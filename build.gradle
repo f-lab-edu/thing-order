@@ -24,12 +24,6 @@ project(':common') {
     jar.enabled = true
 }
 
-project(':api') {
-    dependencies {
-        implementation project(':common')
-    }
-}
-
 project(':web') {
     dependencies {
         implementation project(':common')
