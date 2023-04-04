@@ -18,8 +18,3 @@ subprojects {
         mavenCentral()
     }
 }
-
-project(':common') {
-    bootJar.enabled = false
-    jar.enabled = true
-}
