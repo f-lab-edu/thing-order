@@ -19,13 +19,3 @@ subprojects {
     }
 }
 
-project(':common') {
-    bootJar.enabled = false
-    jar.enabled = true
-}
-
-project(':web') {
-    dependencies {
-        implementation project(':common')
-    }
-}
