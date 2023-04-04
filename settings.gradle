@@ -8,5 +8,5 @@
  */
 
 rootProject.name = 'thing-order'
-include('common', 'web')
+include(':common', ':web')
 
