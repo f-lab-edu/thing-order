@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.10' apply false
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE' apply false
+}
+
+subprojects {
+    group 'com.thing-order'
+    version '1.0'
+
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    sourceCompatibility = 11
+
+    repositories {
+        mavenCentral()
+    }
+}
+
