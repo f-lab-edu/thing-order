@@ -1,10 +1,7 @@
 package org.example.controller;
 
 import org.example.domain.Order;
-import org.example.dto.order.CreateMemberOrderInputDTO;
-import org.example.dto.order.CreateMemberOrderOutputDTO;
-import org.example.dto.order.GetOrderByUserOutputDTO;
-import org.example.dto.order.OrderInfo;
+import org.example.dto.order.*;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,5 +15,10 @@ public class OrderController {
     @GetMapping("/{userId}")
     public GetOrderByUserOutputDTO getOrdersByUser(@PathVariable() String userId) {
         return new GetOrderByUserOutputDTO(true, new OrderInfo());
+    }
+
+    @PostMapping("/confirm")
+    public ConfirmMemberOrderOutputDTO confirmOrder(ConfirmOrderInputDTO confirmOrderInputDTO) {
+        return new ConfirmMemberOrderOutputDTO(true, true);
     }
 }
