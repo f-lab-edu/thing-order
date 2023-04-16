@@ -6,5 +6,4 @@ public class CreateOrderItemInput {
     private Long userCouponId;
     private Long optionId;
     private Long orderQuantity;
-
 }
