@@ -1,14 +1,10 @@
 package org.example.dto.order;
+import lombok.Getter;
+import lombok.Setter;
 import org.example.domain.Order;
 
+@Getter
+@Setter
 public class OrderInfo {
     private Order order;
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
 }
