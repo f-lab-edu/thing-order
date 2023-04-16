@@ -2,10 +2,10 @@ package org.example.dto.order;
 
 import java.util.List;
 
-public class CreateMemberOrderInputDTO {
+public class CreateMemberOrderRequestDto {
     private Long deliveryId;
     private String deliveryMessage;
-    private List<CreateOrderItemInput> items;
+    private List<CreateOrderItemRequest> items;
     private Long pointDiscountPrice;
 }
 

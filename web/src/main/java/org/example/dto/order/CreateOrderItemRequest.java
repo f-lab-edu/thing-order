@@ -1,7 +1,7 @@
 package org.example.dto.order;
 
 
-public class CreateOrderItemInput {
+public class CreateOrderItemRequest {
     private Long productId;
     private Long userCouponId;
     private Long optionId;

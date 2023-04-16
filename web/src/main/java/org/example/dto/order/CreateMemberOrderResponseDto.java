@@ -6,12 +6,12 @@ import org.example.domain.*;
 
 @Getter
 @Setter
-public class CreateMemberOrderOutputDTO {
+public class CreateMemberOrderResponseDto {
     private boolean ok;
     private Order results;
     private boolean isZeroPaidOrder;
 
-    public CreateMemberOrderOutputDTO(boolean ok, Order results, boolean isZeroPaidOrder) {
+    public CreateMemberOrderResponseDto(boolean ok, Order results, boolean isZeroPaidOrder) {
         this.ok = ok;
         this.results = results;
         this.isZeroPaidOrder = isZeroPaidOrder;

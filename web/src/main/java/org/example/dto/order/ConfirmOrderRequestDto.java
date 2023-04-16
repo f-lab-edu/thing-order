@@ -1,5 +1,5 @@
 package org.example.dto.order;
 
-public class ConfirmOrderInputDTO {
+public class ConfirmOrderRequestDto {
     private Long orderItemId;
 }

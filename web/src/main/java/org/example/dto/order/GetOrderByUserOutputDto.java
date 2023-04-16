@@ -5,11 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GetOrderByUserOutputDTO {
+public class GetOrderByUserOutputDto {
     private boolean ok;
-    private OrderInfo results;
+    private OrderInfoResponse results;
 
-    public GetOrderByUserOutputDTO(boolean ok, OrderInfo results) {
+    public GetOrderByUserOutputDto(boolean ok, OrderInfoResponse results) {
         this.ok = ok;
         this.results = results;
     }

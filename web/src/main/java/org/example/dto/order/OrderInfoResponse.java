@@ -5,6 +5,6 @@ import org.example.domain.Order;
 
 @Getter
 @Setter
-public class OrderInfo {
+public class OrderInfoResponse {
     private Order order;
 }

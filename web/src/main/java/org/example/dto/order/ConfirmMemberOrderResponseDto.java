@@ -4,11 +4,11 @@ import lombok.*;
 
 @Getter
 @Setter
-public class ConfirmMemberOrderOutputDTO {
+public class ConfirmMemberOrderResponseDto {
     private boolean ok;
     private boolean results;
 
-    public ConfirmMemberOrderOutputDTO(boolean ok, boolean results) {
+    public ConfirmMemberOrderResponseDto(boolean ok, boolean results) {
         this.ok = ok;
         this.results = results;
     }

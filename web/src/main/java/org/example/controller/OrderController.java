@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/order")
 public class OrderController {
     @PostMapping
-    public CreateMemberOrderOutputDTO createOrder(CreateMemberOrderInputDTO createMemberOrderInputDto) {
-        return new CreateMemberOrderOutputDTO(true, new Order(), false);
+    public CreateMemberOrderResponseDto createOrder(CreateMemberOrderRequestDto createMemberOrderRequestDto) {
+        return new CreateMemberOrderResponseDto(true, new Order(), false);
     }
 
     @GetMapping("/{userId}")
-    public GetOrderByUserOutputDTO getOrdersByUser(@PathVariable() String userId) {
-        return new GetOrderByUserOutputDTO(true, new OrderInfo());
+    public GetOrderByUserOutputDto getOrdersByUser(@PathVariable() String userId) {
+        return new GetOrderByUserOutputDto(true, new OrderInfoResponse());
     }
 
     @PostMapping("/confirm")
-    public ConfirmMemberOrderOutputDTO confirmOrder(ConfirmOrderInputDTO confirmOrderInputDTO) {
-        return new ConfirmMemberOrderOutputDTO(true, true);
+    public ConfirmMemberOrderResponseDto confirmOrder(ConfirmOrderRequestDto confirmOrderRequestDTO) {
+        return new ConfirmMemberOrderResponseDto(true, true);
     }
 }
