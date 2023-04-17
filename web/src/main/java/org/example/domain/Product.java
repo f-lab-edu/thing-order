@@ -1,9 +1,13 @@
 package org.example.domain;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 public class Product {
     private Long id;
     private String coverImg;
@@ -28,5 +32,4 @@ public class Product {
     private Long stockCount;
     private OptionsType optionsType;
     private ProductOption productOption;
-
 }

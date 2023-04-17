@@ -1,5 +1,10 @@
 package org.example.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class OrderItemOption {
     private Long optionId;
     private String optionName1;

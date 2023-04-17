@@ -1,8 +1,13 @@
 package org.example.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
+@Setter
 public class OrderItem {
     private Product product;
     private OrderItemOption options;

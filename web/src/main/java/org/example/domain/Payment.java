@@ -1,7 +1,12 @@
 package org.example.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 public class Payment {
     private String paymentKey;
     private String orderNumber;
