@@ -1,9 +1,9 @@
 package org.example.domain;
 
 public enum OptionsType {
-    DATE("Date"),
-    MONTH("Month"),
-    QUARTER("Quarter"),
+    ABSENCE("Absence"),
+    Solo("Solo"),
+    Combination("Combination"),
     ;
 
     OptionsType(String optionsType) {

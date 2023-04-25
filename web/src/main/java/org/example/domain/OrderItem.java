@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OrderItem {
+    private Long id;
     private Product product;
     private OrderItemOption options;
     private Long orderItemVat;
@@ -37,4 +38,14 @@ public class OrderItem {
     private boolean isAcceptedConditionalFreeDeliveryFee;
     private boolean isAcceptedConditionalFreeDeliveryFeeWhenOrder;
     private Long originalDeliveryFeeBeforeDeliveryDiscount;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public void setIsAcceptedConditionalFreeDeliveryFee(boolean isAcceptedConditionalFreeDeliveryFee) {
+        this.isAcceptedConditionalFreeDeliveryFee = isAcceptedConditionalFreeDeliveryFee;
+    }
+
+    public void setIsAcceptedConditionalFreeDeliveryFeeWhenOrder(boolean acceptedConditionalFreeDeliveryFeeWhenOrder) {
+        isAcceptedConditionalFreeDeliveryFeeWhenOrder = acceptedConditionalFreeDeliveryFeeWhenOrder;
+    }
 }

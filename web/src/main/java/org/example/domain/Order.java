@@ -21,15 +21,13 @@ public class Order {
     private Long deliveryFee;
     private List<OrderItem> items;
     private User customer;
-    private Product product;
-    private Shop shop;
     private Long orderItemVat;
     private PaymentMethod paymentMethod;
     private OrderCustomerType orderCustomerType;
+    private String refundBankAccount;
     private String refundAccountBankName;
     private String refundAccountHolder;
     private String deliveryMessage;
-    private String deliverMessage;
     private String deliveryPhoneNumber;
     private String receiver;
     private String streetAddress;
@@ -42,4 +40,5 @@ public class Order {
     private String customerName;
     private String customerPhoneNumber;
     private String customerPersonalCustomsCode;
+    private DeliveryType deliveryType;
 }
