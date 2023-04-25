@@ -1,5 +1,7 @@
 package org.example.controller;
 
+import org.example.service.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,9 +18,16 @@ import org.example.dto.order.OrderInfoResponse;
 @RestController
 @RequestMapping("/order")
 public class OrderController {
+    private final OrderService orderService;
+
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
     @PostMapping
-    public CreateMemberOrderResponseDto createOrder(CreateMemberOrderRequestDto createMemberOrderRequestDto) {
-        return new CreateMemberOrderResponseDto(true, new Order(), false);
+    public CreateMemberOrderResponseDto createMemberOrder(CreateMemberOrderRequestDto createMemberOrderRequestDto) {
+        Order newOrder =  orderService.createMemberOrder();
+        return new CreateMemberOrderResponseDto(true, newOrder, false);
     }
 
     @GetMapping("/{userId}")
