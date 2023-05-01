@@ -1,14 +1,14 @@
 package org.example.domain;
 
+import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 public class OrderItem {
+    private Long id;
     private Product product;
     private OrderItemOption options;
     private Long orderItemVat;
@@ -38,4 +38,14 @@ public class OrderItem {
     private boolean isAcceptedConditionalFreeDeliveryFee;
     private boolean isAcceptedConditionalFreeDeliveryFeeWhenOrder;
     private Long originalDeliveryFeeBeforeDeliveryDiscount;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public void setIsAcceptedConditionalFreeDeliveryFee(boolean isAcceptedConditionalFreeDeliveryFee) {
+        this.isAcceptedConditionalFreeDeliveryFee = isAcceptedConditionalFreeDeliveryFee;
+    }
+
+    public void setIsAcceptedConditionalFreeDeliveryFeeWhenOrder(boolean acceptedConditionalFreeDeliveryFeeWhenOrder) {
+        isAcceptedConditionalFreeDeliveryFeeWhenOrder = acceptedConditionalFreeDeliveryFeeWhenOrder;
+    }
 }

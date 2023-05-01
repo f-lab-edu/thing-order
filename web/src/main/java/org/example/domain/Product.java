@@ -2,8 +2,6 @@ package org.example.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.cglib.core.Local;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -32,4 +30,12 @@ public class Product {
     private Long stockCount;
     private OptionsType optionsType;
     private ProductOption productOption;
+
+    public void setIsFreeShipping(boolean isFreeShipping) {
+        this.isFreeShipping = isFreeShipping;
+    }
+
+    public void setIsCrawled(boolean isCrawled) {
+        this.isCrawled = isCrawled;
+    }
 }

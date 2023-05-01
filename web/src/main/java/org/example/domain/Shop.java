@@ -14,4 +14,13 @@ public class Shop {
     private String logoImg;
     private boolean isCrawled;
     private List<Product> products;
+    private Long baseShippingFee;
+    private Long jejuShippingFee;
+    private Long islandShippingFee;
+    private Long freeShippingFee;
+    private ShopClassification shopClassification;
+
+    public void setIsCrawled(boolean isCrawled) {
+        this.isCrawled = isCrawled;
+    }
 }
