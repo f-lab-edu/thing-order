@@ -1,0 +1,22 @@
+input CreateOrderV3Input {
+    paymentMethod: paymentMethod!
+    deliveryMessage: String!
+    deliveryId: Int!
+    items: [CreateOrderItemV3Input!]!
+    pointDiscountPrice: Int = 0
+}
+
+input CreateOrderItemV3Input {
+    productId: Int!
+    userCouponId: Int
+    optionId: Int
+    orderQuantity: Int!
+}
+
+input MemberOrderInput {
+    orderNumber: String!
+}
+
+input ConfirmMemberOrderInput {
+    orderItemId: Int!
+}

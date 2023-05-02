@@ -1,0 +1,241 @@
+enum paymentMethod {
+    Card
+    VirtualAccount
+}
+
+enum DeliveryCompany {
+    Hanjin
+    Cj
+    Lotte
+    Logen
+    PostOffice
+    GyeongDong
+    DaeSin
+    GeonYeong
+    YoungMa
+    HoNam
+    CU
+    GsPostBox
+    HomePick
+    EMS
+    DHL
+    CjInternationalExpress
+    FedEx
+    Etc
+}
+
+enum ApplicableProduct {
+    AllProducts
+    SpecificProducts
+}
+
+enum Writer {
+    Master
+    Seller
+}
+
+enum ContentType {
+    News
+    NewProduct
+    BrandIntroduction
+    OfflineEvent
+    ThinggoEvent
+    Recommend
+    Youtube
+}
+
+enum DisplayStatus {
+    Reserved
+    Displayable
+    UnDisplayable
+}
+
+enum ExposureArea {
+    Home
+    AllProducts
+    ParticularProducts
+}
+
+enum UrlType {
+    Shop
+    Product
+    Event
+    Search
+    None
+    Relation
+    Best
+    New
+    Content
+    Interest
+    Reservation
+    Category
+}
+
+enum ThumbnailType {
+    Square
+    Rectangle
+}
+
+enum RenderType {
+    Main
+    Announcement
+    Content
+    NewContentBlock
+    RecommendBlock
+    ProductBanner
+    Category
+    RelationProduct
+}
+
+enum OptionSequenceType {
+    Latest
+}
+
+enum OptionsName {
+    Absence
+    Solo
+    Combination
+}
+
+enum StatusOfStock {
+    OutOfStock
+    OnSale
+}
+
+enum ShippingType {
+    Domestic
+    Overseas
+    PreReserved
+}
+
+enum EstimatedWarehousingDateType {
+    Date
+    Month
+    Quarter
+}
+
+enum ProductClassification {
+    Crawling
+    Partnership
+}
+
+enum ManagerRole {
+    Master
+    Admin
+    Seller
+}
+
+type OptionTotalPrice {
+    optionId: Int
+    optionName: String
+    optionPrice: Int
+    stockCount: Int
+}
+
+enum orderCustomerType {
+    MemberOrder
+    NonMemberOrder
+}
+
+enum UserRole {
+    Client
+}
+
+enum Grade {
+    Paili
+    Lizard
+    Lijamong
+    MegaLijamong
+}
+
+enum SignUpWay {
+    Google
+    Naver
+    Kakao
+    Apple
+    Local
+    Email
+}
+
+enum SocialPlatformToLinkWithAccount {
+    Google
+    Kakao
+    Apple
+}
+
+enum UserGender {
+    Female
+    Male
+    Unknown
+}
+
+enum OrderStatus {
+    Pending
+    Cancel
+    OrderFailed
+    DepositWaiting
+    OrderComplete
+    DeliveryPreparation
+    DeliveryRelease
+    DeliveryComplete
+    CalculateComplete
+    RefundRequest
+    RefundComplete
+}
+
+enum CategoryType {
+    Character
+    Type
+    All
+}
+
+enum AreaType {
+    Jeju
+    AreaExceptForJeju
+}
+
+enum CouponDiscountTarget {
+    NewUser
+    NewAppDownload
+    ExcelUpload
+    IdUpload
+}
+
+enum DiscountType {
+    Percentage
+    Value
+}
+
+enum CouponStatus {
+    Available
+    Reserved
+    Used
+    Expired
+    DeletedByAdmin
+}
+
+enum CouponCondition {
+    AllProduct
+    ParticularProduct
+    ParticularShopProduct
+    ParticularSaleMethod
+}
+
+enum SaleMethod {
+    Domestic
+    Overseas
+    PreReserved
+}
+
+enum OS {
+    IOS
+    Android
+    PC
+    Etc
+    ProdAndroid
+    DevAndroid
+    TestAndroid
+    ProdIOS
+    DevIOS
+    TestIOS
+}
