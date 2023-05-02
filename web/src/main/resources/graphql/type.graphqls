@@ -1,0 +1,556 @@
+type OrderInfo {
+    order: Order
+    payment: Payment
+}
+
+type Order {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    orderNumber: String!
+    customer: User
+    items: [OrderItem!]!
+    totalOriginalPrice: Int!
+    totalDiscountPrice: Int!
+    productDiscountPrice: Int
+    pointDiscountPrice: Int
+    couponDiscountPrice: Int
+    deliveryFee: Int!
+    user: User
+    product: [Product!]
+    shop: Shop
+    orderItemVat: Int
+    finalPrice: Int
+    finalPurchasePrice: Int
+    paymentMethod: paymentMethod!
+    orderCustomerType: orderCustomerType!
+    refundAccountBankName: String
+    refundBankAccount: String
+    refundAccountHolder: String
+    deliveryMessage: String!
+    deliveryPhoneNumber: String!
+    receiver: String!
+    streetAddress: String!
+    detailAddress: String!
+    zipCode: String!
+    paymentDate: DateTime
+    orderName: String!
+    payment: Payment
+    customerEmail: String
+    customerName: String
+    customerPhoneNumber: String
+    customerPersonalCustomsCode: String
+}
+
+type OrderItem {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    product: Product
+    options: OrderItemOption
+    customer: User
+    coupon: CouponConstraint
+    paymentInfo: Payment
+    calculationAmount: Int
+    orderItemVat: Int
+    deliveryCompany: DeliveryCompany
+    deliveryNumber: String
+    order: Order!
+    orderItemTotalPaymentAmount: Int!
+    orderItemTotalAmount: Int!
+    pointDiscountAmount: Int
+    couponDiscountAmount: Int
+    productDiscountAmount: Int
+    hasReviews: Boolean!
+    cancelReason: String
+    refundReason: String
+    deliveryReleaseDate: DateTime
+    receiptCompletedDate: DateTime
+    orderStatusDate: DateTime
+    finalPurchasePrice: Int
+    status: OrderStatus!
+    shop: Shop
+    deliveryFee: Int
+    jejuShippingFee: Int
+    islandShippingFee: Int
+}
+
+type OrderItemOption {
+    optionId: Int
+    optionName1: String
+    optionValue1: String
+    optionName2: String
+    optionValue2: String
+    optionName3: String
+    optionValue3: String
+    optionPrice: Int
+    orderQuantity: Int!
+}
+
+type Shop {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    name: String!
+    coverImg: String
+    logoImg: String
+    description: String
+    shopManager: [Manager!]
+    isDisplayed: Boolean
+    baseShippingFee: Int
+    jejuShippingFee: Int
+    islandShippingFee: Int
+    freeShippingFee: Int
+    orders: [OrderItem!]
+    products: [Product!]
+    shopNoticeBanner: [ShopNoticeBanner!]
+    deletedAt: DateTime
+    crawling: [Crawling!]
+    isCrawled: Boolean
+    address: String!
+    representative: String!
+    businessNumber: String!
+    reportNumber: String!
+    serverCenterContact: String!
+    businessName: String!
+    representativeEmail: String!
+    deletedLog: String
+    additionalImages: [ShopAdditionalImage!]
+    shopAdditionalImages: [String!]
+}
+
+type ShopAdditionalImage {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    image: String!
+}
+
+type Crawling {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    title: String!
+    isActive: Boolean!
+    link: String!
+    deletedAt: DateTime
+    cycle: Int!
+    nextCrawlingDate: DateTime!
+    crawlingStartDate: DateTime
+    crawlingEndDate: DateTime
+    instantCrawlingStartDate: DateTime
+    instantCrawlingEndDate: DateTime
+    isSuccessedForRecent: Boolean
+    productCount: Int!
+    soldOutCount: Int!
+    adultProductCount: Int!
+    errorProductCount: Int!
+    shop: Shop
+}
+
+type ShopNoticeBanner {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    title: String!
+    isDisplayed: Boolean!
+    bannerImg: String
+    applicableProduct: ApplicableProduct!
+    writer: Writer
+    deletedAt: DateTime
+    product: [Product!]
+    shop: Shop
+}
+
+type Product {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    crawlProductId: String
+    name: String!
+    price: Int
+    productId: String
+    classification: ProductClassification
+    discountRate: Int
+    discountPrice: Int
+    discountType: DiscountType
+    coverImg: String
+    searchKeyword: String
+    searchKeywordUpdatedDate: DateTime
+    additionalImages: [ProductAdditionalImage!]
+    productAdditionalImages: [String!]
+    productDeletedImages: [String!]
+    count: Int
+    description: String
+    copiedDescription: String
+    descriptionCoverImage: String
+    splittedDescriptionCoverImage: [String!]
+    stockCount: Int
+    ratingAvg: Float
+    modelName: String
+    phoneNumberOfAS: String
+    manufacturer: String
+    standardOfQA: String
+    guideLineOfAS: String
+    isDisplayed: Boolean
+    isAdult: Boolean
+    baseShippingFee: Int
+    jejuShippingFee: Int
+    islandShippingFee: Int
+    countryOfOrigin: String
+    isExposableToThinggo: Boolean
+    isExposableToNaver: Boolean
+    isFreeShipping: Boolean
+    isCrawled: Boolean
+    characterCategory: [Category!]
+    typeCategory: [Category!]
+    estimatedDeliveryDate: Int
+    estimatedWarehousingDate: DateTime
+    estimatedWarehousingDateType: EstimatedWarehousingDateType
+    preReserveStartTime: DateTime
+    preReserveEndTime: DateTime
+    exposureDate: DateTime
+    shippingType: ShippingType
+    optionsChoice: [ProductOptionChoice!]
+    options: [ProductOption!]
+    optionsType: OptionsName
+    reviews: [Review!]
+    optionSequenceType: OptionSequenceType
+    crawlLink: String
+    deletedAt: DateTime
+    deletedLog: String
+    crawling: String
+    shop: Shop
+    naverCategory: NaverCategory
+    orderItem: [OrderItem!]
+    orderStatus: OrderStatus
+    pointDiscountAmount: Int
+    couponDiscountAmount: Int
+    productBanner: [HomeContent!]
+    shopNoticeBanner: ShopNoticeBanner
+    freeShippingFee: Int
+    finalPrice: Int
+    finalPurchasePrice: Int
+    deliveryFee: Int
+    shopNoticeBannerToProduct: ShopNoticeBanner
+    optionTotalPrice: [OptionTotalPrice!]
+    convertedEstimatedWarehousingDate: String
+}
+
+type HomeContent {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    coverImg: String
+    title: String!
+    blockTitle: String!
+    blockVersion: Int!
+    isExposed: Boolean!
+    subTitle: String!
+    description: String
+    countOfDisplayedProduct: Int
+    thumbnailType: ThumbnailType!
+    isDisplayed: Boolean!
+    renderType: RenderType!
+    sequenceInSlider: Int
+    homeRenderSequence: Int
+    deletedAt: DateTime
+    logCategory: String
+    urlType: UrlType
+    urlValue: String
+    exposureArea: ExposureArea
+    displayStatus: DisplayStatus!
+    displayStartTime: DateTime
+    displayEndTime: DateTime
+    availableFieldOfProduct: [String!]
+    collectedLog: [String!]
+    contents: [Content!]!
+    relatedProducts: [Product!]
+    linkedContentId: Int
+    recommendProducts: [Product!]
+    displaySequence: Int
+}
+
+type Content {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    coverImg: String
+    title: String!
+    text: String!
+    textCoverImage: String
+    splittedTextCoverImage: [String!]
+    writer: String!
+    deletedAt: DateTime
+    contentType: ContentType!
+    isDisplayed: Boolean!
+    products: [Product!]
+}
+
+type NaverCategory {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    naverCategory: String
+    deletedAt: DateTime
+    categoryName1: String!
+    categoryName2: String
+    categoryName3: String
+    categoryName4: String
+    isActive: Boolean!
+    tag: String
+    tagIgnore: String
+    updateTime: DateTime
+    products: [Product!]
+}
+
+type ProductOption {
+    optionId: Int
+    optionName1: String
+    optionValue1: String
+    optionName2: String
+    optionValue2: String
+    optionName3: String
+    optionValue3: String
+    isAvailable: Boolean!
+    stockCount: Int
+    optionPrice: Int
+    adminCode: String
+    statusOfStock: StatusOfStock
+}
+
+type ProductOptionChoice {
+    optionNumber: Int
+    optionName: String
+    optionValue: [String!]
+    optionPrice: Int
+}
+
+type ProductAdditionalImage {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    image: String
+    deletedAt: DateTime
+}
+
+type Manager {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    email: String!
+    name: String!
+    nickName: String
+    password: String!
+    role: ManagerRole!
+    phoneNumber: String
+    isVerified: Boolean!
+    shops: Shop
+    agreeToAutomaticLogin: Boolean!
+    deletedAt: DateTime
+}
+
+type User {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    email: String!
+    name: String!
+    gender: UserGender
+    birthDay: DateTime
+    phoneNumber: String
+    password: String!
+    role: UserRole!
+    grade: Grade
+    nickName: String
+    signUpWay: SignUpWay
+    os: OS
+    agreeToEmailMarketing: Boolean!
+    agreeToSmsMarketing: Boolean!
+    agreeToPushMessageMarketing: Boolean!
+    agreeToCollectAndUsePersonalInformation: Boolean!
+    agreeToAutomaticLogin: Boolean!
+    agreeToTermsOfService: Boolean!
+    bank: Bank
+    bankAccount: String
+    bankAccountHolder: String
+    personalCustomsCode: String
+    reasonForWithdrawal: String!
+    deletedAt: DateTime
+    fcmToken: String
+    badgeCount: Int
+    allPoint: Int
+    allThingCount: Int
+    shopThingCount: Int
+    productThingCount: Int
+    contentThingCount: Int
+    cumulativeVisitCount: Int!
+    cumulativeClickCount: Int!
+    couponConstraint: [CouponConstraint!]
+    deletedCoupons: [CouponConstraint!]
+    orders: [Order!]!
+    interests: [Interest!]
+    descriptions: [String!]
+    shops: [Shop!]
+    deliveryAddresses: [UserDeliveryAddress!]!
+    reviews: [Review!]
+    carts: [Cart!]
+    isVerified: Boolean!
+    linkedSocialAccount: LinkedSocialAccount
+    master: Master
+}
+
+type Cart {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    product: Product!
+    options: CartItemOption
+    quantity: Int!
+    freeShippingFee: Int
+}
+
+type CartItemOption {
+    optionId: Int
+    optionName1: String
+    optionValue1: String
+    optionName2: String
+    optionValue2: String
+    optionName3: String
+    optionValue3: String
+    optionPrice: Int
+}
+
+type LinkedSocialAccount {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    socialPlatform: SocialPlatformToLinkWithAccount!
+}
+
+type Bank {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    bankName: String!
+}
+
+type Payment {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    method: String
+    bank: String
+    accountNumber: String
+    vat: Int
+    accountHolder: String
+    accountExpireDate: DateTime
+    cardCompany: String
+    cardNumber: String
+    installmentPlanMonths: Int
+    paymentStatus: String
+}
+
+type Master {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+type Interest {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    name: String!
+    coverImg: String
+    deletedAt: DateTime
+    description: String
+    categories: [Category!]
+}
+
+type Category {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    name: String!
+    isActive: Boolean!
+    newProductMappedDate: DateTime
+    excludeTag: String
+    tag: String
+    deletedAt: DateTime
+    displaySequence: Int!
+    depth: Int!
+    coverImg: String
+    firstCategory: [Category!]
+    secondCategory: [Category!]
+    categoryType: CategoryType!
+    products: [Product!]!
+    freeShipProducts: [Product!]!
+    relatedInterest: [Interest!]
+}
+
+type CouponConstraint {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    name: String!
+    description: String!
+    descriptions: [String!]
+    guideline: [String!]!
+    isAvailableForMultipleUses: Boolean!
+    isUsed: Boolean
+    deletedAt: DateTime
+    isActive: Boolean!
+    couponCondition: CouponCondition!
+    saleMethod: SaleMethod!
+    couponStatus: CouponStatus
+    discount: Int!
+    discountType: DiscountType!
+    validUntil: DateTime!
+    issueCount: Int
+    usedCount: Int
+    minPriceOfProduct: Int
+    maxPriceOfProduct: Int
+    issueReservationDate: DateTime
+    joinStartDate: DateTime
+    joinEndDate: DateTime
+    discountTarget: CouponDiscountTarget
+    shop: Shop
+    products: [Product!]
+    users: [User!]
+    shopIds: [Int!]
+}
+
+type UserDeliveryAddress {
+    id: Int!
+    createdAt: DateTime
+    updatedAt: DateTime
+    receiver: String!
+    streetAddress: String!
+    detailAddress: String!
+    zipCode: String!
+    phoneNumberForDelivery: String!
+    isDefault: Boolean
+    isAddressToChargeAdditionalFee: Boolean
+    areaType: AreaType
+}
+
+type Review {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    text: String!
+    reviewImg: [ReviewImage!]
+    representativeReviewImage: String
+    rating: Int!
+    sellerReview: Review
+    product: Product!
+    user: User!
+}
+
+type ReviewImage {
+    id: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    image: String
+}
