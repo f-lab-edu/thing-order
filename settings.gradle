@@ -9,4 +9,4 @@
 
 rootProject.name = 'thing-order'
 include ':web'
-
+include ':common'
