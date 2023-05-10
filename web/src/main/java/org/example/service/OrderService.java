@@ -128,9 +128,8 @@ public class OrderService {
         newOrder.setCouponDiscountPrice(0L);
         newOrder.setPointDiscountPrice(0L);
         newOrder.setDeliveryFee(3000L);
-        newOrder.setOrderItemVat(null);
-        newOrder.setPaymentMethod(PaymentMethod.CARD);
-        newOrder.setOrderCustomerType(OrderCustomerType.MEMBER_ORDER);
+        newOrder.setPaymentMethod(PaymentMethod.Card);
+        newOrder.setOrderCustomerType(OrderCustomerType.MemberOrder);
         newOrder.setRefundAccountHolder(null);
         newOrder.setRefundBankAccount(null);
         newOrder.setRefundAccountBankName(null);

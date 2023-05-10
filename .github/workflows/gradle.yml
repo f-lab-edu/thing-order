@@ -28,7 +28,11 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+    - name: Set up Jasypt Encryptor Password
+      run: echo "Set up Jasypt Encryptor Password"
+      env:
+        JASYPT_ENCRYPTOR_PASSWORD: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
-        arguments: build
+        arguments: "build -Djasypt.encryptor.password=${{ env.JASYPT_ENCRYPTOR_PASSWORD }}"
