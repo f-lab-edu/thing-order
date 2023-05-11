@@ -210,7 +210,7 @@ class OrderServiceTest {
         void createOrderTest17 () {
             Order order = orderService.createMemberOrder();
 
-            Assertions.assertEquals(order.getOrderCustomerType(), OrderCustomerType.MEMBER_ORDER);
+            Assertions.assertEquals(order.getOrderCustomerType(), OrderCustomerType.MemberOrder);
         }
 
         @Test
@@ -218,7 +218,7 @@ class OrderServiceTest {
         void createOrderTest18() {
             Order order = orderService.createMemberOrder();
 
-            if (order.getPaymentMethod() == PaymentMethod.CARD) {
+            if (order.getPaymentMethod() == PaymentMethod.Card) {
                 Assertions.assertNull(order.getRefundBankAccount());
                 Assertions.assertNull(order.getRefundAccountHolder());
                 Assertions.assertNull(order.getRefundAccountBankName());
@@ -230,7 +230,7 @@ class OrderServiceTest {
         void createOrderTest19() {
             Order order = orderService.createMemberOrder();
 
-            if (order.getPaymentMethod() == PaymentMethod.VIRTUAL_ACCOUNT) {
+            if (order.getPaymentMethod() == PaymentMethod.VirtualAccount) {
                 Assertions.assertNotNull(order.getRefundBankAccount());
                 Assertions.assertNotNull(order.getRefundAccountHolder());
                 Assertions.assertNotNull(order.getRefundAccountBankName());

@@ -1,0 +1,16 @@
+spring:
+  graphql:
+    graphiql:
+      enabled: true
+  datasource:
+    url: ENC(DjnvefXGI6eJB3eH3dk9EwWBqNfRbnjPMLt6uw0H15C05QHs/DLkE4HKeSozc9BO3A9UGpDwFS/Z07DDPCU5o2f7TrVPJGOZW0cfTwGH2nxdifhPfgeiTFSryv/K/NeD54N2wocVNdtuEoVnFulqdQ4/d4PFR7OWdVfTs/Vwy2yRawwGN/gpKw==)
+    username: ENC(S+XUVdaV2nAY9hkDVfxhznKJnuqfjs2P)
+    password: ENC(f1jOSELKR5TR0DK5pkSp6YSGdfSpPi4os7t5FQVbETb3JC/GHnijtgEEP7nZJLt7)
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true

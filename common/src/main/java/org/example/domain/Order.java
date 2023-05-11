@@ -3,6 +3,7 @@ package org.example.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,7 +22,6 @@ public class Order {
     private Long deliveryFee;
     private List<OrderItem> items;
     private User customer;
-    private Long orderItemVat;
     private PaymentMethod paymentMethod;
     private OrderCustomerType orderCustomerType;
     private String refundBankAccount;
