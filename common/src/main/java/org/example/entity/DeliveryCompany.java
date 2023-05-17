@@ -1,10 +1,10 @@
-package org.example.domain;
+package org.example.entity;
 
 public enum DeliveryCompany {
-    HANJIN("05"),
-    CJ("04"),
-    LOTTE("08"),
-    LOGEN("06"),
+    Hanjin("05"),
+    Cj("04"),
+    Lotte("08"),
+    Logen("06"),
     POST_OFFICE("01"),
     GYEONG_DONG("23"),
     DAE_SIN("22"),

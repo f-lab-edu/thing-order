@@ -1,4 +1,4 @@
-package org.example.domain;
+package org.example.entity;
 
 public enum OrderCustomerType {
     MemberOrder("MemberOrder"),

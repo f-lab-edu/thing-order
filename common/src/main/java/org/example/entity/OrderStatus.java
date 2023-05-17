@@ -1,4 +1,4 @@
-package org.example.domain;
+package org.example.entity;
 
 public enum OrderStatus {
     PENDING("Pending"),
@@ -11,10 +11,8 @@ public enum OrderStatus {
     DELIVERY_COMPLETE("DeliveryComplete"),
     CALCULATE_COMPLETE("CalculateComplete"),
     REFUND_REQUEST("RefundRequest"),
-    REFUND_COMPLETE("RefundComplete"),
-    ;
+    REFUND_COMPLETE("RefundComplete");
 
     OrderStatus(String orderStatus) {
-
     }
 }

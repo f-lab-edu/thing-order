@@ -1,10 +1,9 @@
-package org.example.domain;
+package org.example.entity;
 
 public enum OptionsType {
-    ABSENCE("Absence"),
+    Absence("Absence"),
     Solo("Solo"),
-    Combination("Combination"),
-    ;
+    Combination("Combination");
 
     OptionsType(String optionsType) {
     }

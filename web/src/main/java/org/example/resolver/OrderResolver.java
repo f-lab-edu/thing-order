@@ -1,12 +1,12 @@
 package org.example.resolver;
 
-import org.example.domain.Order;
 import org.example.dto.order.ConfirmMemberOrderResponseDto;
 import org.example.dto.order.ConfirmOrderRequestDto;
 import org.example.dto.order.CreateMemberOrderResponseDto;
 import org.example.dto.order.GetMemberOrderByUserRequestDto;
 import org.example.dto.order.GetMemberOrderByUserResponseDto;
 import org.example.dto.order.OrderInfoResponse;
+import org.example.entity.Order;
 import org.example.service.OrderService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
