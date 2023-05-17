@@ -1,10 +1,9 @@
-package org.example.domain;
+package org.example.entity;
 
 public enum EstimatedWarehousingDateType {
-    DATE("Date"),
-    MONTH("Month"),
-    QUARTER("Quarter"),
-    ;
+    Date("Date"),
+    Month("Month"),
+    Quarter("Quarter");
 
     EstimatedWarehousingDateType(String estimatedWareHousingDateType) {
     }

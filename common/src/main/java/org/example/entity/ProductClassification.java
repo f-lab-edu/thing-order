@@ -1,8 +1,8 @@
-package org.example.domain;
+package org.example.entity;
 
 public enum ProductClassification {
-    CRAWLING("Crawling"),
-    PARTNERSHIP("Partnership");
+    Crawling("Crawling"),
+    Partnership("Partnership");
 
     ProductClassification(String productClassification) {
     }
