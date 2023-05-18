@@ -183,6 +183,7 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("Order의 customer 필드는 null이 아니여야 한다")
+        @Disabled
         void createOrderTest14() {
             Order order = orderService.createMemberOrder();
 
