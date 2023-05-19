@@ -12,9 +12,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -31,7 +31,7 @@ class UserServiceTest {
         long userId = 1L;
         User user = User.builder().id(userId).email("test@gmail.com").phoneNumber("01012345678").name(
                 "test").build();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
         // when
         Optional<User> optionalUser = userService.findUserById(userId);
@@ -47,7 +47,7 @@ class UserServiceTest {
     void findUserById2() {
         // given
         long invalidUserId = 2L;
-        when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
+        given(userRepository.findById(invalidUserId)).willReturn(Optional.empty());
 
         // when
         Optional<User> optionalUser = userService.findUserById(invalidUserId);
