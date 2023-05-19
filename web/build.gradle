@@ -1,16 +1,25 @@
 dependencies {
+    // web
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // graphql
     implementation 'org.springframework.boot:spring-boot-starter-graphql'
     implementation 'com.graphql-java:graphql-java-extended-scalars:20.2'
+
+    // jasypt
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
 
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // postgres
     implementation 'org.postgresql:postgresql:42.5.4'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // lombok
     compileOnly 'org.projectlombok:lombok:1.18.26'
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
 
+    // test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // common
     implementation project(':common')
 }
 
