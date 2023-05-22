@@ -1,17 +1,25 @@
+plugins {
+    id 'java-library'
+}
+
 dependencies {
-    // jpa
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-55:3.3.2'
-    implementation 'com.vladmihalcea:hibernate-types-52:2.21.1'
+    // spring-data-jpa
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // json type column
+    api 'io.hypersistence:hypersistence-utils-hibernate-55:3.3.2'
+
+    // json string array column
+    api 'com.vladmihalcea:hibernate-types-52:2.21.1'
 
     // jackson
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations'
-    implementation 'com.fasterxml.jackson.core:jackson-core'
+    api 'com.fasterxml.jackson.core:jackson-databind'
+    api 'com.fasterxml.jackson.core:jackson-annotations'
+    api 'com.fasterxml.jackson.core:jackson-core'
 
     // lombok
-    compileOnly 'org.projectlombok:lombok:1.18.26'
-    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
     // h2
     testRuntimeOnly 'com.h2database:h2'
