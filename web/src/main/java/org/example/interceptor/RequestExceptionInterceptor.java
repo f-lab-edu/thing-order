@@ -34,7 +34,7 @@ public class RequestExceptionInterceptor implements WebGraphQlInterceptor {
     @NonNull
     public Mono<WebGraphQlResponse> intercept(@NonNull WebGraphQlRequest request, Chain chain) {
         return chain.next(request).map(response -> {
-            if (response.isValid()) {
+            if (response.getErrors().isEmpty()) {
                 return response;
             }
 
