@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.order.ConfirmMemberOrderResponseDto;
 import org.example.dto.order.ConfirmOrderRequestDto;
 import org.example.dto.order.CreateMemberOrderResponseDto;
+import org.example.dto.order.CreateOrderItemRequest;
 import org.example.dto.order.GetMemberOrderByUserRequestDto;
 import org.example.dto.order.GetMemberOrderByUserResponseDto;
 import org.example.dto.order.OrderInfoResponse;
@@ -17,6 +18,8 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 public class OrderResolver {
@@ -26,8 +29,9 @@ public class OrderResolver {
     @MutationMapping
     public CreateMemberOrderResponseDto createMemberOrderV3() throws Exception {
         User user = userService.findUserById(88293L).orElseThrow(() -> new Exception("user not found"));
+        List<CreateOrderItemRequest> createOrderItemRequests = List.of(new CreateOrderItemRequest());
 
-        Order newOrder = orderService.createMemberOrder(PaymentMethod.Card, user);
+        Order newOrder = orderService.createMemberOrder(PaymentMethod.Card, user, createOrderItemRequests);
         return new CreateMemberOrderResponseDto(true, newOrder, false);
     }
 
