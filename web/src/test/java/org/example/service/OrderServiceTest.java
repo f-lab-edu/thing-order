@@ -44,7 +44,6 @@ class OrderServiceTest {
     @Nested
     @DisplayName("createMemberOrder() 메서드 테스트")
     class CreateMemberOrderTest {
-
         @Test
         @DisplayName("Order의 totalOriginalPrice는 OrderItem들의 orderItemTotalAmount의 합이다.")
         @Disabled
