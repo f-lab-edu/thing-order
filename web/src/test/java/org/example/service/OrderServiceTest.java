@@ -45,75 +45,6 @@ class OrderServiceTest {
     @DisplayName("createMemberOrder() 메서드 테스트")
     class CreateMemberOrderTest {
 
-        @Nested
-        @DisplayName("환불 계좌 관련 validation 테스트")
-        class RefundAccountValidationTest{
-            @Test
-            @DisplayName("Order의 PaymentMethod가 Card이면 환불 관련 정보가 없어도 예외를 던지지 않는다.")
-            void crateOrderTestWithRefundInfoWhenPaymentMethodCard() {
-                assertThatNoException().isThrownBy(() -> orderService.createMemberOrder(PaymentMethod.Card, getUserWithInvalidRefundBank()));
-            }
-
-            @Test
-            @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보(은행 정보)가 없을 시 예외를 던진다.")
-            void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount() {
-                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
-                        getUserWithInvalidRefundBank()))
-                        .isInstanceOf(Exception.class)
-                        .hasMessage("Refund bank information is necessary");
-            }
-
-            @Test
-            @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보(예금주)가 없을 시 예외를 던진다.")
-            void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount2() {
-                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
-                        getUserWithInvalidRefundBankAccountHolder()))
-                        .isInstanceOf(Exception.class)
-                        .hasMessage("Refund bank information is necessary");
-            }
-
-            @Test
-            @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보(은향 계좌)가 없을 시 예외를 던진다.")
-            void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount3() throws Exception {
-                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
-                        getUserWithInvalidRefundBankAccount()))
-                        .isInstanceOf(Exception.class)
-                        .hasMessage("Refund bank information is necessary");
-            }
-
-            private User getUserWithInvalidRefundBank() {
-                User user = new User();
-                user.setBankAccount("111111111111");
-                user.setBankAccountHolder("예금주");
-
-                return new User();
-            }
-
-            private User getUserWithInvalidRefundBankAccountHolder() {
-                Bank bank = new Bank();
-                bank.setBankCode("11");
-                bank.setBankName("국민은행");
-
-                User user = new User();
-                user.setBankAccount("111111111111");
-                user.setBank(bank);
-
-                return new User();
-            }
-
-            private User getUserWithInvalidRefundBankAccount() {
-                Bank bank = new Bank();
-                bank.setBankCode("11");
-                bank.setBankName("국민은행");
-
-                User user = new User();
-                user.setBankAccountHolder("예금주");
-                user.setBank(bank);
-
-                return new User();
-            }
-        }
-
         @Test
         @DisplayName("Order의 totalOriginalPrice는 OrderItem들의 orderItemTotalAmount의 합이다.")
         @Disabled
@@ -326,7 +257,6 @@ class OrderServiceTest {
             }
         }
 
-
         @Test
         @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보는 null이면 안된다..")
         @Disabled
@@ -434,6 +364,72 @@ class OrderServiceTest {
             //TODO : implementation this test
         }
 
+        @Nested
+        @DisplayName("환불 계좌 관련 validation 테스트")
+        class RefundAccountValidationTest {
+            @Test
+            @DisplayName("Order의 PaymentMethod가 Card이면 환불 관련 정보가 없어도 예외를 던지지 않는다.")
+            void crateOrderTestWithRefundInfoWhenPaymentMethodCard() {
+                // given
 
+                // when // then
+                assertThatNoException().isThrownBy(() -> orderService.createMemberOrder(PaymentMethod.Card, getUserWithInvalidRefundBank()));
+            }
+
+            @Test
+            @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보(은행 정보)가 없을 시 예외를 던진다.")
+            void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount() {
+                // given
+
+                // when // then
+                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, getUserWithInvalidRefundBank()))
+                        .isInstanceOf(Exception.class)
+                        .hasMessage("Refund bank information is necessary");
+            }
+
+            @Test
+            @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보(예금주)가 없을 시 예외를 던진다.")
+            void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount2() {
+                // given
+                Bank bank = new Bank();
+                bank.setBankCode("11");
+                bank.setBankName("국민은행");
+
+                User userWithInvalidRefundBankAccountHolder = new User();
+                userWithInvalidRefundBankAccountHolder.setBankAccount("111111111111");
+                userWithInvalidRefundBankAccountHolder.setBank(bank);
+
+                // when // then
+                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, userWithInvalidRefundBankAccountHolder))
+                        .isInstanceOf(Exception.class)
+                        .hasMessage("Refund bank information is necessary");
+            }
+
+            @Test
+            @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보(은향 계좌)가 없을 시 예외를 던진다.")
+            void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount3() {
+                // given
+                Bank bank = new Bank();
+                bank.setBankCode("11");
+                bank.setBankName("국민은행");
+
+                User userWithInvalidRefundBankAccount = new User();
+                userWithInvalidRefundBankAccount.setBankAccountHolder("예금주");
+                userWithInvalidRefundBankAccount.setBank(bank);
+
+                // when
+                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, userWithInvalidRefundBankAccount))
+                        .isInstanceOf(Exception.class)
+                        .hasMessage("Refund bank information is necessary");
+            }
+
+            private User getUserWithInvalidRefundBank() {
+                User user = new User();
+                user.setBankAccount("111111111111");
+                user.setBankAccountHolder("예금주");
+
+                return new User();
+            }
+        }
     }
 }
