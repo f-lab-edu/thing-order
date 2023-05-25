@@ -10,7 +10,7 @@ import org.example.entity.OrderStatus;
 import org.example.entity.PaymentMethod;
 import org.example.entity.User;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,13 +25,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
-    private static User mockedUser;
+    private User mockedUser;
     @InjectMocks
     private OrderService orderService;
     private PaymentMethod tempPaymentMethod;
 
-    @BeforeAll
-    static void setUp() {
+    @BeforeEach
+    void beforeEach() {
         mockedUser = new User();
     }
 
