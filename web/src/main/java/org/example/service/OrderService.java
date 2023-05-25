@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Service
 public class OrderService {
     public Order createMemberOrder(PaymentMethod paymentMethod, User user) throws Exception {
-        this.checkUserRefundAccount(user, paymentMethod);
+        this.checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(user, paymentMethod);
         LocalDateTime now = LocalDateTime.now();
 
         Order newOrder = new Order();
@@ -18,7 +18,7 @@ public class OrderService {
         return newOrder;
     }
 
-    private void checkUserRefundAccount(User user, PaymentMethod paymentMethod) throws Exception {
+    private void checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(User user, PaymentMethod paymentMethod) throws Exception {
         if (paymentMethod == PaymentMethod.VirtualAccount && (user.getBank() == null || user.getBankAccountHolder() == null || user.getBankAccount() == null)) {
             throw new Exception("Refund bank information is necessary");
         }
