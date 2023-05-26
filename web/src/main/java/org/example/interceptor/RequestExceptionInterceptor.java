@@ -12,13 +12,13 @@ import java.util.Map;
 
 @Configuration
 public class RequestExceptionInterceptor implements WebGraphQlInterceptor {
-    private static Map<String, Object> getCommonResponseExceptionMap(String path, Map<String, Object> dataFields) {
+    private Map<String, Object> getCommonResponseExceptionMap(String path, Map<String, Object> dataFields) {
         Map<String, Object> result = new HashMap<>();
         result.put(path, dataFields);
         return result;
     }
 
-    private static Map<String, Object> getCommonMapForDataMapWhenExceptionInvoked() {
+    private Map<String, Object> getCommonMapForDataMapWhenExceptionInvoked() {
         Map<String, Object> dataFields = new HashMap<>();
         dataFields.put("ok", false);
         dataFields.put("error", null);
@@ -26,7 +26,7 @@ public class RequestExceptionInterceptor implements WebGraphQlInterceptor {
         return dataFields;
     }
 
-    private static String getPathInResponse(WebGraphQlResponse response) {
+    private String getPathInResponse(WebGraphQlResponse response) {
         return (String) response.getExecutionResult().getErrors().get(0).getPath().get(0);
     }
 
