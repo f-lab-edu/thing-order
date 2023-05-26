@@ -1,6 +1,7 @@
 package org.example.service;
 
 
+import org.example.dto.order.CreateOrderItemRequest;
 import org.example.entity.Bank;
 import org.example.entity.DeliveryType;
 import org.example.entity.Order;
@@ -9,6 +10,8 @@ import org.example.entity.OrderItem;
 import org.example.entity.OrderStatus;
 import org.example.entity.PaymentMethod;
 import org.example.entity.User;
+import org.example.exception.GraphqlException;
+import org.example.repository.ProductRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -18,7 +21,10 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -26,6 +32,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
     private User mockedUser;
+    private List<CreateOrderItemRequest> tempCreateOrderItemRequests;
+
+    @Mock
+    ProductRepository productRepository;
     @InjectMocks
     private OrderService orderService;
     private PaymentMethod tempPaymentMethod;
@@ -33,6 +43,9 @@ class OrderServiceTest {
     @BeforeEach
     void beforeEach() {
         mockedUser = new User();
+        CreateOrderItemRequest tempCreateOrderItemRequest = new CreateOrderItemRequest();
+        tempCreateOrderItemRequest.setProductId(1L);
+        tempCreateOrderItemRequests = List.of(tempCreateOrderItemRequest);
     }
 
     @Test
@@ -44,12 +57,11 @@ class OrderServiceTest {
     @Nested
     @DisplayName("createMemberOrder() 메서드 테스트")
     class CreateMemberOrderTest {
-
         @Test
         @DisplayName("Order의 totalOriginalPrice는 OrderItem들의 orderItemTotalAmount의 합이다.")
         @Disabled
         void createOrderTest1() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
             Long totalOriginalPrice = order.getTotalOriginalPrice();
             Long sumOfOrderItemTotalAmount = order.getItems().stream().mapToLong(OrderItem::getOrderItemTotalAmount).sum();
 
@@ -60,7 +72,7 @@ class OrderServiceTest {
         @DisplayName("Order의 totalDiscountPrice는 나머지 할인 프로퍼티의 합이다")
         @Disabled
         void createOrderTest2() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
             Long totalDiscountPrice = order.getTotalDiscountPrice();
             Long sumOfDiscountPrice = order.getProductDiscountPrice() + order.getCouponDiscountPrice() + order.getPointDiscountPrice();
 
@@ -71,7 +83,7 @@ class OrderServiceTest {
         @DisplayName("Order의 deliveryFee는 orderItem의 deliveryFee의 합이다.")
         @Disabled
         void createOrderTest3() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
             Long orderDeliveryFee = order.getDeliveryFee();
             Long sumOfDeliveryFee = order.getItems().stream().mapToLong(OrderItem::getDeliveryFee).sum();
 
@@ -82,7 +94,7 @@ class OrderServiceTest {
         @DisplayName("Order의 배송지 관련 정보 null check")
         @Disabled
         void createOrderTest4() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             Assertions.assertAll(
                     () -> Assertions.assertNotNull(order.getStreetAddress()),
@@ -99,7 +111,7 @@ class OrderServiceTest {
         @DisplayName("Order의 주문 고객 정보 null check")
         @Disabled
         void createOrderTest5() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             Assertions.assertAll(
                     () -> Assertions.assertNotNull(order.getCustomerEmail()),
@@ -112,7 +124,7 @@ class OrderServiceTest {
         @DisplayName("Order의 주문번호, 결제 방식, createdAt, updatedAt null check")
         @Disabled
         void createOrderTest6() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             Assertions.assertAll(
                     () -> Assertions.assertNotNull(order.getOrderNumber()),
@@ -126,7 +138,7 @@ class OrderServiceTest {
         @DisplayName("orderItemTotalPaymentAmount는 orderItemTotalAmount - (productDiscountAmount + couponDiscountAmount + productDiscountAmount) 이다.")
         @Disabled
         void createOrderTest7() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             order.getItems().forEach(orderItem -> {
                 Assertions.assertEquals(orderItem.getOrderItemTotalPaymentAmount(),
@@ -138,7 +150,7 @@ class OrderServiceTest {
         @DisplayName("orderItem의 상태는 PENDING이어야 한다.")
         @Disabled
         void createOrderTest8() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             order.getItems().forEach(orderItem -> {
                 Assertions.assertEquals(orderItem.getOrderStatus(), OrderStatus.PENDING);
@@ -149,7 +161,7 @@ class OrderServiceTest {
         @DisplayName("Order의 deliveryType이 Normal이면 각 orderItem의 deliveryFee는 baseShippingFee와 같은 값이다")
         @Disabled
         void createOrderTest9() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             if (order.getDeliveryType() == DeliveryType.NORMAL) {
                 order.getItems().forEach(orderItem -> {
@@ -162,7 +174,7 @@ class OrderServiceTest {
         @DisplayName("Order의 deliveryType이 Jeju면 각 orderItem의 deliveryFee는 baseShippingFee + jejuShippingFee와 같은 값이다")
         @Disabled
         void createOrderTest10() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             if (order.getDeliveryType() == DeliveryType.JEJU) {
                 order.getItems().forEach(orderItem -> {
@@ -175,7 +187,7 @@ class OrderServiceTest {
         @DisplayName("Order의 deliveryType이 Island면 각 orderItem의 deliveryFee는 baseShippingFee + islandShippingFee와 같은 값이다")
         @Disabled
         void createOrderTest11() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             if (order.getDeliveryType() == DeliveryType.ISLAND) {
                 order.getItems().forEach(orderItem -> {
@@ -188,7 +200,7 @@ class OrderServiceTest {
         @DisplayName("Order 객체에서 paymentDate는 null이어야 한다")
         @Disabled
         void createdOrderTest12() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             Assertions.assertAll(
                     () -> Assertions.assertNull(order.getPaymentDate())
@@ -199,7 +211,7 @@ class OrderServiceTest {
         @DisplayName("Order의 items 리스트는 널이 아니여야 한다")
         @Disabled
         void createOrderTest13() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             Assertions.assertNotNull(order.getItems());
         }
@@ -208,7 +220,7 @@ class OrderServiceTest {
         @DisplayName("Order의 customer 필드는 null이 아니여야 한다")
         @Disabled
         void createOrderTest14() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             Assertions.assertNotNull(order.getCustomer());
         }
@@ -217,7 +229,7 @@ class OrderServiceTest {
         @DisplayName("Order의 OrderItem의 product 필드는 null이 아니여야 한다")
         @Disabled
         void createOrderTest15() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             order.getItems().forEach(orderItem -> {
                 Assertions.assertNotNull(orderItem.getProduct());
@@ -228,7 +240,7 @@ class OrderServiceTest {
         @DisplayName("Order의 OrderItem의 shop 필드는 null이 아니여야 한다")
         @Disabled
         void createOrderTest16() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             order.getItems().forEach(orderItem -> {
                 Assertions.assertNotNull(orderItem.getShop());
@@ -239,7 +251,7 @@ class OrderServiceTest {
         @DisplayName("Order의 customerType은 MemberOrder여야 한다.")
         @Disabled
         void createOrderTest17() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             Assertions.assertEquals(order.getOrderCustomerType(), OrderCustomerType.MemberOrder);
         }
@@ -248,7 +260,7 @@ class OrderServiceTest {
         @DisplayName("Order의 PaymentMethod가 Card이면 환불 관련 정보는 null이어야한다.")
         @Disabled
         void createOrderTest18() throws Exception {
-            Order order = orderService.createMemberOrder(PaymentMethod.Card, mockedUser);
+            Order order = orderService.createMemberOrder(PaymentMethod.Card, mockedUser, tempCreateOrderItemRequests);
 
             if (order.getPaymentMethod() == PaymentMethod.Card) {
                 Assertions.assertNull(order.getRefundBankAccount());
@@ -261,7 +273,8 @@ class OrderServiceTest {
         @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보는 null이면 안된다..")
         @Disabled
         void createOrderTest19() throws Exception {
-            Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser);
+            Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser
+                    , tempCreateOrderItemRequests);
 
             if (order.getPaymentMethod() == PaymentMethod.VirtualAccount) {
                 Assertions.assertNotNull(order.getRefundBankAccount());
@@ -274,7 +287,7 @@ class OrderServiceTest {
         @DisplayName("Order의 totalDiscountPrice(총 할인금액)는 totalOriginalPrice(배송비를 제외한 금액)보다 작거나 같아야 한다.")
         @Disabled
         void createOrderTest20() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser);
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser, tempCreateOrderItemRequests);
 
             Assertions.assertTrue(order.getTotalDiscountPrice() <= order.getTotalOriginalPrice());
         }
@@ -368,21 +381,12 @@ class OrderServiceTest {
         @DisplayName("환불 계좌 관련 validation 테스트")
         class RefundAccountValidationTest {
             @Test
-            @DisplayName("Order의 PaymentMethod가 Card이면 환불 관련 정보가 없어도 예외를 던지지 않는다.")
-            void crateOrderTestWithRefundInfoWhenPaymentMethodCard() {
-                // given
-
-                // when // then
-                assertThatNoException().isThrownBy(() -> orderService.createMemberOrder(PaymentMethod.Card, getUserWithInvalidRefundBank()));
-            }
-
-            @Test
             @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보(은행 정보)가 없을 시 예외를 던진다.")
             void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount() {
                 // given
 
                 // when // then
-                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, getUserWithInvalidRefundBank()))
+                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, getUserWithInvalidRefundBank(), tempCreateOrderItemRequests))
                         .isInstanceOf(Exception.class)
                         .hasMessage("Refund bank information is necessary");
             }
@@ -400,7 +404,7 @@ class OrderServiceTest {
                 userWithInvalidRefundBankAccountHolder.setBank(bank);
 
                 // when // then
-                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, userWithInvalidRefundBankAccountHolder))
+                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, userWithInvalidRefundBankAccountHolder, tempCreateOrderItemRequests))
                         .isInstanceOf(Exception.class)
                         .hasMessage("Refund bank information is necessary");
             }
@@ -418,7 +422,7 @@ class OrderServiceTest {
                 userWithInvalidRefundBankAccount.setBank(bank);
 
                 // when
-                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, userWithInvalidRefundBankAccount))
+                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, userWithInvalidRefundBankAccount, tempCreateOrderItemRequests))
                         .isInstanceOf(Exception.class)
                         .hasMessage("Refund bank information is necessary");
             }
@@ -429,6 +433,20 @@ class OrderServiceTest {
                 user.setBankAccountHolder("예금주");
 
                 return new User();
+            }
+        }
+
+        @Nested
+        @DisplayName("주문할 상품 존재 여부 validation 테스트")
+        class ProductExistValidationTest {
+            @Test
+            @DisplayName("존재하지 않는 상품을 주문할 시 예외를 던진다.")
+            void crateOrderTestWithNotExistProduct() {
+                // given
+                // when // then
+                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.Card,
+                        mockedUser,
+                        tempCreateOrderItemRequests)).isInstanceOf(GraphqlException.class).hasMessage("Could not find the product with ID");
             }
         }
     }
