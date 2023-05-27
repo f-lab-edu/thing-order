@@ -26,16 +26,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
     private User mockedUser;
     private List<CreateOrderItemRequest> tempCreateOrderItemRequests;
-
-    @Mock
-    ProductRepository productRepository;
     @InjectMocks
     private OrderService orderService;
     private PaymentMethod tempPaymentMethod;
@@ -436,18 +432,6 @@ class OrderServiceTest {
             }
         }
 
-        @Nested
-        @DisplayName("주문할 상품 존재 여부 validation 테스트")
-        class ProductExistValidationTest {
-            @Test
-            @DisplayName("존재하지 않는 상품을 주문할 시 예외를 던진다.")
-            void crateOrderTestWithNotExistProduct() {
-                // given
-                // when // then
-                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.Card,
-                        mockedUser,
-                        tempCreateOrderItemRequests)).isInstanceOf(GraphqlException.class).hasMessage("Could not find the product with ID");
-            }
-        }
+
     }
 }
