@@ -28,5 +28,5 @@ public class ProductOption {
 
     private String adminCode;
 
-    private String statusOfStock;
+    private StatusOfStock statusOfStock;
 }

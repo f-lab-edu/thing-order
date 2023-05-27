@@ -19,6 +19,7 @@ public class OrderService {
     public Order createMemberOrder(PaymentMethod paymentMethod, User user, List<CreateOrderItemRequest> itemsToOrder) throws Exception {
         this.checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(user, paymentMethod);
         this.productService.checkProductExist(itemsToOrder.stream().map(CreateOrderItemRequest::getProductId).collect(Collectors.toList()));
+        this.productService.checkProductStockCount(itemsToOrder);
 
         LocalDateTime now = LocalDateTime.now();
 
