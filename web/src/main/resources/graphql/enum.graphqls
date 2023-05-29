@@ -239,3 +239,8 @@ enum OS {
     DevIOS
     TestIOS
 }
+
+enum StatusOfStock {
+    OnSale
+    OutOfStock
+}
