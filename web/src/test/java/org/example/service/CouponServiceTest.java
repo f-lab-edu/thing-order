@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -61,7 +62,7 @@ class CouponServiceTest {
         // given
         Coupon coupon1 = new Coupon();
         coupon1.setCouponStatus(CouponStatus.Used);
-        given(couponRepository.findUserCoupon(testUser.getId(), 1L)).willReturn(coupon1);
+        given(couponRepository.findUserCoupon(testUser.getId(), 1L)).willReturn(Optional.of(coupon1));
 
         // when
         // then

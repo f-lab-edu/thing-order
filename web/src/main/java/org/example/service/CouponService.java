@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,19 +20,22 @@ public class CouponService {
 
     void checkUserCouponStatus(User user, List<Long> couponIdsToUse) {
         for (Long couponId : couponIdsToUse) {
-            Coupon userCoupon = this.couponRepository.findUserCoupon(user.getId(), couponId);
+            Optional<Coupon> userCoupon = this.couponRepository.findUserCoupon(user.getId(),
+                    couponId);
 
-            if (userCoupon == null) {
+            if (userCoupon.isEmpty()) {
                 HashMap<String, Object> ext = new HashMap<String, Object>();
                 ext.put("code", "INVALID_COUPON");
                 throw new GraphqlException("You do not have that coupon", ext);
             }
 
-            if (userCoupon.getCouponStatus() == CouponStatus.Used) {
-                HashMap<String, Object> ext = new HashMap<String, Object>();
-                ext.put("code", "ALREADY_USED_COUPON");
-                throw new GraphqlException("The Coupon is already used", ext);
-            }
+            userCoupon.ifPresent((coupon) -> {
+                if (coupon.getCouponStatus() == CouponStatus.Used) {
+                    HashMap<String, Object> ext = new HashMap<String, Object>();
+                    ext.put("code", "ALREADY_USED_COUPON");
+                    throw new GraphqlException("The Coupon is already used", ext);
+                }
+            });
         }
     }
 }

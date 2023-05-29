@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(classes = {TestConfig.class, CouponRepository.class, UserRepository.class,
@@ -44,9 +46,10 @@ class CouponRepositoryTest {
         Coupon savedCoupon = couponRepository.save(couponToSave);
 
         // when
-        Coupon coupon = couponRepository.findUserCoupon(savedUser.getId(), savedCouponConstraint.getId());
+        Optional<Coupon> coupon = couponRepository.findUserCoupon(savedUser.getId(),
+                savedCouponConstraint.getId());
 
         // then
-        assertThat(coupon.getId()).isEqualTo(savedCoupon.getId());
+        assertThat(coupon.get().getId()).isEqualTo(savedCoupon.getId());
     }
 }
