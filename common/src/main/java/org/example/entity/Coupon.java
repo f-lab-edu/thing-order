@@ -1,9 +1,20 @@
 package org.example.entity;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +22,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@RequiredArgsConstructor
 public class Coupon extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +47,12 @@ public class Coupon extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Builder
+    public Coupon(boolean isUsed, CouponStatus couponStatus, CouponConstraint couponConstraint, User user) {
+        this.isUsed = isUsed;
+        this.couponStatus = couponStatus;
+        this.couponConstraint = couponConstraint;
+        this.user = user;
+    }
 }
