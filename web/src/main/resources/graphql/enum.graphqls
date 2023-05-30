@@ -97,11 +97,6 @@ enum OptionsName {
     Combination
 }
 
-enum StatusOfStock {
-    OutOfStock
-    OnSale
-}
-
 enum ShippingType {
     Domestic
     Overseas
