@@ -15,11 +15,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderService {
     ProductService productService;
+    CouponService couponService;
 
     public Order createMemberOrder(PaymentMethod paymentMethod, User user, List<CreateOrderItemRequest> itemsToOrder) throws Exception {
         this.checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(user, paymentMethod);
         this.productService.checkProductExist(itemsToOrder.stream().map(CreateOrderItemRequest::getProductId).collect(Collectors.toList()));
         this.productService.checkProductStockCount(itemsToOrder);
+        this.couponService.checkUserCouponStatus(user,
+                itemsToOrder.stream()
+                        .filter(item -> item != null && item.getUserCouponId() != null)
+                        .map(CreateOrderItemRequest::getUserCouponId).collect(Collectors.toList())
+        );
 
         LocalDateTime now = LocalDateTime.now();
 

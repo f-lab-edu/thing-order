@@ -5,10 +5,8 @@ import org.example.dto.order.CreateOrderItemRequest;
 import org.example.entity.OptionsType;
 import org.example.entity.Product;
 import org.example.entity.ProductOption;
-import org.example.entity.User;
 import org.example.exception.GraphqlException;
 import org.example.repository.ProductRepository;
-import org.example.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
