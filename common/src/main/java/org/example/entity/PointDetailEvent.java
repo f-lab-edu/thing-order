@@ -1,9 +1,21 @@
 package org.example.entity;
 
-import javax.persistence.*;
+import lombok.Builder;
+import lombok.RequiredArgsConstructor;
+
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 @Entity
+@RequiredArgsConstructor
 public class PointDetailEvent extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +47,12 @@ public class PointDetailEvent extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+
+    @Builder
+    public PointDetailEvent(long amount, boolean isAllUsed, PointStatus pointStatus, User user) {
+        this.amount = amount;
+        this.isAllUsed = isAllUsed;
+        this.pointStatus = pointStatus;
+        this.user = user;
+    }
 }
