@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class PointService {
-    private PointDetailEventRepository pointDetailEventRepository;
+    private final PointDetailEventRepository pointDetailEventRepository;
 
     void checkUserPoint(Long userId, Long pointAmountToUse) {
         long sumOfTotalUserPoint = this.pointDetailEventRepository.getSumOfTotalUserPoint(userId);

@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-    ProductService productService;
-    CouponService couponService;
-    PointService pointService;
+    private final ProductService productService;
+    private final CouponService couponService;
+    private final PointService pointService;
 
     public Order createMemberOrder(PaymentMethod paymentMethod, User user,
             List<CreateOrderItemRequest> itemsToOrder, Long pointDiscountPrice) throws Exception {
