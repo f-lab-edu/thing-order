@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-    ProductService productService;
-    CouponService couponService;
+    private final ProductService productService;
+    private final CouponService couponService;
+    private final PointService pointService;
 
-    public Order createMemberOrder(PaymentMethod paymentMethod, User user, List<CreateOrderItemRequest> itemsToOrder) throws Exception {
+    public Order createMemberOrder(PaymentMethod paymentMethod, User user,
+            List<CreateOrderItemRequest> itemsToOrder, Long pointDiscountPrice) throws Exception {
         this.checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(user, paymentMethod);
         this.productService.checkProductExist(itemsToOrder.stream().map(CreateOrderItemRequest::getProductId).collect(Collectors.toList()));
         this.productService.checkProductStockCount(itemsToOrder);
@@ -26,6 +28,7 @@ public class OrderService {
                         .filter(item -> item != null && item.getUserCouponId() != null)
                         .map(CreateOrderItemRequest::getUserCouponId).collect(Collectors.toList())
         );
+        this.pointService.checkUserPoint(user.getId(), pointDiscountPrice);
 
         LocalDateTime now = LocalDateTime.now();
 

@@ -30,8 +30,10 @@ public class OrderResolver {
     public CreateMemberOrderResponseDto createMemberOrderV3() throws Exception {
         User user = userService.findUserById(88293L).orElseThrow(() -> new Exception("user not found"));
         List<CreateOrderItemRequest> createOrderItemRequests = List.of(new CreateOrderItemRequest());
+        Long pointDiscountPrice = 0L;
 
-        Order newOrder = orderService.createMemberOrder(PaymentMethod.Card, user, createOrderItemRequests);
+        Order newOrder = orderService.createMemberOrder(PaymentMethod.Card, user,
+                createOrderItemRequests, pointDiscountPrice);
         return new CreateMemberOrderResponseDto(true, newOrder, false);
     }
 
