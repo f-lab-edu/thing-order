@@ -97,11 +97,6 @@ enum OptionsName {
     Combination
 }
 
-enum StatusOfStock {
-    OutOfStock
-    OnSale
-}
-
 enum ShippingType {
     Domestic
     Overseas
@@ -238,9 +233,4 @@ enum OS {
     ProdIOS
     DevIOS
     TestIOS
-}
-
-enum StatusOfStock {
-    OnSale
-    OutOfStock
 }
