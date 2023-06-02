@@ -18,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
+
     void checkProductExist(List<Long> productIdsToOrder) {
         for (Long productId : productIdsToOrder) {
             Optional<Product> product = productRepository.findById(productId);

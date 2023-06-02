@@ -33,13 +33,13 @@ class AdditionalDeliveryServiceTest {
         // given
         AdditionalDeliveryFeeArea jejuDeliveryAddress =
                 AdditionalDeliveryFeeArea.builder().areaType(areaType).streetAddress("temp street " +
-                "address").zipCode("123456").build();
+                        "address").zipCode("123456").build();
 
         given(additionalDeliveryFeeAreaRepository.findAdditionalDeliveryFeeAreaByZipCode("123456"))
                 .willReturn(Optional.of(jejuDeliveryAddress));
 
         // when
-        CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput= additionalDeliveryService.checkAdditionalDeliveryFee(
+        CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput = additionalDeliveryService.checkAdditionalDeliveryFee(
                 "123456");
 
         // then
@@ -55,7 +55,7 @@ class AdditionalDeliveryServiceTest {
         // given
 
         // when
-        CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput= additionalDeliveryService.checkAdditionalDeliveryFee(
+        CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput = additionalDeliveryService.checkAdditionalDeliveryFee(
                 "123456");
 
         // then

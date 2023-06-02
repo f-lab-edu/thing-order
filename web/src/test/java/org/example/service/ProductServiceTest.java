@@ -134,7 +134,7 @@ class ProductServiceTest {
     void checkProductStockTest3() {
         // given
         long lackStockCountOptionProductId = 1L;
-        
+
         CreateOrderItemRequest createOrderItemRequest1 = new CreateOrderItemRequest();
         createOrderItemRequest1.setProductId(lackStockCountOptionProductId);
         createOrderItemRequest1.setOptionId(1L);
@@ -154,7 +154,7 @@ class ProductServiceTest {
         productOption.setOptionValue1("빨강");
         productOption.setStockCount(3L);
         productOption.setStatusOfStock(StatusOfStock.OnSale);
-        
+
         String tempOptionProductName = "테스트 옵션 상품";
 
         Product product = new Product();
