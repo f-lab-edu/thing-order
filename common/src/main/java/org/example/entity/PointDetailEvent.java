@@ -1,6 +1,5 @@
 package org.example.entity;
 
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.Entity;
@@ -47,12 +46,4 @@ public class PointDetailEvent extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
-
-    @Builder
-    public PointDetailEvent(long amount, boolean isAllUsed, PointStatus pointStatus, User user) {
-        this.amount = amount;
-        this.isAllUsed = isAllUsed;
-        this.pointStatus = pointStatus;
-        this.user = user;
-    }
 }
