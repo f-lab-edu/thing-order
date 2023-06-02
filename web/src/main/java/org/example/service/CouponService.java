@@ -1,7 +1,6 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.dto.order.CreateOrderItemRequest;
 import org.example.entity.Coupon;
 import org.example.entity.CouponStatus;
 import org.example.entity.User;

@@ -3,7 +3,6 @@ package org.example.entity;
 import com.vladmihalcea.hibernate.type.array.StringArrayType;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;

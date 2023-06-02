@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {TestConfig.class, AdditionalDeliveryFeeAreaRepository.class},
         properties = "spring.config.name=application-common-test")
@@ -27,10 +26,10 @@ class AdditionalDeliveryFeeAreaRepositoryTest {
         // given
         AdditionalDeliveryFeeArea additionalDeliveryFeeAreaToSave =
                 AdditionalDeliveryFeeArea.builder()
-                .areaType(AreaType.Jeju)
-                .zipCode("123456")
-                .streetAddress("temp street address")
-                .build();
+                        .areaType(AreaType.Jeju)
+                        .zipCode("123456")
+                        .streetAddress("temp street address")
+                        .build();
 
         AdditionalDeliveryFeeArea saved =
                 additionalDeliveryFeeAreaRepository.save(additionalDeliveryFeeAreaToSave);
