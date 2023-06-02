@@ -1,9 +1,8 @@
 package org.example.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
@@ -28,8 +27,8 @@ import java.util.List;
 @Setter
 @Entity
 @TypeDef(name = "json", typeClass = JsonType.class)
-@RequiredArgsConstructor
 @ToString
+@NoArgsConstructor
 public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -94,17 +93,8 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
-    @Builder
     public Product(boolean isDisplayed, Shop shop) {
         this.isDisplayed = isDisplayed;
         this.shop = shop;
-    }
-
-    public void setIsFreeShipping(boolean isFreeShipping) {
-        this.isFreeShipping = isFreeShipping;
-    }
-
-    public void setIsCrawled(boolean isCrawled) {
-        this.isCrawled = isCrawled;
     }
 }

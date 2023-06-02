@@ -30,7 +30,7 @@ class ProductRepositoryTest {
         // given
         Shop shopToSave = Shop.builder().name("test").isDisplayed(true).build();
         Shop displayedTrueShop = this.shopRepository.save(shopToSave);
-        Product productToSave = Product.builder().isDisplayed(true).shop(displayedTrueShop).build();
+        Product productToSave = new Product(true, displayedTrueShop);
         Product displayedTrueProduct = this.productRepository.save(productToSave);
 
         // when
@@ -48,7 +48,7 @@ class ProductRepositoryTest {
         // given
         Shop shopToSave = Shop.builder().name("test").isDisplayed(true).build();
         Shop displayedTrueShop = this.shopRepository.save(shopToSave);
-        Product productToSave = Product.builder().isDisplayed(false).shop(displayedTrueShop).build();
+        Product productToSave = new Product(false, displayedTrueShop);
         Product displayedFalseProduct = this.productRepository.save(productToSave);
 
         // when
@@ -65,8 +65,7 @@ class ProductRepositoryTest {
         // given
         Shop shopToSave = Shop.builder().name("test").isDisplayed(false).build();
         Shop dispaleydFalseShop = this.shopRepository.save(shopToSave);
-        Product productToSave =
-                Product.builder().isDisplayed(true).shop(dispaleydFalseShop).build();
+        Product productToSave = new Product(true, dispaleydFalseShop);
         Product displayedTrueProduct = this.productRepository.save(productToSave);
 
         // when
