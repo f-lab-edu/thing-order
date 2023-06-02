@@ -1,8 +1,7 @@
 package org.example.entity;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
@@ -22,7 +21,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class Coupon extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +47,6 @@ public class Coupon extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Builder
     public Coupon(boolean isUsed, CouponStatus couponStatus, CouponConstraint couponConstraint, User user) {
         this.isUsed = isUsed;
         this.couponStatus = couponStatus;

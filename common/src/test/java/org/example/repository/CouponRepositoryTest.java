@@ -38,11 +38,12 @@ class CouponRepositoryTest {
         User userToSave = User.builder().phoneNumber("01012345678").email("test@gmail.com").name(
                 "test").build();
         User savedUser = userRepository.save(userToSave);
+
         CouponConstraint couponConstraintToSave =
                 CouponConstraint.builder().name("테스트 쿠폰").description("테스트 쿠폰 입니다.").build();
         CouponConstraint savedCouponConstraint = couponConstraintRepository.save(couponConstraintToSave);
-        Coupon couponToSave =
-                Coupon.builder().couponStatus(CouponStatus.Available).user(savedUser).couponConstraint(savedCouponConstraint).isUsed(false).build();
+        Coupon couponToSave = new Coupon(false, CouponStatus.Available, savedCouponConstraint,
+                savedUser);
         Coupon savedCoupon = couponRepository.save(couponToSave);
 
         // when
