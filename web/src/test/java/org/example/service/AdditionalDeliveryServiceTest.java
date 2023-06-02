@@ -31,9 +31,8 @@ class AdditionalDeliveryServiceTest {
     @CsvSource({"Jeju", "AreaExceptForJeju"})
     void checkAdditionalDeliveryFeeTest1(AreaType areaType) {
         // given
-        AdditionalDeliveryFeeArea jejuDeliveryAddress =
-                AdditionalDeliveryFeeArea.builder().areaType(areaType).streetAddress("temp street " +
-                        "address").zipCode("123456").build();
+        AdditionalDeliveryFeeArea jejuDeliveryAddress = new AdditionalDeliveryFeeArea("123456",
+                "temp street address", areaType);
 
         given(additionalDeliveryFeeAreaRepository.findAdditionalDeliveryFeeAreaByZipCode("123456"))
                 .willReturn(Optional.of(jejuDeliveryAddress));

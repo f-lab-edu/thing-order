@@ -24,12 +24,8 @@ class AdditionalDeliveryFeeAreaRepositoryTest {
     @Test
     void findAdditionalDeliveryFeeAreaByZipCodeTest() {
         // given
-        AdditionalDeliveryFeeArea additionalDeliveryFeeAreaToSave =
-                AdditionalDeliveryFeeArea.builder()
-                        .areaType(AreaType.Jeju)
-                        .zipCode("123456")
-                        .streetAddress("temp street address")
-                        .build();
+        AdditionalDeliveryFeeArea additionalDeliveryFeeAreaToSave = new AdditionalDeliveryFeeArea(
+                "123456", "temp street address", AreaType.Jeju);
 
         AdditionalDeliveryFeeArea saved =
                 additionalDeliveryFeeAreaRepository.save(additionalDeliveryFeeAreaToSave);
