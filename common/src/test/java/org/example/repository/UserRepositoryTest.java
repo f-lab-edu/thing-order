@@ -22,8 +22,7 @@ class UserRepositoryTest {
     @Test
     void findUserWithId() {
         // given
-        User user1 = User.builder().phoneNumber("01012345678").email("test@gmail.com").name(
-                "test").build();
+        User user1 = new User("test@gmail.com", "test user", "01012345678");
         User savedUser = userRepository.save(user1);
 
         // when
@@ -33,5 +32,4 @@ class UserRepositoryTest {
         assertThat(optionalUser.isPresent()).isEqualTo(true);
         assertThat(optionalUser.get().getId()).isEqualTo(savedUser.getId());
     }
-
 }

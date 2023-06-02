@@ -1,6 +1,5 @@
 package org.example.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -51,8 +50,13 @@ public class User extends BaseEntity {
     @JoinColumn(name = "bank_id")
     private Bank bank;
 
-    @Builder
-    private User(long id, String email, String name, String phoneNumber) {
+    public User(String email, String name, String phoneNumber) {
+        this.email = email;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public User(long id, String email, String name, String phoneNumber) {
         this.id = id;
         this.email = email;
         this.name = name;

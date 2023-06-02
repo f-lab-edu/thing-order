@@ -35,8 +35,7 @@ class CouponRepositoryTest {
     @Test
     void findUserCouponTest() {
         // given
-        User userToSave = User.builder().phoneNumber("01012345678").email("test@gmail.com").name(
-                "test").build();
+        User userToSave = new User("test@gmail.com", "test user", "01012345678");
         User savedUser = userRepository.save(userToSave);
 
         CouponConstraint couponConstraintToSave =

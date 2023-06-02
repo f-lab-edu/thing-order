@@ -29,8 +29,7 @@ class UserServiceTest {
     void findUserById() {
         // given
         long userId = 1L;
-        User user = User.builder().id(userId).email("test@gmail.com").phoneNumber("01012345678").name(
-                "test").build();
+        User user = new User(userId, "test@gmail.com", "test user", "01012345678");
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
         // when
