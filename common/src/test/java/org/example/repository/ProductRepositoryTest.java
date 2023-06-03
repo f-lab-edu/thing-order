@@ -39,7 +39,8 @@ class ProductRepositoryTest {
 
         // then
         assertThat(productOptional.isPresent()).isEqualTo(true);
-        assertThat(productOptional.get().getId()).isEqualTo(displayedTrueProduct.getId());
+        productOptional.ifPresent(
+                product -> assertThat(product.getId()).isEqualTo(displayedTrueProduct.getId()));
     }
 
     @DisplayName("상품의 isDisplayed가 false이면 select 되지 않는다.")

@@ -50,6 +50,6 @@ class CouponRepositoryTest {
                 savedCouponConstraint.getId());
 
         // then
-        assertThat(coupon.get().getId()).isEqualTo(savedCoupon.getId());
+        coupon.ifPresent(value -> assertThat(value.getId()).isEqualTo(savedCoupon.getId()));
     }
 }

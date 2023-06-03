@@ -31,6 +31,6 @@ class UserRepositoryTest {
 
         // then
         assertThat(optionalUser.isPresent()).isEqualTo(true);
-        assertThat(optionalUser.get().getId()).isEqualTo(savedUser.getId());
+        optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(savedUser.getId()));
     }
 }

@@ -176,10 +176,9 @@ class OrderServiceTest {
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
             if (order.getDeliveryType() == DeliveryType.NORMAL) {
-                order.getItems().forEach(orderItem -> {
-                    assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                            orderItem.getBaseShippingFee());
-                });
+                order.getItems()
+                        .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                                orderItem.getBaseShippingFee()));
             }
         }
 
@@ -191,10 +190,9 @@ class OrderServiceTest {
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
             if (order.getDeliveryType() == DeliveryType.JEJU) {
-                order.getItems().forEach(orderItem -> {
-                    assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                            orderItem.getJejuShippingFee());
-                });
+                order.getItems()
+                        .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                                orderItem.getJejuShippingFee()));
             }
         }
 
@@ -206,10 +204,9 @@ class OrderServiceTest {
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
             if (order.getDeliveryType() == DeliveryType.ISLAND) {
-                order.getItems().forEach(orderItem -> {
-                    assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                            orderItem.getIslandShippingFee());
-                });
+                order.getItems()
+                        .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                                orderItem.getIslandShippingFee()));
             }
         }
 

@@ -38,7 +38,7 @@ class UserServiceTest {
         // then
         verify(userRepository, times(1)).findById(userId);
         assertThat(optionalUser.isPresent()).isEqualTo(true);
-        assertThat(optionalUser.get().getId()).isEqualTo(userId);
+        optionalUser.ifPresent(value -> assertThat(value.getId()).isEqualTo(userId));
     }
 
     @DisplayName("존재하지 않는 id를 조회하면 Optional.isPresent() false를 리턴한다.")

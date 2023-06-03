@@ -37,6 +37,7 @@ class AdditionalDeliveryFeeAreaRepositoryTest {
 
         // then
         assertThat(optionalAdditionalDeliveryFeeArea.isEmpty()).isFalse();
-        assertThat(optionalAdditionalDeliveryFeeArea.get().getId()).isEqualTo(saved.getId());
+        optionalAdditionalDeliveryFeeArea.ifPresent(additionalDeliveryFeeArea -> assertThat(
+                additionalDeliveryFeeArea.getId()).isEqualTo(saved.getId()));
     }
 }
