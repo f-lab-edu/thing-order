@@ -60,8 +60,7 @@ class CouponServiceTest {
     @Test
     void checkUserCouponStatus2() {
         // given
-        Coupon coupon1 = new Coupon();
-        coupon1.setCouponStatus(CouponStatus.Used);
+        Coupon coupon1 = new Coupon(CouponStatus.Used);
         given(couponRepository.findUserCoupon(testUser.getId(), 1L)).willReturn(
                 Optional.of(coupon1));
 

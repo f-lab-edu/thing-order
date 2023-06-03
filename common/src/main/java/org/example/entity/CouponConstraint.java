@@ -14,13 +14,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
 @Getter
-@Setter
 @TypeDefs({
         @TypeDef(
                 name = "string-array",

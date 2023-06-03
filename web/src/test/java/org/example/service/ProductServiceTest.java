@@ -52,10 +52,7 @@ class ProductServiceTest {
         mockedCreateOrderItemRequest.setProductId(productIdToOrder);
         mockedCreateOrderItemRequest.setOrderQuantity(quantityToOrder);
 
-        Product product = new Product();
-        product.setId(1L);
-        product.setName(tempProductName);
-        product.setStockCount(0L);
+        Product product = new Product(1L, tempProductName, 0L);
 
         given(productRepository.findById(productIdToOrder)).willReturn(Optional.of(product));
 
@@ -95,20 +92,10 @@ class ProductServiceTest {
         createOrderItemRequest.setOptionId(optionIdToOrder);
         createOrderItemRequest.setOrderQuantity(quantityToOrder);
 
-        ProductOption productOption = new ProductOption();
+        ProductOption productOption = new ProductOption(1L, "색상", "빨강", 3L, StatusOfStock.OnSale);
 
-        productOption.setOptionId(1L);
-        productOption.setOptionName1("색상");
-        productOption.setOptionValue1("빨강");
-        productOption.setStockCount(3L);
-        productOption.setStatusOfStock(StatusOfStock.OnSale);
-
-        Product product = new Product();
-        product.setId(1L);
-        product.setName(tempProductName);
-        product.setStockCount(4L);
-        product.setOptionsType(OptionsType.Combination);
-        product.setOptions(List.of(productOption));
+        Product product = new Product(1L, tempProductName, 4L, OptionsType.Combination,
+                List.of(productOption));
 
         given(productRepository.findById(1L)).willReturn(Optional.of(product));
 
@@ -153,29 +140,16 @@ class ProductServiceTest {
         createOrderItemRequest2.setOptionId(1L);
         createOrderItemRequest2.setOrderQuantity(4L);
 
-        ProductOption productOption = new ProductOption();
-
-        productOption.setOptionId(1L);
-        productOption.setOptionName1("색상");
-        productOption.setOptionValue1("빨강");
-        productOption.setStockCount(3L);
-        productOption.setStatusOfStock(StatusOfStock.OnSale);
+        ProductOption productOption = new ProductOption(1L, "색상", "빨강", 3L, StatusOfStock.OnSale);
 
         String tempOptionProductName = "테스트 옵션 상품";
 
-        Product product = new Product();
-        product.setId(1L);
-        product.setName(tempOptionProductName);
-        product.setStockCount(4L);
-        product.setOptionsType(OptionsType.Combination);
-        product.setOptions(List.of(productOption));
+        Product product = new Product(1L, tempOptionProductName, 4L, OptionsType.Combination,
+                List.of(productOption));
 
         String tempProductName = "테스트 상품";
 
-        Product product2 = new Product();
-        product2.setId(2L);
-        product2.setName(tempProductName);
-        product2.setStockCount(10L);
+        Product product2 = new Product(2L, tempProductName, 10L);
 
         given(productRepository.findById(1L)).willReturn(Optional.of(product));
         given(productRepository.findById(2L)).willReturn(Optional.of(product2));

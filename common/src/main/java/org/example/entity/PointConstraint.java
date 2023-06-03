@@ -11,10 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 public class PointConstraint extends BaseEntity {
 

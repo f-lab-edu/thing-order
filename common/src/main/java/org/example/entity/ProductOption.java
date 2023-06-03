@@ -1,10 +1,8 @@
 package org.example.entity;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class ProductOption {
 
     private long optionId;
@@ -30,4 +28,17 @@ public class ProductOption {
     private String adminCode;
 
     private StatusOfStock statusOfStock;
+
+    public ProductOption(long optionId, String optionName1, String optionValue1, Long stockCount,
+            StatusOfStock statusOfStock) {
+        this.optionId = optionId;
+        this.optionName1 = optionName1;
+        this.optionValue1 = optionValue1;
+        this.stockCount = stockCount;
+        this.statusOfStock = statusOfStock;
+    }
+
+    public void setStockCount(Long stockCount) {
+        this.stockCount = stockCount;
+    }
 }

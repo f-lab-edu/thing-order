@@ -419,8 +419,8 @@ class OrderServiceTest {
             void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount2() {
                 // given
                 Bank bank = new Bank();
-                bank.setBankCode("11");
                 bank.setBankName("국민은행");
+                bank.setBankCode("11");
 
                 User userWithInvalidRefundBankAccountHolder = new User();
                 userWithInvalidRefundBankAccountHolder.setBankAccount("111111111111");
@@ -440,8 +440,8 @@ class OrderServiceTest {
             void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount3() {
                 // given
                 Bank bank = new Bank();
-                bank.setBankCode("11");
                 bank.setBankName("국민은행");
+                bank.setBankCode("11");
 
                 User userWithInvalidRefundBankAccount = new User();
                 userWithInvalidRefundBankAccount.setBankAccountHolder("예금주");

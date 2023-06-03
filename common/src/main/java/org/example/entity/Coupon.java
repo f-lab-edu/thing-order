@@ -15,10 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor
 public class Coupon extends BaseEntity {
@@ -53,5 +51,9 @@ public class Coupon extends BaseEntity {
         this.couponStatus = couponStatus;
         this.couponConstraint = couponConstraint;
         this.user = user;
+    }
+
+    public Coupon(CouponStatus couponStatus) {
+        this.couponStatus = couponStatus;
     }
 }
