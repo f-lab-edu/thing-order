@@ -28,7 +28,7 @@ class ProductRepositoryTest {
     @Test
     void findProductByDisplayedAndShopDisplayed() {
         // given
-        Shop shopToSave = Shop.builder().name("test").isDisplayed(true).build();
+        Shop shopToSave = new Shop("test shop", true);
         Shop displayedTrueShop = this.shopRepository.save(shopToSave);
         Product productToSave = new Product(true, displayedTrueShop);
         Product displayedTrueProduct = this.productRepository.save(productToSave);
@@ -46,7 +46,7 @@ class ProductRepositoryTest {
     @Test
     void findProductByDisplayedAndShopDisplayed2() {
         // given
-        Shop shopToSave = Shop.builder().name("test").isDisplayed(true).build();
+        Shop shopToSave = new Shop("test shop", true);
         Shop displayedTrueShop = this.shopRepository.save(shopToSave);
         Product productToSave = new Product(false, displayedTrueShop);
         Product displayedFalseProduct = this.productRepository.save(productToSave);
@@ -63,7 +63,7 @@ class ProductRepositoryTest {
     @Test
     void findProductByDisplayedAndShopDisplayed3() {
         // given
-        Shop shopToSave = Shop.builder().name("test").isDisplayed(false).build();
+        Shop shopToSave = new Shop("test shop", false);
         Shop dispaleydFalseShop = this.shopRepository.save(shopToSave);
         Product productToSave = new Product(true, dispaleydFalseShop);
         Product displayedTrueProduct = this.productRepository.save(productToSave);

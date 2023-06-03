@@ -1,8 +1,7 @@
 package org.example.entity;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -19,8 +18,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@RequiredArgsConstructor
 @ToString
+@NoArgsConstructor
 public class Shop extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,7 +52,6 @@ public class Shop extends BaseEntity {
     @OneToMany(mappedBy = "shop")
     private List<ShopCoupon> shopCoupon = new ArrayList<>();
 
-    @Builder
     public Shop(String name, boolean isDisplayed) {
         this.name = name;
         this.isDisplayed = isDisplayed;
