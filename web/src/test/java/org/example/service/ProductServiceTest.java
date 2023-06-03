@@ -1,5 +1,11 @@
 package org.example.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+
+import java.util.List;
+import java.util.Optional;
 import org.example.dto.order.CreateOrderItemRequest;
 import org.example.entity.OptionsType;
 import org.example.entity.Product;
@@ -14,15 +20,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
-
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
+
     @Mock
     ProductRepository productRepository;
 
@@ -61,16 +61,19 @@ class ProductServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> productService.checkProductStockCount(List.of(mockedCreateOrderItemRequest)))
+        assertThatThrownBy(
+                () -> productService.checkProductStockCount(List.of(mockedCreateOrderItemRequest)))
                 .isInstanceOf(GraphqlException.class)
                 .hasMessage("stock count less than order quantity")
                 .satisfies(exception -> {
                     if (exception instanceof GraphqlException) {
                         GraphqlException graphqlException = (GraphqlException) exception;
                         assertThat(graphqlException.getExtensions()).isNotNull();
-                        assertThat(graphqlException.getExtensions().get("code")).isEqualTo("LACK_OF_STOCK_COUNT");
+                        assertThat(graphqlException.getExtensions().get("code")).isEqualTo(
+                                "LACK_OF_STOCK_COUNT");
 
-                        List<String> soldOutProductNames = (List<String>) graphqlException.getExtensions().get("soldOutProductName");
+                        List<String> soldOutProductNames = (List<String>) graphqlException.getExtensions()
+                                .get("soldOutProductName");
                         assertThat(soldOutProductNames).isNotNull();
                         assertThat(soldOutProductNames.size()).isEqualTo(1);
                         assertThat(soldOutProductNames.get(0)).isEqualTo(tempProductName);
@@ -111,16 +114,19 @@ class ProductServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> productService.checkProductStockCount(List.of(createOrderItemRequest)))
+        assertThatThrownBy(
+                () -> productService.checkProductStockCount(List.of(createOrderItemRequest)))
                 .isInstanceOf(GraphqlException.class)
                 .hasMessage("stock count less than order quantity")
                 .satisfies(exception -> {
                     if (exception instanceof GraphqlException) {
                         GraphqlException graphqlException = (GraphqlException) exception;
                         assertThat(graphqlException.getExtensions()).isNotNull();
-                        assertThat(graphqlException.getExtensions().get("code")).isEqualTo("LACK_OF_STOCK_COUNT");
+                        assertThat(graphqlException.getExtensions().get("code")).isEqualTo(
+                                "LACK_OF_STOCK_COUNT");
 
-                        List<String> soldOutProductNames = (List<String>) graphqlException.getExtensions().get("soldOutProductName");
+                        List<String> soldOutProductNames = (List<String>) graphqlException.getExtensions()
+                                .get("soldOutProductName");
                         assertThat(soldOutProductNames).isNotNull();
                         assertThat(soldOutProductNames.size()).isEqualTo(1);
                         assertThat(soldOutProductNames.get(0)).isEqualTo(tempProductName + " / 옵션" +
@@ -176,20 +182,24 @@ class ProductServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> productService.checkProductStockCount(List.of(createOrderItemRequest1, createOrderItemRequest2)))
+        assertThatThrownBy(() -> productService.checkProductStockCount(
+                List.of(createOrderItemRequest1, createOrderItemRequest2)))
                 .isInstanceOf(GraphqlException.class)
                 .hasMessage("stock count less than order quantity")
                 .satisfies(exception -> {
                     if (exception instanceof GraphqlException) {
                         GraphqlException graphqlException = (GraphqlException) exception;
                         assertThat(graphqlException.getExtensions()).isNotNull();
-                        assertThat(graphqlException.getExtensions().get("code")).isEqualTo("LACK_OF_STOCK_COUNT");
+                        assertThat(graphqlException.getExtensions().get("code")).isEqualTo(
+                                "LACK_OF_STOCK_COUNT");
 
-                        List<String> soldOutProductNames = (List<String>) graphqlException.getExtensions().get("soldOutProductName");
+                        List<String> soldOutProductNames = (List<String>) graphqlException.getExtensions()
+                                .get("soldOutProductName");
                         assertThat(soldOutProductNames).isNotNull();
                         assertThat(soldOutProductNames.size()).isEqualTo(1);
-                        assertThat(soldOutProductNames.get(0)).isEqualTo(tempOptionProductName + " / 옵션" +
-                                " 재고 부족");
+                        assertThat(soldOutProductNames.get(0)).isEqualTo(
+                                tempOptionProductName + " / 옵션" +
+                                        " 재고 부족");
                     }
                 });
     }

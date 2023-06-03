@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CustomExceptionResolver extends DataFetcherExceptionResolverAdapter {
+
     @Override
     protected GraphQLError resolveToSingleError(@NonNull Throwable ex,
             @NonNull DataFetchingEnvironment env) {

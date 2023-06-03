@@ -1,7 +1,6 @@
 package org.example.entity;
 
-import lombok.RequiredArgsConstructor;
-
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,11 +10,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @RequiredArgsConstructor
 public class PointDetailEvent extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

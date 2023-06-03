@@ -1,11 +1,7 @@
 package org.example.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,13 +11,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 @Getter
 @Setter
 @Entity
 @TypeDef(name = "json", typeClass = JsonType.class)
 public class OrderItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

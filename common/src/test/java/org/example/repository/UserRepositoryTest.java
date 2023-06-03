@@ -1,5 +1,8 @@
 package org.example.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Optional;
 import org.example.config.TestConfig;
 import org.example.entity.User;
 import org.junit.jupiter.api.DisplayName;
@@ -8,13 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@SpringBootTest(classes = {TestConfig.class, UserRepository.class}, properties = "spring.config.name=application-common-test")
+@SpringBootTest(classes = {TestConfig.class,
+        UserRepository.class}, properties = "spring.config.name=application-common-test")
 @EnableAutoConfiguration
 class UserRepositoryTest {
+
     @Autowired
     private UserRepository userRepository;
 

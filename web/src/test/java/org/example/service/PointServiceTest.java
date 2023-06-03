@@ -1,5 +1,9 @@
 package org.example.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+
 import org.example.exception.GraphqlException;
 import org.example.repository.PointDetailEventRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -9,12 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
-
 @ExtendWith(MockitoExtension.class)
 class PointServiceTest {
+
     @Mock
     private PointDetailEventRepository pointDetailEventRepository;
     @InjectMocks
@@ -27,11 +28,13 @@ class PointServiceTest {
         long userIdHasNotEnoughPoint = 1L;
         Long pointHoldsByUser = 1000L;
         Long pointToUserWantToUse = 2000L;
-        given(pointDetailEventRepository.getSumOfTotalUserPoint(userIdHasNotEnoughPoint)).willReturn(pointHoldsByUser);
+        given(pointDetailEventRepository.getSumOfTotalUserPoint(
+                userIdHasNotEnoughPoint)).willReturn(pointHoldsByUser);
 
         // when
         // then
-        assertThatThrownBy(() -> pointService.checkUserPoint(userIdHasNotEnoughPoint, pointToUserWantToUse))
+        assertThatThrownBy(
+                () -> pointService.checkUserPoint(userIdHasNotEnoughPoint, pointToUserWantToUse))
                 .isInstanceOf(GraphqlException.class)
                 .hasMessage("You don't have enough point")
                 .satisfies(exception -> {

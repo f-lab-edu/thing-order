@@ -1,13 +1,9 @@
 package org.example.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -19,9 +15,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 @Getter
 @Setter
@@ -30,6 +29,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 public class Product extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;

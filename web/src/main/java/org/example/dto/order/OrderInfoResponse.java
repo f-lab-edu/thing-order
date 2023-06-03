@@ -7,5 +7,6 @@ import org.example.entity.Order;
 @Getter
 @Setter
 public class OrderInfoResponse {
+
     private Order order;
 }

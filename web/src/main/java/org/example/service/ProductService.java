@@ -1,5 +1,9 @@
 package org.example.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.order.CreateOrderItemRequest;
 import org.example.entity.OptionsType;
@@ -9,14 +13,10 @@ import org.example.exception.GraphqlException;
 import org.example.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class ProductService {
+
     private final ProductRepository productRepository;
 
     void checkProductExist(List<Long> productIdsToOrder) {
@@ -50,10 +50,13 @@ public class ProductService {
                 }
 
                 for (ProductOption productOption : p.getOptions()) {
-                    if (item.getOptionId() == productOption.getOptionId() && productOption.getStatusOfStock() != null) {
-                        productOption.setStockCount(productOption.getStockCount() - item.getOrderQuantity());
+                    if (item.getOptionId() == productOption.getOptionId()
+                            && productOption.getStatusOfStock() != null) {
+                        productOption.setStockCount(
+                                productOption.getStockCount() - item.getOrderQuantity());
 
-                        if (productOption.getStockCount() < 0 && lackOfStockCountProducts.stream().noneMatch(el -> el.getId() == p.getId())) {
+                        if (productOption.getStockCount() < 0 && lackOfStockCountProducts.stream()
+                                .noneMatch(el -> el.getId() == p.getId())) {
                             lackOfOptionStockCountProducts.add(p);
                         }
                     }

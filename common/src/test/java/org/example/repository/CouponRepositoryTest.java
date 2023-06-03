@@ -1,5 +1,8 @@
 package org.example.repository;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.util.Optional;
 import org.example.config.TestConfig;
 import org.example.entity.Coupon;
 import org.example.entity.CouponConstraint;
@@ -11,10 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 @SpringBootTest(classes = {TestConfig.class, CouponRepository.class, UserRepository.class,
         CouponConstraintRepository.class},
         properties = "spring" +
@@ -22,6 +21,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
                 ".name=application-common-test")
 @EnableAutoConfiguration
 class CouponRepositoryTest {
+
     @Autowired
     private CouponConstraintRepository couponConstraintRepository;
 
@@ -39,7 +39,8 @@ class CouponRepositoryTest {
         User savedUser = userRepository.save(userToSave);
 
         CouponConstraint couponConstraintToSave = new CouponConstraint("테스트 쿠폰", "테스트 쿠폰 입니다");
-        CouponConstraint savedCouponConstraint = couponConstraintRepository.save(couponConstraintToSave);
+        CouponConstraint savedCouponConstraint = couponConstraintRepository.save(
+                couponConstraintToSave);
         Coupon couponToSave = new Coupon(false, CouponStatus.Available, savedCouponConstraint,
                 savedUser);
         Coupon savedCoupon = couponRepository.save(couponToSave);
