@@ -19,14 +19,14 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    void checkProductExist(List<Long> productIdsToOrder) {
+    public void checkProductExist(List<Long> productIdsToOrder) {
         for (Long productId : productIdsToOrder) {
             Optional<Product> product = productRepository.findById(productId);
             product.orElseThrow(() -> new GraphqlException("Could not find the product with ID"));
         }
     }
 
-    void checkProductStockCount(List<CreateOrderItemRequest> itemsToOrder) {
+    public void checkProductStockCount(List<CreateOrderItemRequest> itemsToOrder) {
         List<Product> lackOfStockCountProducts = new ArrayList<Product>();
 
         for (CreateOrderItemRequest item : itemsToOrder) {

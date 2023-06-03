@@ -12,7 +12,7 @@ public class PointService {
 
     private final PointDetailEventRepository pointDetailEventRepository;
 
-    void checkUserPoint(Long userId, Long pointAmountToUse) {
+    public void checkUserPoint(Long userId, Long pointAmountToUse) {
         long sumOfTotalUserPoint = this.pointDetailEventRepository.getSumOfTotalUserPoint(userId);
 
         if (pointAmountToUse > sumOfTotalUserPoint) {

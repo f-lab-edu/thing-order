@@ -23,5 +23,4 @@ public class ShopCoupon extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "shop_id")
     private Shop shop;
-
 }

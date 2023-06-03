@@ -14,9 +14,10 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CouponService {
-    private CouponRepository couponRepository;
 
-    void checkUserCouponStatus(User user, List<Long> couponIdsToUse) {
+    private final CouponRepository couponRepository;
+
+    public void checkUserCouponStatus(User user, List<Long> couponIdsToUse) {
         for (Long couponId : couponIdsToUse) {
             Optional<Coupon> userCoupon = this.couponRepository.findUserCoupon(user.getId(),
                     couponId);
