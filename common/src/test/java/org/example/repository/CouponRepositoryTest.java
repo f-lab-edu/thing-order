@@ -38,8 +38,7 @@ class CouponRepositoryTest {
         User userToSave = new User("test@gmail.com", "test user", "01012345678");
         User savedUser = userRepository.save(userToSave);
 
-        CouponConstraint couponConstraintToSave =
-                CouponConstraint.builder().name("테스트 쿠폰").description("테스트 쿠폰 입니다.").build();
+        CouponConstraint couponConstraintToSave = new CouponConstraint("테스트 쿠폰", "테스트 쿠폰 입니다");
         CouponConstraint savedCouponConstraint = couponConstraintRepository.save(couponConstraintToSave);
         Coupon couponToSave = new Coupon(false, CouponStatus.Available, savedCouponConstraint,
                 savedUser);
