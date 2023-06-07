@@ -7,6 +7,7 @@ import org.example.entity.Order;
 @Getter
 @Setter
 public class CreateMemberOrderResponseDto {
+
     private boolean ok;
     private Order results;
     private boolean isZeroPaidOrder;

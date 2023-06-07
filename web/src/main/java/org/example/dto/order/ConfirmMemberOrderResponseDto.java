@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ConfirmMemberOrderResponseDto {
+
     private boolean ok;
     private boolean results;
 

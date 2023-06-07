@@ -1,5 +1,8 @@
 package org.example.repository;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.util.Optional;
 import org.example.config.TestConfig;
 import org.example.entity.Product;
 import org.example.entity.Shop;
@@ -9,15 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-
-@SpringBootTest(classes = {TestConfig.class, ProductRepository.class}, properties = "spring.config" +
-        ".name=application-common-test")
+@SpringBootTest(classes = {TestConfig.class, ProductRepository.class}, properties = "spring.config"
+        + ".name=application-common-test")
 @EnableAutoConfiguration
 class ProductRepositoryTest {
+
     @Autowired
     private ProductRepository productRepository;
 
@@ -28,32 +27,35 @@ class ProductRepositoryTest {
     @Test
     void findProductByDisplayedAndShopDisplayed() {
         // given
-        Shop shopToSave = Shop.builder().name("test").isDisplayed(true).build();
+        Shop shopToSave = new Shop("test shop", true);
         Shop displayedTrueShop = this.shopRepository.save(shopToSave);
-        Product productToSave = Product.builder().isDisplayed(true).shop(displayedTrueShop).build();
+        Product productToSave = new Product(true, displayedTrueShop);
         Product displayedTrueProduct = this.productRepository.save(productToSave);
 
         // when
         Optional<Product> productOptional =
-                this.productRepository.findProductByDisplayedAndShopDisplayed(displayedTrueProduct.getId());
+                this.productRepository.findProductByDisplayedAndShopDisplayed(
+                        displayedTrueProduct.getId());
 
         // then
         assertThat(productOptional.isPresent()).isEqualTo(true);
-        assertThat(productOptional.get().getId()).isEqualTo(displayedTrueProduct.getId());
+        productOptional.ifPresent(
+                product -> assertThat(product.getId()).isEqualTo(displayedTrueProduct.getId()));
     }
 
     @DisplayName("상품의 isDisplayed가 false이면 select 되지 않는다.")
     @Test
     void findProductByDisplayedAndShopDisplayed2() {
         // given
-        Shop shopToSave = Shop.builder().name("test").isDisplayed(true).build();
+        Shop shopToSave = new Shop("test shop", true);
         Shop displayedTrueShop = this.shopRepository.save(shopToSave);
-        Product productToSave = Product.builder().isDisplayed(false).shop(displayedTrueShop).build();
+        Product productToSave = new Product(false, displayedTrueShop);
         Product displayedFalseProduct = this.productRepository.save(productToSave);
 
         // when
         Optional<Product> productOptional =
-                this.productRepository.findProductByDisplayedAndShopDisplayed(displayedFalseProduct.getId());
+                this.productRepository.findProductByDisplayedAndShopDisplayed(
+                        displayedFalseProduct.getId());
 
         // then
         assertThat(productOptional.isEmpty()).isEqualTo(true);
@@ -63,15 +65,15 @@ class ProductRepositoryTest {
     @Test
     void findProductByDisplayedAndShopDisplayed3() {
         // given
-        Shop shopToSave = Shop.builder().name("test").isDisplayed(false).build();
+        Shop shopToSave = new Shop("test shop", false);
         Shop dispaleydFalseShop = this.shopRepository.save(shopToSave);
-        Product productToSave =
-                Product.builder().isDisplayed(true).shop(dispaleydFalseShop).build();
+        Product productToSave = new Product(true, dispaleydFalseShop);
         Product displayedTrueProduct = this.productRepository.save(productToSave);
 
         // when
         Optional<Product> productOptional =
-                this.productRepository.findProductByDisplayedAndShopDisplayed(displayedTrueProduct.getId());
+                this.productRepository.findProductByDisplayedAndShopDisplayed(
+                        displayedTrueProduct.getId());
 
         // then
         assertThat(productOptional.isEmpty()).isEqualTo(true);

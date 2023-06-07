@@ -1,5 +1,11 @@
 package org.example.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.Optional;
 import org.example.entity.User;
 import org.example.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -9,15 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
+
     @Mock
     private UserRepository userRepository;
 
@@ -29,8 +29,7 @@ class UserServiceTest {
     void findUserById() {
         // given
         long userId = 1L;
-        User user = User.builder().id(userId).email("test@gmail.com").phoneNumber("01012345678").name(
-                "test").build();
+        User user = new User(userId, "test@gmail.com", "test user", "01012345678");
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
         // when
@@ -39,7 +38,7 @@ class UserServiceTest {
         // then
         verify(userRepository, times(1)).findById(userId);
         assertThat(optionalUser.isPresent()).isEqualTo(true);
-        assertThat(optionalUser.get().getId()).isEqualTo(userId);
+        optionalUser.ifPresent(value -> assertThat(value.getId()).isEqualTo(userId));
     }
 
     @DisplayName("존재하지 않는 id를 조회하면 Optional.isPresent() false를 리턴한다.")

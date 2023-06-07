@@ -1,5 +1,11 @@
 package org.example.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+
+import java.util.List;
+import java.util.Optional;
 import org.example.entity.Coupon;
 import org.example.entity.CouponStatus;
 import org.example.entity.User;
@@ -13,15 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
-
 @ExtendWith(MockitoExtension.class)
 class CouponServiceTest {
+
     @Mock
     private CouponRepository couponRepository;
     @InjectMocks
@@ -60,9 +60,9 @@ class CouponServiceTest {
     @Test
     void checkUserCouponStatus2() {
         // given
-        Coupon coupon1 = new Coupon();
-        coupon1.setCouponStatus(CouponStatus.Used);
-        given(couponRepository.findUserCoupon(testUser.getId(), 1L)).willReturn(Optional.of(coupon1));
+        Coupon coupon1 = new Coupon(CouponStatus.Used);
+        given(couponRepository.findUserCoupon(testUser.getId(), 1L)).willReturn(
+                Optional.of(coupon1));
 
         // when
         // then

@@ -1,14 +1,9 @@
 package org.example.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -20,17 +15,19 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 @Getter
-@Setter
 @Entity
 @TypeDef(name = "json", typeClass = JsonType.class)
-@RequiredArgsConstructor
 @ToString
+@NoArgsConstructor
 public class Product extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
@@ -94,17 +91,23 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
-    @Builder
     public Product(boolean isDisplayed, Shop shop) {
         this.isDisplayed = isDisplayed;
         this.shop = shop;
     }
 
-    public void setIsFreeShipping(boolean isFreeShipping) {
-        this.isFreeShipping = isFreeShipping;
+    public Product(long id, String name, Long stockCount) {
+        this.id = id;
+        this.name = name;
+        this.stockCount = stockCount;
     }
 
-    public void setIsCrawled(boolean isCrawled) {
-        this.isCrawled = isCrawled;
+    public Product(long id, String name, Long stockCount, OptionsType optionsType,
+            List<ProductOption> options) {
+        this.id = id;
+        this.name = name;
+        this.stockCount = stockCount;
+        this.optionsType = optionsType;
+        this.options = options;
     }
 }

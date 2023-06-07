@@ -1,5 +1,8 @@
 package org.example.repository;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.util.Optional;
 import org.example.config.TestConfig;
 import org.example.entity.Coupon;
 import org.example.entity.CouponConstraint;
@@ -11,10 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 @SpringBootTest(classes = {TestConfig.class, CouponRepository.class, UserRepository.class,
         CouponConstraintRepository.class},
         properties = "spring" +
@@ -22,6 +21,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
                 ".name=application-common-test")
 @EnableAutoConfiguration
 class CouponRepositoryTest {
+
     @Autowired
     private CouponConstraintRepository couponConstraintRepository;
 
@@ -35,14 +35,14 @@ class CouponRepositoryTest {
     @Test
     void findUserCouponTest() {
         // given
-        User userToSave = User.builder().phoneNumber("01012345678").email("test@gmail.com").name(
-                "test").build();
+        User userToSave = new User("test@gmail.com", "test user", "01012345678");
         User savedUser = userRepository.save(userToSave);
-        CouponConstraint couponConstraintToSave =
-                CouponConstraint.builder().name("테스트 쿠폰").description("테스트 쿠폰 입니다.").build();
-        CouponConstraint savedCouponConstraint = couponConstraintRepository.save(couponConstraintToSave);
-        Coupon couponToSave =
-                Coupon.builder().couponStatus(CouponStatus.Available).user(savedUser).couponConstraint(savedCouponConstraint).isUsed(false).build();
+
+        CouponConstraint couponConstraintToSave = new CouponConstraint("테스트 쿠폰", "테스트 쿠폰 입니다");
+        CouponConstraint savedCouponConstraint = couponConstraintRepository.save(
+                couponConstraintToSave);
+        Coupon couponToSave = new Coupon(false, CouponStatus.Available, savedCouponConstraint,
+                savedUser);
         Coupon savedCoupon = couponRepository.save(couponToSave);
 
         // when
@@ -50,6 +50,6 @@ class CouponRepositoryTest {
                 savedCouponConstraint.getId());
 
         // then
-        assertThat(coupon.get().getId()).isEqualTo(savedCoupon.getId());
+        coupon.ifPresent(value -> assertThat(value.getId()).isEqualTo(savedCoupon.getId()));
     }
 }

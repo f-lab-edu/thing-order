@@ -1,16 +1,19 @@
 package org.example.entity;
 
-import lombok.Builder;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-import javax.persistence.*;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class AdditionalDeliveryFeeArea extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -22,7 +25,6 @@ public class AdditionalDeliveryFeeArea extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AreaType areaType;
 
-    @Builder
     public AdditionalDeliveryFeeArea(String zipCode, String streetAddress, AreaType areaType) {
         this.zipCode = zipCode;
         this.streetAddress = streetAddress;

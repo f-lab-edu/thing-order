@@ -3,6 +3,7 @@ package org.example.exception;
 import java.util.Map;
 
 public class GraphqlException extends AbstractGraphQLException {
+
     public GraphqlException(String message) {
         super(message);
     }

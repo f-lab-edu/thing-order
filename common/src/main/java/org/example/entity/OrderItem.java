@@ -1,19 +1,25 @@
 package org.example.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
+import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-
 @Getter
-@Setter
 @Entity
 @TypeDef(name = "json", typeClass = JsonType.class)
 public class OrderItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -89,33 +95,15 @@ public class OrderItem {
     @JoinColumn(name = "coupon_id")
     private Coupon coupons;
 
-    public void setIsAcceptedConditionalFreeDeliveryFee(boolean isAcceptedConditionalFreeDeliveryFee) {
-        this.isAcceptedConditionalFreeDeliveryFee = isAcceptedConditionalFreeDeliveryFee;
-    }
-
-    public void setIsAcceptedConditionalFreeDeliveryFeeWhenOrder(boolean acceptedConditionalFreeDeliveryFeeWhenOrder) {
-        isAcceptedConditionalFreeDeliveryFeeWhenOrder = acceptedConditionalFreeDeliveryFeeWhenOrder;
-    }
-
     public OrderItemOption getOrderItemOption(ProductOption productOption, long orderQuantity) {
         if (productOption != null) {
-            OrderItemOption orderItemOption = new OrderItemOption();
-            orderItemOption.setOptionId(productOption.getOptionId());
-            orderItemOption.setOptionName1(productOption.getOptionName1());
-            orderItemOption.setOptionValue2(productOption.getOptionValue2());
-            orderItemOption.setOptionName2(productOption.getOptionName2());
-            orderItemOption.setOptionValue3(productOption.getOptionValue3());
-            orderItemOption.setOptionName3(productOption.getOptionName3());
-            orderItemOption.setOptionValue3(productOption.getOptionValue3());
-            orderItemOption.setOptionPrice(productOption.getOptionPrice());
-            orderItemOption.setOrderQuality(orderQuantity);
-
-            return orderItemOption;
+            return new OrderItemOption(productOption.getOptionId(),
+                    productOption.getOptionName1(), productOption.getOptionValue1(),
+                    productOption.getOptionName2(),
+                    productOption.getOptionValue2(), productOption.getOptionName3(),
+                    productOption.getOptionValue2(), productOption.getOptionPrice(), orderQuantity);
         } else {
-            OrderItemOption orderItemOption = new OrderItemOption();
-            orderItemOption.setOrderQuality(orderQuantity);
-
-            return orderItemOption;
+            return new OrderItemOption(orderQuantity);
         }
     }
 }

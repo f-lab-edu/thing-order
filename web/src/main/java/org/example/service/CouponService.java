@@ -1,7 +1,9 @@
 package org.example.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.example.dto.order.CreateOrderItemRequest;
 import org.example.entity.Coupon;
 import org.example.entity.CouponStatus;
 import org.example.entity.User;
@@ -9,16 +11,13 @@ import org.example.exception.GraphqlException;
 import org.example.repository.CouponRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class CouponService {
-    private CouponRepository couponRepository;
 
-    void checkUserCouponStatus(User user, List<Long> couponIdsToUse) {
+    private final CouponRepository couponRepository;
+
+    public void checkUserCouponStatus(User user, List<Long> couponIdsToUse) {
         for (Long couponId : couponIdsToUse) {
             Optional<Coupon> userCoupon = this.couponRepository.findUserCoupon(user.getId(),
                     couponId);

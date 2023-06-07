@@ -1,15 +1,9 @@
 package org.example.entity;
 
 import com.vladmihalcea.hibernate.type.array.StringArrayType;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
-
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,12 +12,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 @Getter
-@Setter
 @TypeDefs({
         @TypeDef(
                 name = "string-array",
@@ -31,8 +26,9 @@ import java.util.List;
         )
 })
 @Entity
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class CouponConstraint extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -91,8 +87,7 @@ public class CouponConstraint extends BaseEntity {
     @OneToMany(mappedBy = "couponConstraint")
     private List<ShopCoupon> shopCoupon = new ArrayList<>();
 
-    @Builder
-    public CouponConstraint(String name, String description, List<Coupon> coupons) {
+    public CouponConstraint(String name, String description) {
         this.name = name;
         this.description = description;
     }

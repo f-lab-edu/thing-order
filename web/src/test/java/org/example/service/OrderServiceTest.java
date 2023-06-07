@@ -1,6 +1,10 @@
 package org.example.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import org.example.dto.order.CreateOrderItemRequest;
 import org.example.entity.Bank;
 import org.example.entity.DeliveryType;
@@ -19,15 +23,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
+
     private User mockedUser;
     private Long pointDiscountPrice;
     private List<CreateOrderItemRequest> tempCreateOrderItemRequests;
@@ -53,6 +53,7 @@ class OrderServiceTest {
     @Nested
     @DisplayName("createMemberOrder() 메서드 테스트")
     class CreateMemberOrderTest {
+
         @Test
         @DisplayName("Order의 totalOriginalPrice는 OrderItem들의 orderItemTotalAmount의 합이다.")
         @Disabled
@@ -60,9 +61,10 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
             Long totalOriginalPrice = order.getTotalOriginalPrice();
-            Long sumOfOrderItemTotalAmount = order.getItems().stream().mapToLong(OrderItem::getOrderItemTotalAmount).sum();
+            Long sumOfOrderItemTotalAmount = order.getItems().stream()
+                    .mapToLong(OrderItem::getOrderItemTotalAmount).sum();
 
-            Assertions.assertEquals(totalOriginalPrice, sumOfOrderItemTotalAmount);
+            assertThat(totalOriginalPrice).isEqualTo(sumOfOrderItemTotalAmount);
         }
 
         @Test
@@ -72,9 +74,11 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
             Long totalDiscountPrice = order.getTotalDiscountPrice();
-            Long sumOfDiscountPrice = order.getProductDiscountPrice() + order.getCouponDiscountPrice() + order.getPointDiscountPrice();
+            Long sumOfDiscountPrice =
+                    order.getProductDiscountPrice() + order.getCouponDiscountPrice()
+                            + order.getPointDiscountPrice();
 
-            Assertions.assertEquals(totalDiscountPrice, sumOfDiscountPrice);
+            assertThat(totalDiscountPrice).isEqualTo(sumOfDiscountPrice);
         }
 
         @Test
@@ -84,9 +88,10 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
             Long orderDeliveryFee = order.getDeliveryFee();
-            Long sumOfDeliveryFee = order.getItems().stream().mapToLong(OrderItem::getDeliveryFee).sum();
+            Long sumOfDeliveryFee = order.getItems().stream().mapToLong(OrderItem::getDeliveryFee)
+                    .sum();
 
-            Assertions.assertEquals(orderDeliveryFee, sumOfDeliveryFee);
+            assertThat(orderDeliveryFee).isEqualTo(sumOfDeliveryFee);
         }
 
         @Test
@@ -96,14 +101,14 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            Assertions.assertAll(
-                    () -> Assertions.assertNotNull(order.getStreetAddress()),
-                    () -> Assertions.assertNotNull(order.getDetailAddress()),
-                    () -> Assertions.assertNotNull(order.getZipCode()),
-                    () -> Assertions.assertNotNull(order.getReceiver()),
-                    () -> Assertions.assertNotNull(order.getDeliveryType()),
-                    () -> Assertions.assertNotNull(order.getDeliveryMessage()),
-                    () -> Assertions.assertNotNull(order.getDeliveryPhoneNumber())
+            assertAll(
+                    () -> assertThat(order.getStreetAddress()).isNotNull(),
+                    () -> assertThat(order.getDetailAddress()).isNotNull(),
+                    () -> assertThat(order.getZipCode()).isNotNull(),
+                    () -> assertThat(order.getReceiver()).isNotNull(),
+                    () -> assertThat(order.getDeliveryType()).isNotNull(),
+                    () -> assertThat(order.getDeliveryMessage()).isNotNull(),
+                    () -> assertThat(order.getDeliveryPhoneNumber()).isNotNull()
             );
         }
 
@@ -114,10 +119,10 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            Assertions.assertAll(
-                    () -> Assertions.assertNotNull(order.getCustomerEmail()),
-                    () -> Assertions.assertNotNull(order.getCustomer()),
-                    () -> Assertions.assertNotNull(order.getOrderCustomerType())
+            assertAll(
+                    () -> assertThat(order.getCustomerEmail()).isNotNull(),
+                    () -> assertThat(order.getCustomer()).isNotNull(),
+                    () -> assertThat(order.getOrderCustomerType()).isNotNull()
             );
         }
 
@@ -128,11 +133,11 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            Assertions.assertAll(
-                    () -> Assertions.assertNotNull(order.getOrderNumber()),
-                    () -> Assertions.assertNotNull(order.getPaymentMethod()),
-                    () -> Assertions.assertNotNull(order.getCreatedAt()),
-                    () -> Assertions.assertNotNull(order.getUpdatedAt())
+            assertAll(
+                    () -> assertThat(order.getOrderNumber()).isNotNull(),
+                    () -> assertThat(order.getPaymentMethod()).isNotNull(),
+                    () -> assertThat(order.getCreatedAt()).isNotNull(),
+                    () -> assertThat(order.getUpdatedAt()).isNotNull()
             );
         }
 
@@ -143,10 +148,13 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            order.getItems().forEach(orderItem -> {
-                Assertions.assertEquals(orderItem.getOrderItemTotalPaymentAmount(),
-                        orderItem.getOrderItemTotalAmount() - (orderItem.getProductDiscountAmount() + orderItem.getPointDiscountAmount() + orderItem.getCouponDiscountAmount()));
-            });
+            order.getItems()
+                    .forEach(orderItem -> assertThat(orderItem.getOrderItemTotalPaymentAmount())
+                            .isEqualTo(orderItem.getOrderItemTotalAmount() - (
+                                    orderItem.getProductDiscountAmount()
+                                            + orderItem.getPointDiscountAmount()
+                                            + orderItem.getCouponDiscountAmount())
+                            ));
         }
 
         @Test
@@ -156,9 +164,8 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            order.getItems().forEach(orderItem -> {
-                Assertions.assertEquals(orderItem.getOrderStatus(), OrderStatus.PENDING);
-            });
+            order.getItems().forEach(orderItem -> assertThat(orderItem.getOrderStatus()).isEqualTo(
+                    OrderStatus.PENDING));
         }
 
         @Test
@@ -169,9 +176,9 @@ class OrderServiceTest {
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
             if (order.getDeliveryType() == DeliveryType.NORMAL) {
-                order.getItems().forEach(orderItem -> {
-                    Assertions.assertEquals(orderItem.getDeliveryFee(), orderItem.getBaseShippingFee());
-                });
+                order.getItems()
+                        .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                                orderItem.getBaseShippingFee()));
             }
         }
 
@@ -183,9 +190,9 @@ class OrderServiceTest {
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
             if (order.getDeliveryType() == DeliveryType.JEJU) {
-                order.getItems().forEach(orderItem -> {
-                    Assertions.assertEquals(orderItem.getDeliveryFee(), orderItem.getJejuShippingFee());
-                });
+                order.getItems()
+                        .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                                orderItem.getJejuShippingFee()));
             }
         }
 
@@ -197,9 +204,9 @@ class OrderServiceTest {
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
             if (order.getDeliveryType() == DeliveryType.ISLAND) {
-                order.getItems().forEach(orderItem -> {
-                    Assertions.assertEquals(orderItem.getDeliveryFee(), orderItem.getIslandShippingFee());
-                });
+                order.getItems()
+                        .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                                orderItem.getIslandShippingFee()));
             }
         }
 
@@ -210,8 +217,8 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            Assertions.assertAll(
-                    () -> Assertions.assertNull(order.getPaymentDate())
+            assertAll(
+                    () -> assertThat(order.getPaymentDate()).isNull()
             );
         }
 
@@ -222,7 +229,7 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            Assertions.assertNotNull(order.getItems());
+            assertThat(order.getItems()).isNotNull();
         }
 
         @Test
@@ -232,7 +239,7 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            Assertions.assertNotNull(order.getCustomer());
+            assertThat(order.getCustomer()).isNotNull();
         }
 
         @Test
@@ -242,9 +249,7 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            order.getItems().forEach(orderItem -> {
-                Assertions.assertNotNull(orderItem.getProduct());
-            });
+            order.getItems().forEach(orderItem -> assertThat(orderItem.getProduct()).isNotNull());
         }
 
         @Test
@@ -254,9 +259,7 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            order.getItems().forEach(orderItem -> {
-                Assertions.assertNotNull(orderItem.getShop());
-            });
+            order.getItems().forEach(orderItem -> assertThat(orderItem.getShop()).isNotNull());
         }
 
         @Test
@@ -266,7 +269,7 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            Assertions.assertEquals(order.getOrderCustomerType(), OrderCustomerType.MemberOrder);
+            assertThat(order.getOrderCustomerType()).isEqualTo(OrderCustomerType.MemberOrder);
         }
 
         @Test
@@ -277,9 +280,9 @@ class OrderServiceTest {
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
             if (order.getPaymentMethod() == PaymentMethod.Card) {
-                Assertions.assertNull(order.getRefundBankAccount());
-                Assertions.assertNull(order.getRefundAccountHolder());
-                Assertions.assertNull(order.getRefundAccountBankName());
+                assertThat(order.getRefundBankAccount()).isNull();
+                assertThat(order.getRefundAccountHolder()).isNull();
+                assertThat(order.getRefundAccountBankName()).isNull();
             }
         }
 
@@ -291,9 +294,9 @@ class OrderServiceTest {
                     , tempCreateOrderItemRequests, pointDiscountPrice);
 
             if (order.getPaymentMethod() == PaymentMethod.VirtualAccount) {
-                Assertions.assertNotNull(order.getRefundBankAccount());
-                Assertions.assertNotNull(order.getRefundAccountHolder());
-                Assertions.assertNotNull(order.getRefundAccountBankName());
+                assertThat(order.getRefundBankAccount()).isNotNull();
+                assertThat(order.getRefundAccountHolder()).isNotNull();
+                assertThat(order.getRefundAccountBankName()).isNotNull();
             }
         }
 
@@ -304,7 +307,8 @@ class OrderServiceTest {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
                     tempCreateOrderItemRequests, pointDiscountPrice);
 
-            Assertions.assertTrue(order.getTotalDiscountPrice() <= order.getTotalOriginalPrice());
+            assertThat(order.getTotalDiscountPrice()).isLessThanOrEqualTo(
+                    order.getTotalDiscountPrice());
         }
 
         @Test
@@ -395,13 +399,17 @@ class OrderServiceTest {
         @Nested
         @DisplayName("환불 계좌 관련 validation 테스트")
         class RefundAccountValidationTest {
+
             @Test
             @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보(은행 정보)가 없을 시 예외를 던진다.")
             void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount() {
                 // given
 
                 // when // then
-                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, getUserWithInvalidRefundBank(), tempCreateOrderItemRequests, pointDiscountPrice))
+                assertThatThrownBy(
+                        () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
+                                getUserWithInvalidRefundBank(), tempCreateOrderItemRequests,
+                                pointDiscountPrice))
                         .isInstanceOf(Exception.class)
                         .hasMessage("Refund bank information is necessary");
             }
@@ -411,15 +419,18 @@ class OrderServiceTest {
             void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount2() {
                 // given
                 Bank bank = new Bank();
-                bank.setBankCode("11");
                 bank.setBankName("국민은행");
+                bank.setBankCode("11");
 
                 User userWithInvalidRefundBankAccountHolder = new User();
                 userWithInvalidRefundBankAccountHolder.setBankAccount("111111111111");
                 userWithInvalidRefundBankAccountHolder.setBank(bank);
 
                 // when // then
-                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, userWithInvalidRefundBankAccountHolder, tempCreateOrderItemRequests, pointDiscountPrice))
+                assertThatThrownBy(
+                        () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
+                                userWithInvalidRefundBankAccountHolder, tempCreateOrderItemRequests,
+                                pointDiscountPrice))
                         .isInstanceOf(Exception.class)
                         .hasMessage("Refund bank information is necessary");
             }
@@ -429,15 +440,18 @@ class OrderServiceTest {
             void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount3() {
                 // given
                 Bank bank = new Bank();
-                bank.setBankCode("11");
                 bank.setBankName("국민은행");
+                bank.setBankCode("11");
 
                 User userWithInvalidRefundBankAccount = new User();
                 userWithInvalidRefundBankAccount.setBankAccountHolder("예금주");
                 userWithInvalidRefundBankAccount.setBank(bank);
 
                 // when
-                assertThatThrownBy(() -> orderService.createMemberOrder(PaymentMethod.VirtualAccount, userWithInvalidRefundBankAccount, tempCreateOrderItemRequests, pointDiscountPrice))
+                assertThatThrownBy(
+                        () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
+                                userWithInvalidRefundBankAccount, tempCreateOrderItemRequests,
+                                pointDiscountPrice))
                         .isInstanceOf(Exception.class)
                         .hasMessage("Refund bank information is necessary");
             }
@@ -450,7 +464,5 @@ class OrderServiceTest {
                 return new User();
             }
         }
-
-
     }
 }

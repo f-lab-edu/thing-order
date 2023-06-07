@@ -1,18 +1,18 @@
 package org.example.service;
 
+import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import org.example.exception.GraphqlException;
 import org.example.repository.PointDetailEventRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-
 @Service
 @RequiredArgsConstructor
 public class PointService {
+
     private final PointDetailEventRepository pointDetailEventRepository;
 
-    void checkUserPoint(Long userId, Long pointAmountToUse) {
+    public void checkUserPoint(Long userId, Long pointAmountToUse) {
         long sumOfTotalUserPoint = this.pointDetailEventRepository.getSumOfTotalUserPoint(userId);
 
         if (pointAmountToUse > sumOfTotalUserPoint) {
