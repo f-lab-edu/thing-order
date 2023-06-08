@@ -12,12 +12,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 @Getter
 @Entity
 @TypeDef(name = "json", typeClass = JsonType.class)
+@NoArgsConstructor
 public class OrderItem {
 
     @Id
@@ -105,5 +107,61 @@ public class OrderItem {
         } else {
             return new OrderItemOption(orderQuantity);
         }
+    }
+
+    public void setCoupons(Coupon coupons) {
+        this.coupons = coupons;
+    }
+
+    public void setBaseShippingFee(Long baseShippingFee) {
+        this.baseShippingFee = baseShippingFee;
+    }
+
+    public void setJejuShippingFee(Long jejuShippingFee) {
+        this.jejuShippingFee = jejuShippingFee;
+    }
+
+    public void setIslandShippingFee(Long islandShippingFee) {
+        this.islandShippingFee = islandShippingFee;
+    }
+
+    public void setAcceptedConditionalFreeDeliveryFee(boolean acceptedConditionalFreeDeliveryFee) {
+        isAcceptedConditionalFreeDeliveryFee = acceptedConditionalFreeDeliveryFee;
+    }
+
+    public void setAcceptedConditionalFreeDeliveryFeeWhenOrder(
+            boolean acceptedConditionalFreeDeliveryFeeWhenOrder) {
+        isAcceptedConditionalFreeDeliveryFeeWhenOrder = acceptedConditionalFreeDeliveryFeeWhenOrder;
+    }
+
+
+    public void setDeliveryFee(Long deliveryFee) {
+        this.deliveryFee = deliveryFee;
+    }
+
+    public OrderItem(Product product, Long orderItemTotalPaymentAmount, Long orderQuantity,
+            Long orderItemTotalAmount, Long productDiscountAmount, LocalDateTime orderStatusDate,
+            OrderStatus orderStatus, Long deliveryFee, Long baseShippingFee, Long jejuShippingFee,
+            Long islandShippingFee, Long originJejuShippingFee, Long originIslandShippingFee,
+            Long originBaseShippingFee, Long conditionalFreeDeliveryFeeStandardByShop,
+            boolean isAcceptedConditionalFreeDeliveryFee,
+            Long originalDeliveryFeeBeforeDeliveryDiscount) {
+        this.product = product;
+        this.orderItemTotalPaymentAmount = orderItemTotalPaymentAmount;
+        this.orderQuantity = orderQuantity;
+        this.orderItemTotalAmount = orderItemTotalAmount;
+        this.productDiscountAmount = productDiscountAmount;
+        this.orderStatusDate = orderStatusDate;
+        this.orderStatus = orderStatus;
+        this.deliveryFee = deliveryFee;
+        this.baseShippingFee = baseShippingFee;
+        this.jejuShippingFee = jejuShippingFee;
+        this.islandShippingFee = islandShippingFee;
+        this.originJejuShippingFee = originJejuShippingFee;
+        this.originIslandShippingFee = originIslandShippingFee;
+        this.originBaseShippingFee = originBaseShippingFee;
+        this.conditionalFreeDeliveryFeeStandardByShop = conditionalFreeDeliveryFeeStandardByShop;
+        this.isAcceptedConditionalFreeDeliveryFee = isAcceptedConditionalFreeDeliveryFee;
+        this.originalDeliveryFeeBeforeDeliveryDiscount = originalDeliveryFeeBeforeDeliveryDiscount;
     }
 }

@@ -19,22 +19,25 @@ public class CouponService {
 
     public void checkUserCouponStatus(User user, List<Long> couponIdsToUse) {
         for (Long couponId : couponIdsToUse) {
-            Optional<Coupon> userCoupon = this.couponRepository.findUserCoupon(user.getId(),
-                    couponId);
+            Coupon userCoupon = this.findUserCoupon(user.getId(), couponId);
 
-            if (userCoupon.isEmpty()) {
+            if (userCoupon == null) {
                 HashMap<String, Object> ext = new HashMap<String, Object>();
                 ext.put("code", "INVALID_COUPON");
                 throw new GraphqlException("You do not have that coupon", ext);
             }
 
-            userCoupon.ifPresent((coupon) -> {
-                if (coupon.getCouponStatus() == CouponStatus.Used) {
-                    HashMap<String, Object> ext = new HashMap<String, Object>();
-                    ext.put("code", "ALREADY_USED_COUPON");
-                    throw new GraphqlException("The Coupon is already used", ext);
-                }
-            });
+            if (userCoupon.getCouponStatus() == CouponStatus.Used) {
+                HashMap<String, Object> ext = new HashMap<String, Object>();
+                ext.put("code", "ALREADY_USED_COUPON");
+                throw new GraphqlException("The Coupon is already used", ext);
+            }
         }
+    }
+
+    public Coupon findUserCoupon(Long userId, Long userCouponId) {
+        Optional<Coupon> userCoupon = this.couponRepository.findUserCoupon(userId, userCouponId);
+
+        return userCoupon.orElse(null);
     }
 }

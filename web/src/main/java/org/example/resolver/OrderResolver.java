@@ -33,9 +33,10 @@ public class OrderResolver {
         List<CreateOrderItemRequest> createOrderItemRequests = List.of(
                 new CreateOrderItemRequest());
         Long pointDiscountPrice = 0L;
+        Long deliveryId = 1L;
 
         Order newOrder = orderService.createMemberOrder(PaymentMethod.Card, user,
-                createOrderItemRequests, pointDiscountPrice);
+                createOrderItemRequests, pointDiscountPrice, deliveryId);
         return new CreateMemberOrderResponseDto(true, newOrder, false);
     }
 

@@ -19,8 +19,8 @@ public class AdditionalDeliveryService {
                         zipCode);
 
         return deliveryFeeArea.map(
-                        additionalDeliveryFeeArea -> CheckAdditionalDeliveryFeeOutput.of(true, true,
+                        additionalDeliveryFeeArea -> new CheckAdditionalDeliveryFeeOutput(true, true,
                                 additionalDeliveryFeeArea.getAreaType()))
-                .orElseGet(() -> CheckAdditionalDeliveryFeeOutput.of(true, false, null));
+                .orElseGet(() -> new CheckAdditionalDeliveryFeeOutput(true, false, null));
     }
 }

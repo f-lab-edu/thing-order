@@ -1,8 +1,10 @@
 package org.example.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
+@EqualsAndHashCode
 public class ProductOption {
 
     private long optionId;
