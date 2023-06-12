@@ -1,5 +1,6 @@
 package org.example.entity;
 
+import org.example.config.PostgreSQLEnumType;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -27,6 +28,7 @@ import lombok.ToString;
 @Getter
 @Entity
 @TypeDef(name = "json", typeClass = JsonType.class)
+@TypeDef(name = "psql_enum", typeClass = PostgreSQLEnumType.class)
 @ToString
 @NoArgsConstructor
 public class Product extends BaseEntity {
@@ -40,6 +42,8 @@ public class Product extends BaseEntity {
     private String name;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "product_discount_type_enum")
+    @Type(type = "psql_enum")
     private DiscountType discountType;
 
     private Long discountRate;
@@ -54,6 +58,8 @@ public class Product extends BaseEntity {
     private ProductClassification classification;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "product_shipping_type_enum")
+    @Type(type = "psql_enum")
     private ShippingType shippingType;
 
     private Long baseShippingFee;
@@ -78,6 +84,8 @@ public class Product extends BaseEntity {
     private Long stockCount;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "product_options_type_enum")
+    @Type(type = "psql_enum")
     private OptionsType optionsType;
 
     @Type(type = "json")

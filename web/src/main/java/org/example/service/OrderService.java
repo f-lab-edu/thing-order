@@ -233,8 +233,6 @@ public class OrderService {
             orderItemList.addAll(sortedOrderItem.getOrderItems());
         }
 
-        this.orderItemRepository.saveAll(orderItemList);
-
         return new NewOrderItemResult(orderItemList, totalProductDiscountPrice, totalDeliveryFee);
     }
 
@@ -317,9 +315,10 @@ public class OrderService {
 
         OrderItem newOrderItem = new OrderItem(product, orderItemTotalPaymentAmount, orderQuantity,
                 orderItemTotalPaymentAmount, productDiscountPrice, LocalDateTime.now(),
-                OrderStatus.PENDING, deliveryFee, product.getBaseShippingFee(), jejuShippingFee,
+                OrderStatus.Pending, deliveryFee, product.getBaseShippingFee(), jejuShippingFee,
                 islandShippingFee, jejuShippingFee, islandShippingFee, product.getBaseShippingFee(),
-                conditionalFreeDeliveryFeeStandardByShop, false, deliveryFee);
+                conditionalFreeDeliveryFeeStandardByShop, false, deliveryFee, product.getShop(),
+                userSelectOptions);
 
         return new CreateNewOrderItemResult(newOrderItem, productDiscountPrice, deliveryFee);
     }

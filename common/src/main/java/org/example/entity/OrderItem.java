@@ -1,12 +1,17 @@
 package org.example.entity;
 
+import org.example.config.PostgreSQLEnumType;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,11 +23,14 @@ import javax.persistence.OneToOne;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
 @Entity
 @TypeDef(name = "json", typeClass = JsonType.class)
+@TypeDef(name = "psql_enum", typeClass = PostgreSQLEnumType.class)
 @NoArgsConstructor
+@ToString
 public class OrderItem {
 
     @Id
@@ -39,7 +47,7 @@ public class OrderItem {
 
     @Type(type = "json")
     @Column(columnDefinition = "json")
-    private OrderItemOption options;
+    private Map<String, Object> options = new HashMap<>();
 
     private Long orderItemVat;
 
@@ -69,6 +77,9 @@ public class OrderItem {
 
     private LocalDateTime orderStatusDate;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(columnDefinition = "order_item_order_status_enum")
+    @Type(type = "psql_enum")
     private OrderStatus orderStatus;
 
     @OneToOne
@@ -82,10 +93,13 @@ public class OrderItem {
 
     private Long islandShippingFee;
 
+    @Column(name = "original_jeju_shipping_fee")
     private Long originJejuShippingFee;
 
+    @Column(name = "original_island_shipping_fee")
     private Long originIslandShippingFee;
 
+    @Column(name = "original_base_shipping_fee")
     private Long originBaseShippingFee;
 
     private Long conditionalFreeDeliveryFeeStandardByShop;
@@ -100,15 +114,20 @@ public class OrderItem {
     @JoinColumn(name = "coupon_id")
     private Coupon coupons;
 
-    public OrderItemOption getOrderItemOption(ProductOption productOption, long orderQuantity) {
+    public Map<String, Object> getOrderItemOption(ProductOption productOption, long orderQuantity) {
         if (productOption != null) {
-            return new OrderItemOption(productOption.getOptionId(),
-                    productOption.getOptionName1(), productOption.getOptionValue1(),
-                    productOption.getOptionName2(),
-                    productOption.getOptionValue2(), productOption.getOptionName3(),
-                    productOption.getOptionValue2(), productOption.getOptionPrice(), orderQuantity);
+            return Map.of("optionId", productOption.getOptionId(),
+                    "optionName1", productOption.getOptionName1(),
+                    "optionValue1", productOption.getOptionValue1(),
+                    "optionName2", productOption.getOptionName2(),
+                    "optionValue2", productOption.getOptionValue2(),
+                    "optionName3", productOption.getOptionName3(),
+                    "optionValue3", productOption.getOptionValue3(),
+                    "optionPrice", productOption.getOptionPrice(),
+                    "orderQuantity", orderQuantity
+            );
         } else {
-            return new OrderItemOption(orderQuantity);
+            return Map.of("orderQuantity", orderQuantity);
         }
     }
 
@@ -137,7 +156,6 @@ public class OrderItem {
         isAcceptedConditionalFreeDeliveryFeeWhenOrder = acceptedConditionalFreeDeliveryFeeWhenOrder;
     }
 
-
     public void setDeliveryFee(Long deliveryFee) {
         this.deliveryFee = deliveryFee;
     }
@@ -148,7 +166,8 @@ public class OrderItem {
                      Long islandShippingFee, Long originJejuShippingFee, Long originIslandShippingFee,
                      Long originBaseShippingFee, Long conditionalFreeDeliveryFeeStandardByShop,
                      boolean isAcceptedConditionalFreeDeliveryFee,
-                     Long originalDeliveryFeeBeforeDeliveryDiscount) {
+                     Long originalDeliveryFeeBeforeDeliveryDiscount, Shop shop,
+                     ProductOption userSelectOption) {
         this.product = product;
         this.orderItemTotalPaymentAmount = orderItemTotalPaymentAmount;
         this.orderQuantity = orderQuantity;
@@ -166,5 +185,7 @@ public class OrderItem {
         this.conditionalFreeDeliveryFeeStandardByShop = conditionalFreeDeliveryFeeStandardByShop;
         this.isAcceptedConditionalFreeDeliveryFee = isAcceptedConditionalFreeDeliveryFee;
         this.originalDeliveryFeeBeforeDeliveryDiscount = originalDeliveryFeeBeforeDeliveryDiscount;
+        this.shop = shop;
+        this.options = getOrderItemOption(userSelectOption, orderQuantity);
     }
 }
