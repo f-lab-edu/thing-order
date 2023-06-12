@@ -79,4 +79,15 @@ public class ProductService {
             throw new GraphqlException("stock count less than order quantity", extensions);
         }
     }
+
+    public Product findProductByDisplayedAndShopDisplayed(Long productId) {
+        Optional<Product> optionalProduct =
+                this.productRepository.findProductByDisplayedAndShopDisplayed(productId);
+
+        if (optionalProduct.isEmpty()) {
+            throw new GraphqlException("product not found");
+        }
+
+        return optionalProduct.get();
+    }
 }
