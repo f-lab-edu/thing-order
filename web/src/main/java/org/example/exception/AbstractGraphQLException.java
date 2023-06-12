@@ -21,7 +21,7 @@ public class AbstractGraphQLException extends RuntimeException {
 
     public Map<String, Object> getExtensions() {
         return parameters.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }
 

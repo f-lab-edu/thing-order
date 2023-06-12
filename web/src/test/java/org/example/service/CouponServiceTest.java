@@ -1,5 +1,12 @@
 package org.example.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.example.entity.Coupon;
 import org.example.entity.CouponStatus;
 import org.example.entity.User;
@@ -12,13 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class CouponServiceTest {
@@ -45,16 +45,16 @@ class CouponServiceTest {
         // when
         // then
         assertThatThrownBy(() -> couponService.checkUserCouponStatus(testUser, List.of(1L, 2L)))
-                .isInstanceOf(GraphqlException.class)
-                .hasMessage("You do not have that coupon")
-                .satisfies(exception -> {
-                    if (exception instanceof GraphqlException) {
-                        GraphqlException graphqlException = (GraphqlException) exception;
-                        assertThat(graphqlException.getExtensions()).isNotNull();
-                        assertThat(graphqlException.getExtensions().get("code")).isEqualTo(
-                                "INVALID_COUPON");
-                    }
-                });
+            .isInstanceOf(GraphqlException.class)
+            .hasMessage("You do not have that coupon")
+            .satisfies(exception -> {
+                if (exception instanceof GraphqlException) {
+                    GraphqlException graphqlException = (GraphqlException)exception;
+                    assertThat(graphqlException.getExtensions()).isNotNull();
+                    assertThat(graphqlException.getExtensions().get("code")).isEqualTo(
+                        "INVALID_COUPON");
+                }
+            });
     }
 
     @DisplayName("해당 user가 이미 사용한 쿠폰을 사용하려고 할 시 예외를 던진다")
@@ -63,20 +63,20 @@ class CouponServiceTest {
         // given
         Coupon coupon1 = new Coupon(CouponStatus.Used);
         given(couponRepository.findUserCoupon(testUser.getId(), 1L)).willReturn(
-                Optional.of(coupon1));
+            Optional.of(coupon1));
 
         // when
         // then
         assertThatThrownBy(() -> couponService.checkUserCouponStatus(testUser, List.of(1L)))
-                .isInstanceOf(GraphqlException.class)
-                .hasMessage("The Coupon is already used")
-                .satisfies(exception -> {
-                    if (exception instanceof GraphqlException) {
-                        GraphqlException graphqlException = (GraphqlException) exception;
-                        assertThat(graphqlException.getExtensions()).isNotNull();
-                        assertThat(graphqlException.getExtensions().get("code")).isEqualTo(
-                                "ALREADY_USED_COUPON");
-                    }
-                });
+            .isInstanceOf(GraphqlException.class)
+            .hasMessage("The Coupon is already used")
+            .satisfies(exception -> {
+                if (exception instanceof GraphqlException) {
+                    GraphqlException graphqlException = (GraphqlException)exception;
+                    assertThat(graphqlException.getExtensions()).isNotNull();
+                    assertThat(graphqlException.getExtensions().get("code")).isEqualTo(
+                        "ALREADY_USED_COUPON");
+                }
+            });
     }
 }

@@ -41,7 +41,7 @@ public class ProductOption {
     private StatusOfStock statusOfStock;
 
     public ProductOption(long optionId, String optionName1, String optionValue1, Long stockCount,
-                         StatusOfStock statusOfStock) {
+        StatusOfStock statusOfStock) {
         this.optionId = optionId;
         this.optionName1 = optionName1;
         this.optionValue1 = optionValue1;

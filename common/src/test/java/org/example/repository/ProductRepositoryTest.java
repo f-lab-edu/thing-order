@@ -1,5 +1,9 @@
 package org.example.repository;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.util.Optional;
+
 import org.example.config.TestConfig;
 import org.example.entity.Product;
 import org.example.entity.Shop;
@@ -9,12 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 @SpringBootTest(classes = {TestConfig.class, ProductRepository.class}, properties = "spring.config"
-        + ".name=application-common-test")
+    + ".name=application-common-test")
 @EnableAutoConfiguration
 class ProductRepositoryTest {
 
@@ -35,13 +35,13 @@ class ProductRepositoryTest {
 
         // when
         Optional<Product> productOptional =
-                this.productRepository.findProductByDisplayedAndShopDisplayed(
-                        displayedTrueProduct.getId());
+            this.productRepository.findProductByDisplayedAndShopDisplayed(
+                displayedTrueProduct.getId());
 
         // then
         assertThat(productOptional.isPresent()).isEqualTo(true);
         productOptional.ifPresent(
-                product -> assertThat(product.getId()).isEqualTo(displayedTrueProduct.getId()));
+            product -> assertThat(product.getId()).isEqualTo(displayedTrueProduct.getId()));
     }
 
     @DisplayName("상품의 isDisplayed가 false이면 select 되지 않는다.")
@@ -55,8 +55,8 @@ class ProductRepositoryTest {
 
         // when
         Optional<Product> productOptional =
-                this.productRepository.findProductByDisplayedAndShopDisplayed(
-                        displayedFalseProduct.getId());
+            this.productRepository.findProductByDisplayedAndShopDisplayed(
+                displayedFalseProduct.getId());
 
         // then
         assertThat(productOptional.isEmpty()).isEqualTo(true);
@@ -73,8 +73,8 @@ class ProductRepositoryTest {
 
         // when
         Optional<Product> productOptional =
-                this.productRepository.findProductByDisplayedAndShopDisplayed(
-                        displayedTrueProduct.getId());
+            this.productRepository.findProductByDisplayedAndShopDisplayed(
+                displayedTrueProduct.getId());
 
         // then
         assertThat(productOptional.isEmpty()).isEqualTo(true);

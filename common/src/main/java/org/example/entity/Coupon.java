@@ -23,22 +23,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Coupon extends BaseEntity {
 
+    @OneToMany(mappedBy = "coupons")
+    private final List<OrderItem> orderItem = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     private String code;
-
     private boolean isUsed;
-
     private LocalDateTime couponUsageDate;
-
     @Enumerated(EnumType.STRING)
     private CouponStatus couponStatus;
-
-    @OneToMany(mappedBy = "coupons")
-    private List<OrderItem> orderItem = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_constraint_id")
     private CouponConstraint couponConstraint;
@@ -48,7 +42,7 @@ public class Coupon extends BaseEntity {
     private User user;
 
     public Coupon(boolean isUsed, CouponStatus couponStatus, CouponConstraint couponConstraint,
-                  User user) {
+        User user) {
         this.isUsed = isUsed;
         this.couponStatus = couponStatus;
         this.couponConstraint = couponConstraint;

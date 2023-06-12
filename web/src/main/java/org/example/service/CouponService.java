@@ -1,15 +1,15 @@
 package org.example.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
 import org.example.entity.Coupon;
 import org.example.entity.CouponStatus;
 import org.example.entity.User;
 import org.example.exception.GraphqlException;
 import org.example.repository.CouponRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,12 +1,12 @@
 package org.example.interceptor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.WebGraphQlRequest;
 import org.springframework.graphql.server.WebGraphQlResponse;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import lombok.NonNull;
 import reactor.core.publisher.Mono;
@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 public class RequestExceptionInterceptor implements WebGraphQlInterceptor {
 
     private Map<String, Object> getCommonResponseExceptionMap(String path,
-                                                              Map<String, Object> dataFields) {
+        Map<String, Object> dataFields) {
         Map<String, Object> result = new HashMap<>();
         result.put(path, dataFields);
         return result;
@@ -30,7 +30,7 @@ public class RequestExceptionInterceptor implements WebGraphQlInterceptor {
     }
 
     private String getPathInResponse(WebGraphQlResponse response) {
-        return (String) response.getExecutionResult().getErrors().get(0).getPath().get(0);
+        return (String)response.getExecutionResult().getErrors().get(0).getPath().get(0);
     }
 
     @Override

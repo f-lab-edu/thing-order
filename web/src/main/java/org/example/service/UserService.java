@@ -1,10 +1,10 @@
 package org.example.service;
 
+import java.util.Optional;
+
 import org.example.entity.User;
 import org.example.repository.UserRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 

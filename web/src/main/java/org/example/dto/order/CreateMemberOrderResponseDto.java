@@ -22,10 +22,10 @@ public class CreateMemberOrderResponseDto {
     @Override
     public String toString() {
         return "CreateMemberOrderOutputDTO{" +
-                "ok=" + ok +
-                ", results=" + results +
-                ", isZeroPaidOrder=" + isZeroPaidOrder +
-                '}';
+            "ok=" + ok +
+            ", results=" + results +
+            ", isZeroPaidOrder=" + isZeroPaidOrder +
+            '}';
     }
 }
 

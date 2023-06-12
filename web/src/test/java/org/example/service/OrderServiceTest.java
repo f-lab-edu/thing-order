@@ -65,10 +65,10 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest1() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
             Long totalOriginalPrice = order.getTotalOriginalPrice();
             Long sumOfOrderItemTotalAmount = order.getItems().stream()
-                    .mapToLong(OrderItem::getOrderItemTotalAmount).sum();
+                .mapToLong(OrderItem::getOrderItemTotalAmount).sum();
 
             assertThat(totalOriginalPrice).isEqualTo(sumOfOrderItemTotalAmount);
         }
@@ -78,11 +78,11 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest2() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
             Long totalDiscountPrice = order.getTotalDiscountPrice();
             Long sumOfDiscountPrice =
-                    order.getProductDiscountPrice() + order.getCouponDiscountPrice()
-                            + order.getPointDiscountPrice();
+                order.getProductDiscountPrice() + order.getCouponDiscountPrice()
+                    + order.getPointDiscountPrice();
 
             assertThat(totalDiscountPrice).isEqualTo(sumOfDiscountPrice);
         }
@@ -92,10 +92,10 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest3() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
             Long orderDeliveryFee = order.getDeliveryFee();
             Long sumOfDeliveryFee = order.getItems().stream().mapToLong(OrderItem::getDeliveryFee)
-                    .sum();
+                .sum();
 
             assertThat(orderDeliveryFee).isEqualTo(sumOfDeliveryFee);
         }
@@ -105,16 +105,16 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest4() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             assertAll(
-                    () -> assertThat(order.getStreetAddress()).isNotNull(),
-                    () -> assertThat(order.getDetailAddress()).isNotNull(),
-                    () -> assertThat(order.getZipCode()).isNotNull(),
-                    () -> assertThat(order.getReceiver()).isNotNull(),
-                    () -> assertThat(order.getDeliveryType()).isNotNull(),
-                    () -> assertThat(order.getDeliveryMessage()).isNotNull(),
-                    () -> assertThat(order.getDeliveryPhoneNumber()).isNotNull()
+                () -> assertThat(order.getStreetAddress()).isNotNull(),
+                () -> assertThat(order.getDetailAddress()).isNotNull(),
+                () -> assertThat(order.getZipCode()).isNotNull(),
+                () -> assertThat(order.getReceiver()).isNotNull(),
+                () -> assertThat(order.getDeliveryType()).isNotNull(),
+                () -> assertThat(order.getDeliveryMessage()).isNotNull(),
+                () -> assertThat(order.getDeliveryPhoneNumber()).isNotNull()
             );
         }
 
@@ -123,12 +123,12 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest5() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             assertAll(
-                    () -> assertThat(order.getCustomerEmail()).isNotNull(),
-                    () -> assertThat(order.getCustomer()).isNotNull(),
-                    () -> assertThat(order.getOrderCustomerType()).isNotNull()
+                () -> assertThat(order.getCustomerEmail()).isNotNull(),
+                () -> assertThat(order.getCustomer()).isNotNull(),
+                () -> assertThat(order.getOrderCustomerType()).isNotNull()
             );
         }
 
@@ -137,13 +137,13 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest6() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             assertAll(
-                    () -> assertThat(order.getOrderNumber()).isNotNull(),
-                    () -> assertThat(order.getPaymentMethod()).isNotNull(),
-                    () -> assertThat(order.getCreatedAt()).isNotNull(),
-                    () -> assertThat(order.getUpdatedAt()).isNotNull()
+                () -> assertThat(order.getOrderNumber()).isNotNull(),
+                () -> assertThat(order.getPaymentMethod()).isNotNull(),
+                () -> assertThat(order.getCreatedAt()).isNotNull(),
+                () -> assertThat(order.getUpdatedAt()).isNotNull()
             );
         }
 
@@ -152,15 +152,15 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest7() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             order.getItems()
-                    .forEach(orderItem -> assertThat(orderItem.getOrderItemTotalPaymentAmount())
-                            .isEqualTo(orderItem.getOrderItemTotalAmount() - (
-                                    orderItem.getProductDiscountAmount()
-                                            + orderItem.getPointDiscountAmount()
-                                            + orderItem.getCouponDiscountAmount())
-                            ));
+                .forEach(orderItem -> assertThat(orderItem.getOrderItemTotalPaymentAmount())
+                    .isEqualTo(orderItem.getOrderItemTotalAmount() - (
+                        orderItem.getProductDiscountAmount()
+                            + orderItem.getPointDiscountAmount()
+                            + orderItem.getCouponDiscountAmount())
+                    ));
         }
 
         @Test
@@ -168,10 +168,10 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest8() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             order.getItems().forEach(orderItem -> assertThat(orderItem.getOrderStatus()).isEqualTo(
-                    OrderStatus.Pending));
+                OrderStatus.Pending));
         }
 
         @Test
@@ -179,12 +179,12 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest9() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             if (order.getDeliveryType() == DeliveryType.NORMAL) {
                 order.getItems()
-                        .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                                orderItem.getBaseShippingFee()));
+                    .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                        orderItem.getBaseShippingFee()));
             }
         }
 
@@ -193,12 +193,12 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest10() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             if (order.getDeliveryType() == DeliveryType.JEJU) {
                 order.getItems()
-                        .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                                orderItem.getJejuShippingFee()));
+                    .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                        orderItem.getJejuShippingFee()));
             }
         }
 
@@ -207,12 +207,12 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest11() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             if (order.getDeliveryType() == DeliveryType.ISLAND) {
                 order.getItems()
-                        .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                                orderItem.getIslandShippingFee()));
+                    .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                        orderItem.getIslandShippingFee()));
             }
         }
 
@@ -221,10 +221,10 @@ class OrderServiceTest {
         @Disabled
         void createdOrderTest12() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             assertAll(
-                    () -> assertThat(order.getPaymentDate()).isNull()
+                () -> assertThat(order.getPaymentDate()).isNull()
             );
         }
 
@@ -233,7 +233,7 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest13() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             assertThat(order.getItems()).isNotNull();
         }
@@ -243,7 +243,7 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest14() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             assertThat(order.getCustomer()).isNotNull();
         }
@@ -253,7 +253,7 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest15() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             order.getItems().forEach(orderItem -> assertThat(orderItem.getProduct()).isNotNull());
         }
@@ -263,7 +263,7 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest16() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             order.getItems().forEach(orderItem -> assertThat(orderItem.getShop()).isNotNull());
         }
@@ -273,7 +273,7 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest17() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             assertThat(order.getOrderCustomerType()).isEqualTo(OrderCustomerType.MemberOrder);
         }
@@ -283,7 +283,7 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest18() throws Exception {
             Order order = orderService.createMemberOrder(PaymentMethod.Card, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             if (order.getPaymentMethod() == PaymentMethod.Card) {
                 assertThat(order.getRefundBankAccount()).isNull();
@@ -297,7 +297,7 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest19() throws Exception {
             Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser
-                    , tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                , tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             if (order.getPaymentMethod() == PaymentMethod.VirtualAccount) {
                 assertThat(order.getRefundBankAccount()).isNotNull();
@@ -311,10 +311,10 @@ class OrderServiceTest {
         @Disabled
         void createOrderTest20() throws Exception {
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                    tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             assertThat(order.getTotalDiscountPrice()).isLessThanOrEqualTo(
-                    order.getTotalDiscountPrice());
+                order.getTotalDiscountPrice());
         }
 
         @Test
@@ -413,11 +413,11 @@ class OrderServiceTest {
 
                 // when // then
                 assertThatThrownBy(
-                        () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
-                                getUserWithInvalidRefundBank(), tempCreateOrderItemRequests,
-                                pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
-                        .isInstanceOf(Exception.class)
-                        .hasMessage("Refund bank information is necessary");
+                    () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
+                        getUserWithInvalidRefundBank(), tempCreateOrderItemRequests,
+                        pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
+                    .isInstanceOf(Exception.class)
+                    .hasMessage("Refund bank information is necessary");
             }
 
             @Test
@@ -434,11 +434,11 @@ class OrderServiceTest {
 
                 // when // then
                 assertThatThrownBy(
-                        () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
-                                userWithInvalidRefundBankAccountHolder, tempCreateOrderItemRequests,
-                                pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
-                        .isInstanceOf(Exception.class)
-                        .hasMessage("Refund bank information is necessary");
+                    () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
+                        userWithInvalidRefundBankAccountHolder, tempCreateOrderItemRequests,
+                        pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
+                    .isInstanceOf(Exception.class)
+                    .hasMessage("Refund bank information is necessary");
             }
 
             @Test
@@ -455,11 +455,11 @@ class OrderServiceTest {
 
                 // when
                 assertThatThrownBy(
-                        () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
-                                userWithInvalidRefundBankAccount, tempCreateOrderItemRequests,
-                                pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
-                        .isInstanceOf(Exception.class)
-                        .hasMessage("Refund bank information is necessary");
+                    () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
+                        userWithInvalidRefundBankAccount, tempCreateOrderItemRequests,
+                        pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
+                    .isInstanceOf(Exception.class)
+                    .hasMessage("Refund bank information is necessary");
             }
 
             private User getUserWithInvalidRefundBank() {
