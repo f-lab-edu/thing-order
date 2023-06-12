@@ -56,9 +56,27 @@ public class OrderService {
         NewOrderItemResult newOrderItemResult = this.newOrderItemResult(itemsToOrder,
                 user.findAddressById(deliveryId).getZipCode(), user.getId());
 
+        Order order = this.newOrderObject(user, itemsToOrder, newOrderItemResult.getOrderItems());
+
         Order newOrder = new Order();
 
         return newOrder;
+    }
+
+    private Order newOrderObject(User user, List<CreateOrderItemRequest> itemsToOrder, List<OrderItem> orderItems) {
+        List<Product> products = orderItems.stream().map(OrderItem::getProduct).collect(Collectors.toList());
+
+        String orderName = this.createOrderName(products, products.size());
+
+        return null;
+    }
+
+    private String createOrderName(List<Product> products, int totalCountOfOrderedProduct) {
+        if (totalCountOfOrderedProduct == 1) {
+            return products.get(0).getName();
+        } else {
+            return products.get(0).getName() + " 외 " + (totalCountOfOrderedProduct - 1) + " 건";
+        }
     }
 
     private void checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(User user,
