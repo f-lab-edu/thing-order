@@ -1,11 +1,13 @@
 package org.example.dto.order;
 
-import java.util.ArrayList;
-import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 import org.example.entity.OrderItem;
 import org.example.entity.Shop;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter

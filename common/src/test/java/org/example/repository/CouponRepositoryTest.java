@@ -1,8 +1,5 @@
 package org.example.repository;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-import java.util.Optional;
 import org.example.config.TestConfig;
 import org.example.entity.Coupon;
 import org.example.entity.CouponConstraint;
@@ -13,6 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(classes = {TestConfig.class, CouponRepository.class, UserRepository.class,
         CouponConstraintRepository.class},

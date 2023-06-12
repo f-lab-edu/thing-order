@@ -1,9 +1,5 @@
 package org.example.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.BDDMockito.given;
-
-import java.util.Optional;
 import org.example.dto.order.CheckAdditionalDeliveryFeeOutput;
 import org.example.entity.AdditionalDeliveryFeeArea;
 import org.example.entity.AreaType;
@@ -16,6 +12,11 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class AdditionalDeliveryServiceTest {

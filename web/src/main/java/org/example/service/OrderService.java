@@ -1,12 +1,5 @@
 package org.example.service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.example.dto.order.CheckAdditionalDeliveryFeeOutput;
 import org.example.dto.order.CreateNewOrderItemResult;
 import org.example.dto.order.CreateOrderItemRequest;
@@ -25,6 +18,15 @@ import org.example.entity.User;
 import org.example.repository.OrderItemRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -36,7 +38,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
 
     public Order createMemberOrder(PaymentMethod paymentMethod, User user,
-            List<CreateOrderItemRequest> itemsToOrder, Long pointDiscountPrice, Long deliveryId)
+                                   List<CreateOrderItemRequest> itemsToOrder, Long pointDiscountPrice, Long deliveryId)
             throws Exception {
         this.checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(user,
                 paymentMethod);
@@ -60,7 +62,7 @@ public class OrderService {
     }
 
     private void checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(User user,
-            PaymentMethod paymentMethod) throws Exception {
+                                                                                        PaymentMethod paymentMethod) throws Exception {
         if (paymentMethod == PaymentMethod.VirtualAccount && (user.getBank() == null
                 || user.getBankAccountHolder() == null || user.getBankAccount() == null)) {
             throw new Exception("Refund bank information is necessary");
@@ -68,7 +70,7 @@ public class OrderService {
     }
 
     private NewOrderItemResult newOrderItemResult(List<CreateOrderItemRequest> itemsToOrder,
-            String zipCode, Long userId) {
+                                                  String zipCode, Long userId) {
         List<OrderItem> result = new ArrayList<>();
         Long totalProductDiscountPrice = 0L;
         Long totalDeliveryFee = 0L;
@@ -238,8 +240,8 @@ public class OrderService {
 
 
     private CreateNewOrderItemResult createNewOrderItemObjectV2(Product product, long optionId,
-            long orderQuantity,
-            boolean isAddressToChargeAdditionalFee, AreaType areaType) {
+                                                                long orderQuantity,
+                                                                boolean isAddressToChargeAdditionalFee, AreaType areaType) {
         long orderItemTotalAmount = 0;
         long orderItemTotalPaymentAmount = 0;
         long productDiscountPrice = 0;
