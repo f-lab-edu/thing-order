@@ -188,4 +188,14 @@ public class OrderItem {
     public void setDeliveryFee(Long deliveryFee) {
         this.deliveryFee = deliveryFee;
     }
+
+    public boolean hasNotCouponToUse() {
+        return this.coupons == null;
+    }
+
+    public void applyCouponDiscountAmount(Long couponDiscountAmount) {
+        this.couponDiscountAmount = couponDiscountAmount;
+        this.orderItemTotalPaymentAmount -= this.couponDiscountAmount;
+        this.order.applyCouponDiscountPrice(couponDiscountAmount);
+    }
 }

@@ -17,10 +17,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @Table(name = "\"order\"")
+@NoArgsConstructor
 public class Order extends BaseEntity {
 
     @Id
@@ -137,5 +139,39 @@ public class Order extends BaseEntity {
 
     private Long calculateTotalDeliveryFee(List<OrderItem> items) {
         return items.stream().mapToLong(OrderItem::getDeliveryFee).sum();
+    }
+
+    public void applyCouponDiscountPrice(Long couponDiscountPrice) {
+        this.couponDiscountPrice += couponDiscountPrice;
+        this.totalDiscountPrice += couponDiscountPrice;
+    }
+
+    public Order copy(Order order) {
+        Order newOrder = new Order();
+        this.orderName = order.orderName;
+        this.orderNumber = order.orderNumber;
+        this.totalOriginalPrice = order.totalOriginalPrice;
+        this.pointDiscountPrice = order.pointDiscountPrice;
+        this.deliveryFee = order.deliveryFee;
+        this.paymentMethod = order.paymentMethod;
+        this.orderCustomerType = order.orderCustomerType;
+        this.deliveryMessage = order.deliveryMessage;
+        this.deliveryPhoneNumber = order.deliveryPhoneNumber;
+        this.receiver = order.receiver;
+        this.streetAddress = order.streetAddress;
+        this.detailAddress = order.detailAddress;
+        this.zipCode = order.zipCode;
+        this.customerEmail = order.customerEmail;
+        this.customerName = order.customerName;
+        this.customerPhoneNumber = order.customerPhoneNumber;
+        this.customerPersonalCustomsCode = order.customerPersonalCustomsCode;
+        this.items = order.items;
+        this.customer = order.customer;
+        this.deliveryType = order.deliveryType;
+        this.refundAccountBankName = order.refundAccountBankName;
+        this.refundBankAccount = order.refundBankAccount;
+        this.refundAccountHolder = order.refundAccountHolder;
+
+        return newOrder;
     }
 }

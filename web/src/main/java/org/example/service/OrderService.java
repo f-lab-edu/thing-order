@@ -14,6 +14,7 @@ import org.example.dto.order.NewOrderItemResult;
 import org.example.dto.order.SortedOrderItem;
 import org.example.entity.AreaType;
 import org.example.entity.Coupon;
+import org.example.entity.CouponConstraint;
 import org.example.entity.OptionsType;
 import org.example.entity.Order;
 import org.example.entity.OrderCustomerType;
@@ -62,7 +63,25 @@ public class OrderService {
             newOrderItemResult.getCheckAdditionalDeliveryFeeOutput(), paymentMethod, pointDiscountPrice,
             deliveryMessage, deliveryId);
 
+        Order couponAppliedOrder = this.calculateCouponUsageInOrder(order);
+
         return order;
+    }
+
+    private Order calculateCouponUsageInOrder(Order order) {
+        for (OrderItem orderItem : order.getItems()) {
+            if (orderItem.hasNotCouponToUse()) {
+                continue;
+            }
+
+            CouponConstraint couponConstraint = orderItem.getCoupons().getCouponConstraint();
+            Long couponDiscountPrice = couponConstraint.getTotalCouponDiscountPrice(orderItem.getOrderItemTotalAmount(),
+                orderItem.getOrderQuantity());
+
+            orderItem.applyCouponDiscountAmount(couponDiscountPrice);
+        }
+
+        return order.copy(order);
     }
 
     private Order newOrderObject(User user, List<OrderItem> orderItems,
