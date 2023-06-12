@@ -1,5 +1,7 @@
 package org.example.resolver;
 
+import java.util.List;
+
 import org.example.dto.order.ConfirmMemberOrderResponseDto;
 import org.example.dto.order.ConfirmOrderRequestDto;
 import org.example.dto.order.CreateMemberOrderResponseDto;
@@ -16,8 +18,6 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
-
-import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,9 +36,10 @@ public class OrderResolver {
                 new CreateOrderItemRequest(70627111L, null, 1L, 1L));
         Long pointDiscountPrice = 0L;
         Long deliveryId = 5872L;
+        String deliveryMessage = "temp delivery message";
 
         Order newOrder = orderService.createMemberOrder(PaymentMethod.Card, user,
-                createOrderItemRequests, pointDiscountPrice, deliveryId);
+                createOrderItemRequests, pointDiscountPrice, deliveryId, deliveryMessage);
         return new CreateMemberOrderResponseDto(true, newOrder, false);
     }
 
