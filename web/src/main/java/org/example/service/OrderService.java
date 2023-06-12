@@ -56,6 +56,8 @@ public class OrderService {
         NewOrderItemResult newOrderItemResult = this.newOrderItemResult(itemsToOrder,
                 user.findAddressById(deliveryId).getZipCode(), user.getId());
 
+        System.out.println("here");
+
         Order order = this.newOrderObject(user, itemsToOrder, newOrderItemResult.getOrderItems());
 
         Order newOrder = new Order();
@@ -67,8 +69,17 @@ public class OrderService {
         List<Product> products = orderItems.stream().map(OrderItem::getProduct).collect(Collectors.toList());
 
         String orderName = this.createOrderName(products, products.size());
+        String orderNumber = this.createOrderNumber();
 
         return null;
+    }
+
+    private String createOrderNumber() {
+        LocalDateTime now = LocalDateTime.now();
+
+        return String.format("%04d%01d%02d%s",
+                now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
+                Integer.toString(now.getNano(), 36));
     }
 
     private String createOrderName(List<Product> products, int totalCountOfOrderedProduct) {
