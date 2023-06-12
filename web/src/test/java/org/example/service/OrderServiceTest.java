@@ -168,7 +168,7 @@ class OrderServiceTest {
                     tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId);
 
             order.getItems().forEach(orderItem -> assertThat(orderItem.getOrderStatus()).isEqualTo(
-                    OrderStatus.PENDING));
+                    OrderStatus.Pending));
         }
 
         @Test

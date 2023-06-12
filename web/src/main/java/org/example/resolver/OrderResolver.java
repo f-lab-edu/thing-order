@@ -33,9 +33,9 @@ public class OrderResolver {
         User user = userService.findUserById(88293L)
                 .orElseThrow(() -> new Exception("user not found"));
         List<CreateOrderItemRequest> createOrderItemRequests = List.of(
-                new CreateOrderItemRequest());
+                new CreateOrderItemRequest(70627111L, null, 1L, 1L));
         Long pointDiscountPrice = 0L;
-        Long deliveryId = 1L;
+        Long deliveryId = 5872L;
 
         Order newOrder = orderService.createMemberOrder(PaymentMethod.Card, user,
                 createOrderItemRequests, pointDiscountPrice, deliveryId);
