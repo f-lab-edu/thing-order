@@ -1,8 +1,10 @@
 package org.example.dto.order;
 
-import java.util.List;
-import lombok.Getter;
 import org.example.entity.OrderItem;
+
+import java.util.List;
+
+import lombok.Getter;
 
 @Getter
 public class NewOrderItemResult {
@@ -12,7 +14,7 @@ public class NewOrderItemResult {
     private final Long totalDeliveryFee;
 
     public NewOrderItemResult(List<OrderItem> orderItemList, Long totalProductDiscountPrice,
-            Long totalDeliveryFee) {
+                              Long totalDeliveryFee) {
         this.orderItems = orderItemList;
         this.totalProductDiscountPrice = totalProductDiscountPrice;
         this.totalDeliveryFee = totalDeliveryFee;

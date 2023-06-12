@@ -24,9 +24,9 @@ public class OrderItemOption {
     private Long orderQuality;
 
     public OrderItemOption(Long optionId, String optionName1, String optionValue1,
-            String optionName2,
-            String optionValue2, String optionName3, String optionValue3, Long optionPrice,
-            Long orderQuality) {
+                           String optionName2,
+                           String optionValue2, String optionName3, String optionValue3, Long optionPrice,
+                           Long orderQuality) {
         this.optionId = optionId;
         this.optionName1 = optionName1;
         this.optionValue1 = optionValue1;

@@ -1,7 +1,10 @@
 package org.example.entity;
 
-import io.hypersistence.utils.hibernate.type.json.JsonType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
 import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,10 +14,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
 @Getter
 @Entity
@@ -140,12 +143,12 @@ public class OrderItem {
     }
 
     public OrderItem(Product product, Long orderItemTotalPaymentAmount, Long orderQuantity,
-            Long orderItemTotalAmount, Long productDiscountAmount, LocalDateTime orderStatusDate,
-            OrderStatus orderStatus, Long deliveryFee, Long baseShippingFee, Long jejuShippingFee,
-            Long islandShippingFee, Long originJejuShippingFee, Long originIslandShippingFee,
-            Long originBaseShippingFee, Long conditionalFreeDeliveryFeeStandardByShop,
-            boolean isAcceptedConditionalFreeDeliveryFee,
-            Long originalDeliveryFeeBeforeDeliveryDiscount) {
+                     Long orderItemTotalAmount, Long productDiscountAmount, LocalDateTime orderStatusDate,
+                     OrderStatus orderStatus, Long deliveryFee, Long baseShippingFee, Long jejuShippingFee,
+                     Long islandShippingFee, Long originJejuShippingFee, Long originIslandShippingFee,
+                     Long originBaseShippingFee, Long conditionalFreeDeliveryFeeStandardByShop,
+                     boolean isAcceptedConditionalFreeDeliveryFee,
+                     Long originalDeliveryFeeBeforeDeliveryDiscount) {
         this.product = product;
         this.orderItemTotalPaymentAmount = orderItemTotalPaymentAmount;
         this.orderQuantity = orderQuantity;
