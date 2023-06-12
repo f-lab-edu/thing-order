@@ -12,7 +12,7 @@ public class CheckAdditionalDeliveryFeeOutput {
     private final AreaType areaType;
 
     public CheckAdditionalDeliveryFeeOutput(boolean ok, boolean isAddressToChargeAdditionalFee,
-                                            AreaType areaType) {
+        AreaType areaType) {
         this.ok = ok;
         this.isAddressToChargeAdditionalFee = isAddressToChargeAdditionalFee;
         this.areaType = areaType;

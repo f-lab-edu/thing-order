@@ -15,7 +15,7 @@ public class CreateOrderItemRequest {
     private Long orderQuantity;
 
     public CreateOrderItemRequest(Long productId, Long userCouponId, Long optionId,
-                                  Long orderQuantity) {
+        Long orderQuantity) {
         this.productId = productId;
         this.userCouponId = userCouponId;
         this.optionId = optionId;

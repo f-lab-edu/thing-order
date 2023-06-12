@@ -1,5 +1,9 @@
 package org.example.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+
 import org.example.exception.GraphqlException;
 import org.example.repository.PointDetailEventRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -8,10 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class PointServiceTest {
@@ -29,21 +29,21 @@ class PointServiceTest {
         Long pointHoldsByUser = 1000L;
         Long pointToUserWantToUse = 2000L;
         given(pointDetailEventRepository.getSumOfTotalUserPoint(
-                userIdHasNotEnoughPoint)).willReturn(pointHoldsByUser);
+            userIdHasNotEnoughPoint)).willReturn(pointHoldsByUser);
 
         // when
         // then
         assertThatThrownBy(
-                () -> pointService.checkUserPoint(userIdHasNotEnoughPoint, pointToUserWantToUse))
-                .isInstanceOf(GraphqlException.class)
-                .hasMessage("You don't have enough point")
-                .satisfies(exception -> {
-                    if (exception instanceof GraphqlException) {
-                        GraphqlException graphqlException = (GraphqlException) exception;
-                        assertThat(graphqlException.getExtensions()).isNotNull();
-                        assertThat(graphqlException.getExtensions().get("code")).isEqualTo(
-                                "NOT_ENOUGH_POINT");
-                    }
-                });
+            () -> pointService.checkUserPoint(userIdHasNotEnoughPoint, pointToUserWantToUse))
+            .isInstanceOf(GraphqlException.class)
+            .hasMessage("You don't have enough point")
+            .satisfies(exception -> {
+                if (exception instanceof GraphqlException) {
+                    GraphqlException graphqlException = (GraphqlException)exception;
+                    assertThat(graphqlException.getExtensions()).isNotNull();
+                    assertThat(graphqlException.getExtensions().get("code")).isEqualTo(
+                        "NOT_ENOUGH_POINT");
+                }
+            });
     }
 }

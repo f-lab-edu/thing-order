@@ -12,7 +12,7 @@ public class CreateNewOrderItemResult {
     private final long deliveryFee;
 
     public CreateNewOrderItemResult(OrderItem orderItem, long productDiscountPrice,
-                                    long deliveryFee) {
+        long deliveryFee) {
         this.orderItem = orderItem;
         this.productDiscountPrice = productDiscountPrice;
         this.deliveryFee = deliveryFee;

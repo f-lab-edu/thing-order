@@ -1,5 +1,10 @@
 package org.example.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
 import org.example.dto.order.CreateOrderItemRequest;
 import org.example.entity.OptionsType;
 import org.example.entity.Product;
@@ -7,11 +12,6 @@ import org.example.entity.ProductOption;
 import org.example.exception.GraphqlException;
 import org.example.repository.ProductRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,12 +53,12 @@ public class ProductService {
 
                 for (ProductOption productOption : p.getOptions()) {
                     if (item.getOptionId() == productOption.getOptionId()
-                            && productOption.getStatusOfStock() != null) {
+                        && productOption.getStatusOfStock() != null) {
                         productOption.setStockCount(
-                                productOption.getStockCount() - item.getOrderQuantity());
+                            productOption.getStockCount() - item.getOrderQuantity());
 
                         if (productOption.getStockCount() < 0 && lackOfStockCountProducts.stream()
-                                .noneMatch(el -> el.getId() == p.getId())) {
+                            .noneMatch(el -> el.getId() == p.getId())) {
                             lackOfOptionStockCountProducts.add(p);
                         }
                     }
@@ -84,7 +84,7 @@ public class ProductService {
 
     public Product findProductByDisplayedAndShopDisplayed(Long productId) {
         Optional<Product> optionalProduct =
-                this.productRepository.findProductByDisplayedAndShopDisplayed(productId);
+            this.productRepository.findProductByDisplayedAndShopDisplayed(productId);
 
         if (optionalProduct.isEmpty()) {
             throw new GraphqlException("product not found");

@@ -1,10 +1,10 @@
 package org.example.dto.order;
 
-import org.example.entity.OrderItem;
-import org.example.entity.Shop;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.example.entity.OrderItem;
+import org.example.entity.Shop;
 
 import lombok.Getter;
 import lombok.Setter;
