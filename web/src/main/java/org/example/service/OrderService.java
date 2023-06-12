@@ -2,6 +2,7 @@ package org.example.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ import org.example.entity.Product;
 import org.example.entity.ProductOption;
 import org.example.entity.User;
 import org.example.entity.UserDeliveryAddress;
-import org.example.repository.OrderItemRepository;
+import org.example.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class OrderService {
     private final CouponService couponService;
     private final PointService pointService;
     private final AdditionalDeliveryService additionalDeliveryService;
-    private final OrderItemRepository orderItemRepository;
+    private final OrderRepository orderRepository;
 
     public Order createMemberOrder(PaymentMethod paymentMethod, User user,
         List<CreateOrderItemRequest> itemsToOrder, Long pointDiscountPrice, Long deliveryId, String deliveryMessage)
@@ -64,8 +65,44 @@ public class OrderService {
             deliveryMessage, deliveryId);
 
         Order couponAppliedOrder = this.calculateCouponUsageInOrder(order);
+        Order pointAppliedOrder = this.calculatePointUsageInOrder(couponAppliedOrder, pointDiscountPrice);
+        pointAppliedOrder.getItems().forEach(orderItem -> orderItem.setOrder(pointAppliedOrder));
 
-        return order;
+        return this.orderRepository.save(pointAppliedOrder);
+    }
+
+    private Order calculatePointUsageInOrder(Order order, Long pointDiscountAmount) {
+        if (pointDiscountAmount > 0) {
+            List<OrderItem> orderItems = this.sortOrderItemsByHighPrice(order.getItems());
+
+            for (OrderItem orderItem : orderItems) {
+                if (pointDiscountAmount == 0) {
+                    break;
+                }
+
+                if (orderItem.getOrderItemTotalPaymentAmount() - pointDiscountAmount > 0) {
+                    orderItem.applyPointDiscountAmount(pointDiscountAmount);
+
+                    pointDiscountAmount = 0L;
+                } else if (orderItem.getOrderItemTotalPaymentAmount() - pointDiscountAmount <= 0) {
+                    orderItem.applyPointDiscountAmount(orderItem.getOrderItemTotalPaymentAmount());
+
+                    pointDiscountAmount -= orderItem.getOrderItemTotalPaymentAmount();
+                }
+            }
+
+            return order.copy(order);
+        } else {
+            return order;
+        }
+    }
+
+    private List<OrderItem> sortOrderItemsByHighPrice(List<OrderItem> orderItems) {
+        orderItems.sort(Comparator.comparingLong((OrderItem item) ->
+                item.getOrderItemTotalAmount() - item.getProductDiscountAmount() - item.getCouponDiscountAmount())
+            .reversed());
+
+        return orderItems;
     }
 
     private Order calculateCouponUsageInOrder(Order order) {
@@ -131,8 +168,6 @@ public class OrderService {
     private NewOrderItemResult newOrderItemResult(List<CreateOrderItemRequest> itemsToOrder,
         String zipCode, Long userId) {
         List<OrderItem> result = new ArrayList<>();
-        Long totalProductDiscountPrice = 0L;
-        Long totalDeliveryFee = 0L;
         boolean isAddressToChargeAdditionalFee = false;
         AreaType areaType = null;
 
@@ -159,9 +194,6 @@ public class OrderService {
 
                 createNewOrderItemResult.getOrderItem().setCoupons(coupon);
             }
-
-            totalProductDiscountPrice += createNewOrderItemResult.getProductDiscountPrice();
-            totalDeliveryFee += createNewOrderItemResult.getDeliveryFee();
 
             result.add(createNewOrderItemResult.getOrderItem());
         }
@@ -292,8 +324,7 @@ public class OrderService {
             orderItemList.addAll(sortedOrderItem.getOrderItems());
         }
 
-        return new NewOrderItemResult(orderItemList, totalProductDiscountPrice, totalDeliveryFee,
-            checkAdditionalDeliveryFeeOutput);
+        return new NewOrderItemResult(orderItemList, checkAdditionalDeliveryFeeOutput);
     }
 
     private CreateNewOrderItemResult createNewOrderItemObjectV2(Product product, long optionId,
@@ -373,7 +404,7 @@ public class OrderService {
                 .getFreeShippingFee() : 0;
 
         OrderItem newOrderItem = new OrderItem(product, orderItemTotalPaymentAmount, orderQuantity,
-            orderItemTotalPaymentAmount, productDiscountPrice, LocalDateTime.now(),
+            orderItemTotalAmount, productDiscountPrice, LocalDateTime.now(),
             OrderStatus.Pending, deliveryFee, product.getBaseShippingFee(), jejuShippingFee,
             islandShippingFee, jejuShippingFee, islandShippingFee, product.getBaseShippingFee(),
             conditionalFreeDeliveryFeeStandardByShop, false, deliveryFee, product.getShop(),

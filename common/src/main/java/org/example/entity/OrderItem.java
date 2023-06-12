@@ -141,6 +141,8 @@ public class OrderItem {
         this.originalDeliveryFeeBeforeDeliveryDiscount = originalDeliveryFeeBeforeDeliveryDiscount;
         this.shop = shop;
         this.options = getOrderItemOption(userSelectOption, orderQuantity);
+        this.pointDiscountAmount = 0L;
+        this.couponDiscountAmount = 0L;
     }
 
     public Map<String, Object> getOrderItemOption(ProductOption productOption, long orderQuantity) {
@@ -185,6 +187,10 @@ public class OrderItem {
         isAcceptedConditionalFreeDeliveryFeeWhenOrder = acceptedConditionalFreeDeliveryFeeWhenOrder;
     }
 
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
     public void setDeliveryFee(Long deliveryFee) {
         this.deliveryFee = deliveryFee;
     }
@@ -197,5 +203,11 @@ public class OrderItem {
         this.couponDiscountAmount = couponDiscountAmount;
         this.orderItemTotalPaymentAmount -= this.couponDiscountAmount;
         this.order.applyCouponDiscountPrice(couponDiscountAmount);
+    }
+
+    public void applyPointDiscountAmount(Long pointDiscountAmount) {
+        this.pointDiscountAmount = pointDiscountAmount;
+        this.orderItemTotalPaymentAmount -= this.pointDiscountAmount;
+        this.order.applyPointDiscountPrice(pointDiscountAmount);
     }
 }

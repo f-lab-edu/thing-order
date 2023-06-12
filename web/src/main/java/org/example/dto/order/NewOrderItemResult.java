@@ -10,15 +10,11 @@ import lombok.Getter;
 public class NewOrderItemResult {
 
     private final List<OrderItem> orderItems;
-    private final Long totalProductDiscountPrice;
-    private final Long totalDeliveryFee;
     private final CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput;
 
-    public NewOrderItemResult(List<OrderItem> orderItemList, Long totalProductDiscountPrice, Long totalDeliveryFee,
+    public NewOrderItemResult(List<OrderItem> orderItemList,
         CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput) {
         this.orderItems = orderItemList;
-        this.totalProductDiscountPrice = totalProductDiscountPrice;
-        this.totalDeliveryFee = totalDeliveryFee;
         this.checkAdditionalDeliveryFeeOutput = checkAdditionalDeliveryFeeOutput;
     }
 }
