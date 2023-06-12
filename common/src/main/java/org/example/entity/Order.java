@@ -86,4 +86,52 @@ public class Order extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User customer;
+
+    public Order(String orderName, String orderNumber, Long pointDiscountPrice, PaymentMethod paymentMethod, OrderCustomerType orderCustomerType, String deliveryMessage, String deliveryPhoneNumber, String receiver, String streetAddress, String detailAddress, String zipCode, String customerEmail, String customerName, String customerPhoneNumber, String customerPersonalCustomsCode, List<OrderItem> items, User customer, boolean isAddressToChargeAdditionalFee, AreaType areaType) {
+        this.orderName = orderName;
+        this.orderNumber = orderNumber;
+        this.totalOriginalPrice = this.calculateTotalOriginalPrice(items);
+        this.pointDiscountPrice = pointDiscountPrice;
+        this.deliveryFee = this.calculateTotalDeliveryFee(items);
+        this.paymentMethod = paymentMethod;
+        this.orderCustomerType = orderCustomerType;
+        this.deliveryMessage = deliveryMessage;
+        this.deliveryPhoneNumber = deliveryPhoneNumber;
+        this.receiver = receiver;
+        this.streetAddress = streetAddress;
+        this.detailAddress = detailAddress;
+        this.zipCode = zipCode;
+        this.customerEmail = customerEmail;
+        this.customerName = customerName;
+        this.customerPhoneNumber = customerPhoneNumber;
+        this.customerPersonalCustomsCode = customerPersonalCustomsCode;
+        this.items = items;
+        this.customer = customer;
+
+        if (isAddressToChargeAdditionalFee && areaType == AreaType.Jeju) {
+            this.deliveryType = DeliveryType.JEJU;
+        }
+
+        if (isAddressToChargeAdditionalFee && areaType == AreaType.AreaExceptForJeju) {
+            this.deliveryType = DeliveryType.ISLAND;
+        }
+
+        if (!isAddressToChargeAdditionalFee) {
+            this.deliveryType = DeliveryType.NORMAL;
+        }
+
+        if (paymentMethod == PaymentMethod.VirtualAccount) {
+            this.refundAccountBankName = customer.getBank().getBankName();
+            this.refundBankAccount = customer.getBankAccount();
+            this.refundAccountHolder = customer.getBankAccountHolder();
+        }
+    }
+
+    private Long calculateTotalOriginalPrice(List<OrderItem> items) {
+        return items.stream().mapToLong(OrderItem::getOrderItemTotalAmount).sum();
+    }
+
+    private Long calculateTotalDeliveryFee(List<OrderItem> items) {
+        return items.stream().mapToLong(OrderItem::getDeliveryFee).sum();
+    }
 }

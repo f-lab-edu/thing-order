@@ -1,5 +1,12 @@
 package org.example.service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.example.dto.order.CheckAdditionalDeliveryFeeOutput;
 import org.example.dto.order.CreateNewOrderItemResult;
 import org.example.dto.order.CreateOrderItemRequest;
@@ -9,21 +16,16 @@ import org.example.entity.AreaType;
 import org.example.entity.Coupon;
 import org.example.entity.OptionsType;
 import org.example.entity.Order;
+import org.example.entity.OrderCustomerType;
 import org.example.entity.OrderItem;
 import org.example.entity.OrderStatus;
 import org.example.entity.PaymentMethod;
 import org.example.entity.Product;
 import org.example.entity.ProductOption;
 import org.example.entity.User;
+import org.example.entity.UserDeliveryAddress;
 import org.example.repository.OrderItemRepository;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +40,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
 
     public Order createMemberOrder(PaymentMethod paymentMethod, User user,
-                                   List<CreateOrderItemRequest> itemsToOrder, Long pointDiscountPrice, Long deliveryId)
+                                   List<CreateOrderItemRequest> itemsToOrder, Long pointDiscountPrice, Long deliveryId, String deliveryMessage)
             throws Exception {
         this.checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(user,
                 paymentMethod);
@@ -56,9 +58,38 @@ public class OrderService {
         NewOrderItemResult newOrderItemResult = this.newOrderItemResult(itemsToOrder,
                 user.findAddressById(deliveryId).getZipCode(), user.getId());
 
-        Order newOrder = new Order();
+        Order order = this.newOrderObject(user, newOrderItemResult.getOrderItems(), newOrderItemResult.getCheckAdditionalDeliveryFeeOutput(), paymentMethod, pointDiscountPrice, deliveryMessage, deliveryId);
 
-        return newOrder;
+        return order;
+    }
+
+    private Order newOrderObject(User user, List<OrderItem> orderItems, CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput, PaymentMethod paymentMethod, Long pointDiscountPrice, String deliveryMessage, Long deliveryId) {
+        List<Product> products = orderItems.stream().map(OrderItem::getProduct)
+            .collect(Collectors.toList());
+
+        UserDeliveryAddress userDeliveryAddress = user.findAddressById(deliveryId);
+
+        String orderName = this.createOrderName(products, products.size());
+        String orderNumber = this.createOrderNumber();
+
+        return new Order(orderName, orderNumber, pointDiscountPrice, paymentMethod, OrderCustomerType.MemberOrder, deliveryMessage, userDeliveryAddress.getPhoneNumberForDelivery(), userDeliveryAddress.getReceiver(), userDeliveryAddress.getStreetAddress(), userDeliveryAddress.getDetailAddress(), userDeliveryAddress.getZipCode(), user.getEmail(), user.getName(), user.getPhoneNumber(), user.getPersonalCustomsCode(), orderItems, user, checkAdditionalDeliveryFeeOutput.isAddressToChargeAdditionalFee(), checkAdditionalDeliveryFeeOutput.getAreaType());
+    }
+
+
+    private String createOrderNumber() {
+        LocalDateTime now = LocalDateTime.now();
+
+        return String.format("%04d%01d%02d%s",
+                now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
+                Integer.toString(now.getNano(), 36));
+    }
+
+    private String createOrderName(List<Product> products, int totalCountOfOrderedProduct) {
+        if (totalCountOfOrderedProduct == 1) {
+            return products.get(0).getName();
+        } else {
+            return products.get(0).getName() + " 외 " + (totalCountOfOrderedProduct - 1) + " 건";
+        }
     }
 
     private void checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(User user,
@@ -233,7 +264,7 @@ public class OrderService {
             orderItemList.addAll(sortedOrderItem.getOrderItems());
         }
 
-        return new NewOrderItemResult(orderItemList, totalProductDiscountPrice, totalDeliveryFee);
+        return new NewOrderItemResult(orderItemList, totalProductDiscountPrice, totalDeliveryFee, checkAdditionalDeliveryFeeOutput);
     }
 
 
