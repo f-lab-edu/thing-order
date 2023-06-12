@@ -1,9 +1,5 @@
 package org.example.entity;
 
-import org.example.config.PostgreSQLEnumType;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +15,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+
+import org.example.config.PostgreSQLEnumType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.Getter;
@@ -114,17 +114,46 @@ public class OrderItem {
     @JoinColumn(name = "coupon_id")
     private Coupon coupons;
 
+    public OrderItem(Product product, Long orderItemTotalPaymentAmount, Long orderQuantity,
+        Long orderItemTotalAmount, Long productDiscountAmount, LocalDateTime orderStatusDate,
+        OrderStatus orderStatus, Long deliveryFee, Long baseShippingFee, Long jejuShippingFee,
+        Long islandShippingFee, Long originJejuShippingFee, Long originIslandShippingFee,
+        Long originBaseShippingFee, Long conditionalFreeDeliveryFeeStandardByShop,
+        boolean isAcceptedConditionalFreeDeliveryFee,
+        Long originalDeliveryFeeBeforeDeliveryDiscount, Shop shop,
+        ProductOption userSelectOption) {
+        this.product = product;
+        this.orderItemTotalPaymentAmount = orderItemTotalPaymentAmount;
+        this.orderQuantity = orderQuantity;
+        this.orderItemTotalAmount = orderItemTotalAmount;
+        this.productDiscountAmount = productDiscountAmount;
+        this.orderStatusDate = orderStatusDate;
+        this.orderStatus = orderStatus;
+        this.deliveryFee = deliveryFee;
+        this.baseShippingFee = baseShippingFee;
+        this.jejuShippingFee = jejuShippingFee;
+        this.islandShippingFee = islandShippingFee;
+        this.originJejuShippingFee = originJejuShippingFee;
+        this.originIslandShippingFee = originIslandShippingFee;
+        this.originBaseShippingFee = originBaseShippingFee;
+        this.conditionalFreeDeliveryFeeStandardByShop = conditionalFreeDeliveryFeeStandardByShop;
+        this.isAcceptedConditionalFreeDeliveryFee = isAcceptedConditionalFreeDeliveryFee;
+        this.originalDeliveryFeeBeforeDeliveryDiscount = originalDeliveryFeeBeforeDeliveryDiscount;
+        this.shop = shop;
+        this.options = getOrderItemOption(userSelectOption, orderQuantity);
+    }
+
     public Map<String, Object> getOrderItemOption(ProductOption productOption, long orderQuantity) {
         if (productOption != null) {
             return Map.of("optionId", productOption.getOptionId(),
-                    "optionName1", productOption.getOptionName1(),
-                    "optionValue1", productOption.getOptionValue1(),
-                    "optionName2", productOption.getOptionName2(),
-                    "optionValue2", productOption.getOptionValue2(),
-                    "optionName3", productOption.getOptionName3(),
-                    "optionValue3", productOption.getOptionValue3(),
-                    "optionPrice", productOption.getOptionPrice(),
-                    "orderQuantity", orderQuantity
+                "optionName1", productOption.getOptionName1(),
+                "optionValue1", productOption.getOptionValue1(),
+                "optionName2", productOption.getOptionName2(),
+                "optionValue2", productOption.getOptionValue2(),
+                "optionName3", productOption.getOptionName3(),
+                "optionValue3", productOption.getOptionValue3(),
+                "optionPrice", productOption.getOptionPrice(),
+                "orderQuantity", orderQuantity
             );
         } else {
             return Map.of("orderQuantity", orderQuantity);
@@ -152,40 +181,11 @@ public class OrderItem {
     }
 
     public void setAcceptedConditionalFreeDeliveryFeeWhenOrder(
-            boolean acceptedConditionalFreeDeliveryFeeWhenOrder) {
+        boolean acceptedConditionalFreeDeliveryFeeWhenOrder) {
         isAcceptedConditionalFreeDeliveryFeeWhenOrder = acceptedConditionalFreeDeliveryFeeWhenOrder;
     }
 
     public void setDeliveryFee(Long deliveryFee) {
         this.deliveryFee = deliveryFee;
-    }
-
-    public OrderItem(Product product, Long orderItemTotalPaymentAmount, Long orderQuantity,
-                     Long orderItemTotalAmount, Long productDiscountAmount, LocalDateTime orderStatusDate,
-                     OrderStatus orderStatus, Long deliveryFee, Long baseShippingFee, Long jejuShippingFee,
-                     Long islandShippingFee, Long originJejuShippingFee, Long originIslandShippingFee,
-                     Long originBaseShippingFee, Long conditionalFreeDeliveryFeeStandardByShop,
-                     boolean isAcceptedConditionalFreeDeliveryFee,
-                     Long originalDeliveryFeeBeforeDeliveryDiscount, Shop shop,
-                     ProductOption userSelectOption) {
-        this.product = product;
-        this.orderItemTotalPaymentAmount = orderItemTotalPaymentAmount;
-        this.orderQuantity = orderQuantity;
-        this.orderItemTotalAmount = orderItemTotalAmount;
-        this.productDiscountAmount = productDiscountAmount;
-        this.orderStatusDate = orderStatusDate;
-        this.orderStatus = orderStatus;
-        this.deliveryFee = deliveryFee;
-        this.baseShippingFee = baseShippingFee;
-        this.jejuShippingFee = jejuShippingFee;
-        this.islandShippingFee = islandShippingFee;
-        this.originJejuShippingFee = originJejuShippingFee;
-        this.originIslandShippingFee = originIslandShippingFee;
-        this.originBaseShippingFee = originBaseShippingFee;
-        this.conditionalFreeDeliveryFeeStandardByShop = conditionalFreeDeliveryFeeStandardByShop;
-        this.isAcceptedConditionalFreeDeliveryFee = isAcceptedConditionalFreeDeliveryFee;
-        this.originalDeliveryFeeBeforeDeliveryDiscount = originalDeliveryFeeBeforeDeliveryDiscount;
-        this.shop = shop;
-        this.options = getOrderItemOption(userSelectOption, orderQuantity);
     }
 }

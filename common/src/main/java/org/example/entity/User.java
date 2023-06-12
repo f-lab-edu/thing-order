@@ -50,14 +50,6 @@ public class User extends BaseEntity {
     @JoinColumn(name = "bank_id")
     private Bank bank;
 
-    public UserDeliveryAddress findAddressById(Long deliveryId) {
-        return deliveryAddresses.stream()
-                .filter(address -> address.getId() == deliveryId)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "User has no delivery address with the given ID"));
-    }
-
     public User(String email, String name, String phoneNumber) {
         this.email = email;
         this.name = name;
@@ -69,5 +61,13 @@ public class User extends BaseEntity {
         this.email = email;
         this.name = name;
         this.phoneNumber = phoneNumber;
+    }
+
+    public UserDeliveryAddress findAddressById(Long deliveryId) {
+        return deliveryAddresses.stream()
+            .filter(address -> address.getId() == deliveryId)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(
+                "User has no delivery address with the given ID"));
     }
 }

@@ -87,7 +87,11 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User customer;
 
-    public Order(String orderName, String orderNumber, Long pointDiscountPrice, PaymentMethod paymentMethod, OrderCustomerType orderCustomerType, String deliveryMessage, String deliveryPhoneNumber, String receiver, String streetAddress, String detailAddress, String zipCode, String customerEmail, String customerName, String customerPhoneNumber, String customerPersonalCustomsCode, List<OrderItem> items, User customer, boolean isAddressToChargeAdditionalFee, AreaType areaType) {
+    public Order(String orderName, String orderNumber, Long pointDiscountPrice, PaymentMethod paymentMethod,
+        OrderCustomerType orderCustomerType, String deliveryMessage, String deliveryPhoneNumber, String receiver,
+        String streetAddress, String detailAddress, String zipCode, String customerEmail, String customerName,
+        String customerPhoneNumber, String customerPersonalCustomsCode, List<OrderItem> items, User customer,
+        boolean isAddressToChargeAdditionalFee, AreaType areaType) {
         this.orderName = orderName;
         this.orderNumber = orderNumber;
         this.totalOriginalPrice = this.calculateTotalOriginalPrice(items);

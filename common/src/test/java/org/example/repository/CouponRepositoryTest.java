@@ -1,5 +1,9 @@
 package org.example.repository;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.util.Optional;
+
 import org.example.config.TestConfig;
 import org.example.entity.Coupon;
 import org.example.entity.CouponConstraint;
@@ -11,15 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 @SpringBootTest(classes = {TestConfig.class, CouponRepository.class, UserRepository.class,
-        CouponConstraintRepository.class},
-        properties = "spring" +
-                ".config" +
-                ".name=application-common-test")
+    CouponConstraintRepository.class},
+    properties = "spring" +
+        ".config" +
+        ".name=application-common-test")
 @EnableAutoConfiguration
 class CouponRepositoryTest {
 
@@ -41,14 +41,14 @@ class CouponRepositoryTest {
 
         CouponConstraint couponConstraintToSave = new CouponConstraint("테스트 쿠폰", "테스트 쿠폰 입니다");
         CouponConstraint savedCouponConstraint = couponConstraintRepository.save(
-                couponConstraintToSave);
+            couponConstraintToSave);
         Coupon couponToSave = new Coupon(false, CouponStatus.Available, savedCouponConstraint,
-                savedUser);
+            savedUser);
         Coupon savedCoupon = couponRepository.save(couponToSave);
 
         // when
         Optional<Coupon> coupon = couponRepository.findUserCoupon(savedUser.getId(),
-                savedCouponConstraint.getId());
+            savedCouponConstraint.getId());
 
         // then
         coupon.ifPresent(value -> assertThat(value.getId()).isEqualTo(savedCoupon.getId()));

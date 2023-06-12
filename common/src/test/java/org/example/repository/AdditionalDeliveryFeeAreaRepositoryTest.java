@@ -1,5 +1,9 @@
 package org.example.repository;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
+import java.util.Optional;
+
 import org.example.config.TestConfig;
 import org.example.entity.AdditionalDeliveryFeeArea;
 import org.example.entity.AreaType;
@@ -9,12 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-
 @SpringBootTest(classes = {TestConfig.class, AdditionalDeliveryFeeAreaRepository.class},
-        properties = "spring.config.name=application-common-test")
+    properties = "spring.config.name=application-common-test")
 @EnableAutoConfiguration
 class AdditionalDeliveryFeeAreaRepositoryTest {
 
@@ -26,19 +26,19 @@ class AdditionalDeliveryFeeAreaRepositoryTest {
     void findAdditionalDeliveryFeeAreaByZipCodeTest() {
         // given
         AdditionalDeliveryFeeArea additionalDeliveryFeeAreaToSave = new AdditionalDeliveryFeeArea(
-                "123456", "temp street address", AreaType.Jeju);
+            "123456", "temp street address", AreaType.Jeju);
 
         AdditionalDeliveryFeeArea saved =
-                additionalDeliveryFeeAreaRepository.save(additionalDeliveryFeeAreaToSave);
+            additionalDeliveryFeeAreaRepository.save(additionalDeliveryFeeAreaToSave);
 
         // when
         Optional<AdditionalDeliveryFeeArea> optionalAdditionalDeliveryFeeArea =
-                additionalDeliveryFeeAreaRepository.findAdditionalDeliveryFeeAreaByZipCode(
-                        "123456");
+            additionalDeliveryFeeAreaRepository.findAdditionalDeliveryFeeAreaByZipCode(
+                "123456");
 
         // then
         assertThat(optionalAdditionalDeliveryFeeArea.isEmpty()).isFalse();
         optionalAdditionalDeliveryFeeArea.ifPresent(additionalDeliveryFeeArea -> assertThat(
-                additionalDeliveryFeeArea.getId()).isEqualTo(saved.getId()));
+            additionalDeliveryFeeArea.getId()).isEqualTo(saved.getId()));
     }
 }
