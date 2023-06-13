@@ -68,7 +68,7 @@ public class OrderService {
         Order pointAppliedOrder = this.calculatePointUsageInOrder(couponAppliedOrder, pointDiscountPrice);
         pointAppliedOrder.getItems().forEach(orderItem -> orderItem.setOrder(pointAppliedOrder));
 
-        return this.orderRepository.save(pointAppliedOrder);
+        return pointAppliedOrder;
     }
 
     private Order calculatePointUsageInOrder(Order order, Long pointDiscountAmount) {
@@ -327,7 +327,7 @@ public class OrderService {
         return new NewOrderItemResult(orderItemList, checkAdditionalDeliveryFeeOutput);
     }
 
-    private CreateNewOrderItemResult createNewOrderItemObjectV2(Product product, long optionId,
+    private CreateNewOrderItemResult createNewOrderItemObjectV2(Product product, Long optionId,
         long orderQuantity,
         boolean isAddressToChargeAdditionalFee, AreaType areaType) {
         long orderItemTotalAmount = 0;

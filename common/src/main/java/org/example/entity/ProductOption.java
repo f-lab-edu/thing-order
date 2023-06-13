@@ -5,11 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Getter
-@Setter
 @EqualsAndHashCode
 @NoArgsConstructor
 @ToString
@@ -47,6 +45,21 @@ public class ProductOption {
         this.optionValue1 = optionValue1;
         this.stockCount = stockCount;
         this.statusOfStock = statusOfStock;
+    }
+
+    public ProductOption(long optionId, String optionName1, String optionValue1, String optionName2,
+        String optionValue2, String optionName3, String optionValue3, Long stockCount, Long optionPrice) {
+        this.optionId = optionId;
+        this.optionName1 = optionName1;
+        this.optionValue1 = optionValue1;
+        this.optionName2 = optionName2;
+        this.optionValue2 = optionValue2;
+        this.optionName3 = optionName3;
+        this.optionValue3 = optionValue3;
+        this.stockCount = stockCount;
+        this.statusOfStock = StatusOfStock.OnSale;
+        this.optionPrice = optionPrice;
+        this.isAvailable = true;
     }
 
     public void setStockCount(Long stockCount) {

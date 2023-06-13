@@ -63,6 +63,18 @@ public class User extends BaseEntity {
         this.phoneNumber = phoneNumber;
     }
 
+    public User(String email, String name, String phoneNumber, String personalCustomsCode, String bankAccountHolder,
+        String bankAccount, List<UserDeliveryAddress> deliveryAddresses, Bank bank) {
+        this.email = email;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.personalCustomsCode = personalCustomsCode;
+        this.bankAccountHolder = bankAccountHolder;
+        this.bankAccount = bankAccount;
+        this.deliveryAddresses = deliveryAddresses;
+        this.bank = bank;
+    }
+
     public UserDeliveryAddress findAddressById(Long deliveryId) {
         return deliveryAddresses.stream()
             .filter(address -> address.getId() == deliveryId)

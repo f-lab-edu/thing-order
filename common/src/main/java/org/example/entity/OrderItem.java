@@ -23,14 +23,12 @@ import org.hibernate.annotations.TypeDef;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Getter
 @Entity
 @TypeDef(name = "json", typeClass = JsonType.class)
 @TypeDef(name = "psql_enum", typeClass = PostgreSQLEnumType.class)
 @NoArgsConstructor
-@ToString
 public class OrderItem {
 
     @Id
