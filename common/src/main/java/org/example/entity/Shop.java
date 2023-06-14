@@ -19,27 +19,44 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Shop extends BaseEntity {
 
-    @OneToMany(mappedBy = "shop")
-    private final List<Product> products = new ArrayList<>();
-    @OneToMany(mappedBy = "shop")
-    private final List<ShopCoupon> shopCoupon = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String name;
+
     private String description;
+
     private String logoImg;
+
     private boolean isCrawled;
+
     private boolean isDisplayed;
+
     private Long baseShippingFee;
+
     private Long jejuShippingFee;
+
     private Long islandShippingFee;
+
     private Long freeShippingFee;
+
     @Enumerated(EnumType.STRING)
     private ShopClassification shopClassification;
+
+    @OneToMany(mappedBy = "shop")
+    private final List<Product> products = new ArrayList<>();
+
+    @OneToMany(mappedBy = "shop")
+    private final List<ShopCoupon> shopCoupon = new ArrayList<>();
 
     public Shop(String name, boolean isDisplayed) {
         this.name = name;
         this.isDisplayed = isDisplayed;
     }
+
+    public void setFreeShippingFee(Long freeShippingFee) {
+        this.freeShippingFee = freeShippingFee;
+    }
+
 }

@@ -3,50 +3,107 @@ package org.example.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.example.dto.order.CheckAdditionalDeliveryFeeOutput;
 import org.example.dto.order.CreateOrderItemRequest;
+import org.example.entity.AreaType;
 import org.example.entity.Bank;
 import org.example.entity.DeliveryType;
+import org.example.entity.DiscountType;
+import org.example.entity.OptionsType;
 import org.example.entity.Order;
 import org.example.entity.OrderCustomerType;
 import org.example.entity.OrderItem;
 import org.example.entity.OrderStatus;
 import org.example.entity.PaymentMethod;
+import org.example.entity.Product;
+import org.example.entity.ProductClassification;
+import org.example.entity.ProductOption;
+import org.example.entity.ShippingType;
+import org.example.entity.Shop;
 import org.example.entity.User;
+import org.example.entity.UserDeliveryAddress;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
-
-    private User mockedUser;
-    private Long pointDiscountPrice;
-    private List<CreateOrderItemRequest> tempCreateOrderItemRequests;
     @InjectMocks
     private OrderService orderService;
+
+    @Mock
+    private ProductService productService;
+
+    @Mock
+    private CouponService couponService;
+
+    @Mock
+    private PointService pointService;
+
+    @Mock
+    private AdditionalDeliveryService additionalDeliveryService;
+
+    @Mock
+    private User mockedUser;
+    private List<CreateOrderItemRequest> tempCreateOrderItemRequests;
     private PaymentMethod tempPaymentMethod;
     private Long tempDeliveryId;
+
+    private Product optionTestProduct;
+
+    private Product noOptionTestProduct;
 
     private String tempDeliveryMessage;
 
     @BeforeEach
     void beforeEach() {
-        mockedUser = new User();
+        Bank bank = new Bank("우리", "20");
+
+        UserDeliveryAddress userDeliveryAddress = new UserDeliveryAddress(1L, "testReceiver", "street address",
+            "detail address", "zip code", "01099999999");
+
+        mockedUser = new User("test@gmail.com", "testUser", "01012341234", "", "testUser", "123456789",
+            List.of(userDeliveryAddress), bank);
+
+        Shop shop = new Shop("testShop", true);
+
+        ProductOption productOption1 = new ProductOption(1L, "종류", "랜덤1마리", "", "", "", "", 144L, 0L);
+
+        ProductOption productOption2 = new ProductOption(2L, "색상", "파랑", "", "", "", "", 300L,
+            0L);
+
+        optionTestProduct = new Product("test product 1", DiscountType.Value, 2810L, 1690L, 4500L, false,
+            ProductClassification.Partnership, ShippingType.Domestic, 3000L, 3000L, 3000L, true, 300L,
+            OptionsType.Combination, shop, List.of(productOption1, productOption2));
+
+        noOptionTestProduct = new Product("test product 2", DiscountType.Value, 1000L, 3500L, 4500L, false,
+            ProductClassification.Partnership, ShippingType.Domestic, 5000L, 3000L, 3000L, true, 300L,
+            OptionsType.Absence, shop, null);
+
         CreateOrderItemRequest tempCreateOrderItemRequest = new CreateOrderItemRequest();
         tempCreateOrderItemRequest.setProductId(1L);
+        tempCreateOrderItemRequest.setOptionId(1L);
+        tempCreateOrderItemRequest.setOrderQuantity(1L);
         tempCreateOrderItemRequests = List.of(tempCreateOrderItemRequest);
-        pointDiscountPrice = 0L;
+
         tempDeliveryId = 1L;
+        tempPaymentMethod = PaymentMethod.Card;
         tempDeliveryMessage = "temp delivery message";
     }
 
@@ -62,10 +119,25 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("Order의 totalOriginalPrice는 OrderItem들의 orderItemTotalAmount의 합이다.")
-        @Disabled
         void createOrderTest1() throws Exception {
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
+
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             Long totalOriginalPrice = order.getTotalOriginalPrice();
             Long sumOfOrderItemTotalAmount = order.getItems().stream()
                 .mapToLong(OrderItem::getOrderItemTotalAmount).sum();
@@ -75,10 +147,25 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("Order의 totalDiscountPrice는 나머지 할인 프로퍼티의 합이다")
-        @Disabled
         void createOrderTest2() throws Exception {
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
+
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             Long totalDiscountPrice = order.getTotalDiscountPrice();
             Long sumOfDiscountPrice =
                 order.getProductDiscountPrice() + order.getCouponDiscountPrice()
@@ -89,10 +176,23 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("Order의 deliveryFee는 orderItem의 deliveryFee의 합이다.")
-        @Disabled
         void createOrderTest3() throws Exception {
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
+
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
             Long orderDeliveryFee = order.getDeliveryFee();
             Long sumOfDeliveryFee = order.getItems().stream().mapToLong(OrderItem::getDeliveryFee)
                 .sum();
@@ -102,11 +202,25 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("Order의 배송지 관련 정보 null check")
-        @Disabled
         void createOrderTest4() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             assertAll(
                 () -> assertThat(order.getStreetAddress()).isNotNull(),
                 () -> assertThat(order.getDetailAddress()).isNotNull(),
@@ -120,11 +234,25 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("Order의 주문 고객 정보 null check")
-        @Disabled
         void createOrderTest5() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             assertAll(
                 () -> assertThat(order.getCustomerEmail()).isNotNull(),
                 () -> assertThat(order.getCustomer()).isNotNull(),
@@ -133,27 +261,53 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("Order의 주문번호, 결제 방식, createdAt, updatedAt null check")
-        @Disabled
+        @DisplayName("Order의 주문번호, 결제 방식 null check")
         void createOrderTest6() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             assertAll(
                 () -> assertThat(order.getOrderNumber()).isNotNull(),
-                () -> assertThat(order.getPaymentMethod()).isNotNull(),
-                () -> assertThat(order.getCreatedAt()).isNotNull(),
-                () -> assertThat(order.getUpdatedAt()).isNotNull()
+                () -> assertThat(order.getPaymentMethod()).isNotNull()
             );
         }
 
         @Test
         @DisplayName("orderItemTotalPaymentAmount는 orderItemTotalAmount - (productDiscountAmount + couponDiscountAmount + productDiscountAmount) 이다.")
-        @Disabled
         void createOrderTest7() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             order.getItems()
                 .forEach(orderItem -> assertThat(orderItem.getOrderItemTotalPaymentAmount())
                     .isEqualTo(orderItem.getOrderItemTotalAmount() - (
@@ -165,64 +319,133 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("orderItem의 상태는 PENDING이어야 한다.")
-        @Disabled
         void createOrderTest8() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             order.getItems().forEach(orderItem -> assertThat(orderItem.getOrderStatus()).isEqualTo(
                 OrderStatus.Pending));
         }
 
         @Test
         @DisplayName("Order의 deliveryType이 Normal이면 각 orderItem의 deliveryFee는 baseShippingFee와 같은 값이다")
-        @Disabled
         void createOrderTest9() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
-            if (order.getDeliveryType() == DeliveryType.NORMAL) {
-                order.getItems()
-                    .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                        orderItem.getBaseShippingFee()));
-            }
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
+            assertThat(order.getDeliveryType()).isEqualTo(DeliveryType.NORMAL);
+            order.getItems()
+                .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                    orderItem.getBaseShippingFee()));
         }
 
         @Test
         @DisplayName("Order의 deliveryType이 Jeju면 각 orderItem의 deliveryFee는 baseShippingFee + jejuShippingFee와 같은 값이다")
-        @Disabled
         void createOrderTest10() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
-            if (order.getDeliveryType() == DeliveryType.JEJU) {
-                order.getItems()
-                    .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                        orderItem.getJejuShippingFee()));
-            }
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, true, AreaType.Jeju));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
+            assertThat(order.getDeliveryType()).isEqualTo(DeliveryType.JEJU);
+            order.getItems()
+                .forEach(orderItem -> {
+                    assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                        orderItem.getJejuShippingFee() + orderItem.getBaseShippingFee());
+                });
         }
 
         @Test
         @DisplayName("Order의 deliveryType이 Island면 각 orderItem의 deliveryFee는 baseShippingFee + islandShippingFee와 같은 값이다")
-        @Disabled
         void createOrderTest11() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
-            if (order.getDeliveryType() == DeliveryType.ISLAND) {
-                order.getItems()
-                    .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                        orderItem.getIslandShippingFee()));
-            }
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, true, AreaType.AreaExceptForJeju));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
+            assertThat(order.getDeliveryType()).isEqualTo(DeliveryType.ISLAND);
+            order.getItems()
+                .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                    orderItem.getIslandShippingFee() + orderItem.getBaseShippingFee()));
         }
 
         @Test
         @DisplayName("Order 객체에서 paymentDate는 null이어야 한다")
-        @Disabled
         void createdOrderTest12() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             assertAll(
                 () -> assertThat(order.getPaymentDate()).isNull()
             );
@@ -230,176 +453,346 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("Order의 items 리스트는 널이 아니여야 한다")
-        @Disabled
         void createOrderTest13() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             assertThat(order.getItems()).isNotNull();
         }
 
         @Test
         @DisplayName("Order의 customer 필드는 null이 아니여야 한다")
-        @Disabled
         void createOrderTest14() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             assertThat(order.getCustomer()).isNotNull();
         }
 
         @Test
         @DisplayName("Order의 OrderItem의 product 필드는 null이 아니여야 한다")
-        @Disabled
         void createOrderTest15() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             order.getItems().forEach(orderItem -> assertThat(orderItem.getProduct()).isNotNull());
         }
 
         @Test
         @DisplayName("Order의 OrderItem의 shop 필드는 null이 아니여야 한다")
-        @Disabled
         void createOrderTest16() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             order.getItems().forEach(orderItem -> assertThat(orderItem.getShop()).isNotNull());
         }
 
         @Test
         @DisplayName("Order의 customerType은 MemberOrder여야 한다.")
-        @Disabled
         void createOrderTest17() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             assertThat(order.getOrderCustomerType()).isEqualTo(OrderCustomerType.MemberOrder);
         }
 
         @Test
         @DisplayName("Order의 PaymentMethod가 Card이면 환불 관련 정보는 null이어야한다.")
-        @Disabled
         void createOrderTest18() throws Exception {
-            Order order = orderService.createMemberOrder(PaymentMethod.Card, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
-            if (order.getPaymentMethod() == PaymentMethod.Card) {
-                assertThat(order.getRefundBankAccount()).isNull();
-                assertThat(order.getRefundAccountHolder()).isNull();
-                assertThat(order.getRefundAccountBankName()).isNull();
-            }
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
+            assertThat(order.getRefundBankAccount()).isNull();
+            assertThat(order.getRefundAccountHolder()).isNull();
+            assertThat(order.getRefundAccountBankName()).isNull();
         }
 
         @Test
         @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보는 null이면 안된다..")
-        @Disabled
         void createOrderTest19() throws Exception {
-            Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser
-                , tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
-            if (order.getPaymentMethod() == PaymentMethod.VirtualAccount) {
-                assertThat(order.getRefundBankAccount()).isNotNull();
-                assertThat(order.getRefundAccountHolder()).isNotNull();
-                assertThat(order.getRefundAccountBankName()).isNotNull();
-            }
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
+            assertThat(order.getRefundBankAccount()).isNotNull();
+            assertThat(order.getRefundAccountHolder()).isNotNull();
+            assertThat(order.getRefundAccountBankName()).isNotNull();
         }
 
         @Test
         @DisplayName("Order의 totalDiscountPrice(총 할인금액)는 totalOriginalPrice(배송비를 제외한 금액)보다 작거나 같아야 한다.")
-        @Disabled
         void createOrderTest20() throws Exception {
-            Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                tempCreateOrderItemRequests, pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
             assertThat(order.getTotalDiscountPrice()).isLessThanOrEqualTo(
                 order.getTotalDiscountPrice());
         }
 
         @Test
-        @DisplayName("Crawling 상품은 주문할 수 없다")
-        @Tag("TODO")
-        void createOrderTest21() {
+        @DisplayName("주문 시 상품의 재고를 체크해야한다")
+        void createOrderTest23() throws Exception {
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
-            //TODO : implementation this test
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+
+            // when
+            orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
+            verify(productService, times(1)).checkProductExist(List.of(productIdToOrder));
+            verify(productService, times(1)).checkProductStockCount(List.of(createOrderItemRequest));
+
         }
 
         @Test
-        @DisplayName("Crawling 상점은 주문할 수 없다")
-        @Tag("TODO")
-        void createOrderTest22() {
-            //TODO : implementation this test
-        }
+        @DisplayName("주문 시 쿠폰의 유효성 검사를 테스트 해야한다")
+        void createOrderTest27() throws Exception {
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
-        @Test
-        @DisplayName("주문하는 상품의 재고가 없을 시 예외를 던져야 한다")
-        @Tag("TODO")
-        void createOrderTest23() {
-            //TODO : implementation this test
-        }
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, 1L,
+                productOptionId, productOrderQuantity);
 
-        @Test
-        @DisplayName("주문하는 상품의 isDisplayed 필드는 true여야 하고, 그렇지 않으면 예외를 던진다")
-        @Tag("TODO")
-        void createOrderTest24() {
-            //TODO : implementation this test
-        }
+            // when
+            orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
-        @Test
-        @DisplayName("주문하는 상점의 isDisplayed 필드는 true여야 하고, 그렇지 않으면 예외를 던진다")
-        @Tag("TODO")
-        void createOrderTest25() {
-            //TODO : implementation this test
-        }
-
-        @Test
-        @DisplayName("주문하는 상품이 존재해야 한다")
-        @Tag("TODO")
-        void createOrderTest26() {
-            //TODO : implementation this test
-        }
-
-        @Test
-        @DisplayName("주문에서 사용하고자 하는 쿠폰의 상태가 Available이여야 한다.")
-        @Tag("TODO")
-        void createOrderTest27() {
-            //TODO : implementation this test
+            // then
+            verify(couponService, times(1)).checkUserCouponStatus(mockedUser, Stream.of(createOrderItemRequest)
+                .filter(item -> item != null && item.getUserCouponId() != null)
+                .map(CreateOrderItemRequest::getUserCouponId).collect(Collectors.toList()));
         }
 
         @Test
         @DisplayName("주문에서 포인트를 사용하려면 해당 user의 남은 포인트가 충분해야 한다.")
         @Tag("TODO")
-        void createOrderTest28() {
-            //TODO : implementation this test
+        void createOrderTest28() throws Exception {
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
+
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, 1L,
+                productOptionId, productOrderQuantity);
+
+            // when
+            orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
+                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+
+            // then
+            verify(pointService, times(1)).checkUserPoint(mockedUser.getId(), pointDiscountPrice);
         }
 
         @Test
-        @DisplayName("배송지가 제주 지역일 경우 각 상점에서 설정한 제주 배송비가 적용되어야 한다.")
+        @DisplayName("같은 상점의 상품을 여러개 구매한 경우 하나의 상품에만 배송비(가장 비싼 배송비)가 적용되어야 한다.")
         @Tag("TODO")
-        void createOrderTest29() {
-            //TODO : implementation this test
-        }
+        void createOrderTest31() throws Exception {
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
 
-        @Test
-        @DisplayName("배송지가 도서 산간 지역일 경우 각 상점에서 설정한 도서 산간 배송비가 적용되어야 한다.")
-        @Tag("TODO")
-        void createOrderTest30() {
-            //TODO : implementation this test
-        }
+            Long productIdToOrder2 = 2L;
+            Long productOrderQuantity2 = 1L;
 
-        @Test
-        @DisplayName("같은 상점의 상품을 여러개 구매한 경우 하나의 상품에만 배송비가 적용되어야 한다.")
-        @Tag("TODO")
-        void createOrderTest31() {
-            //TODO : implementation this test
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder2)).willReturn(
+                noOptionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+            CreateOrderItemRequest createOrderItemRequest2 = new CreateOrderItemRequest(productIdToOrder2, null,
+                null, productOrderQuantity2);
+
+            // when
+            Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
+                List.of(createOrderItemRequest, createOrderItemRequest2), pointDiscountPrice, tempDeliveryId,
+                tempDeliveryMessage);
+
+            // then
+            assertThat(order.getDeliveryFee()).isEqualTo(Stream.of(optionTestProduct, noOptionTestProduct)
+                .map(Product::getBaseShippingFee)
+                .max(Comparator.naturalOrder()).orElse(0L));
         }
 
         @Test
         @DisplayName("상점에서 조건부 무료 배송 기준을 지정했을 경우, 기준 금액 이상만큼의 상품을 구매했을 시 무료 배송이 적용되어야 한다.")
         @Tag("TODO")
-        void createOrderTest32() {
-            //TODO : implementation this test
+        void createOrderTest32() throws Exception {
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 0L;
+
+            Long productIdToOrder2 = 2L;
+            Long productOrderQuantity2 = 1L;
+
+            optionTestProduct.getShop().setFreeShippingFee(500L);
+
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder2)).willReturn(
+                noOptionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+            CreateOrderItemRequest createOrderItemRequest2 = new CreateOrderItemRequest(productIdToOrder2, null,
+                null, productOrderQuantity2);
+
+            // when
+            Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
+                List.of(createOrderItemRequest, createOrderItemRequest2), pointDiscountPrice, tempDeliveryId,
+                tempDeliveryMessage);
+
+            // then
+            assertThat(order.getDeliveryFee()).isEqualTo(0L);
         }
 
         @Nested
@@ -410,6 +803,7 @@ class OrderServiceTest {
             @DisplayName("Order의 PaymentMethod가 VirtualAccount이면 환불 관련 정보(은행 정보)가 없을 시 예외를 던진다.")
             void crateOrderTestWithRefundInfoWhenPaymentMethodVirtualAccount() {
                 // given
+                Long pointDiscountPrice = 0L;
 
                 // when // then
                 assertThatThrownBy(
@@ -431,6 +825,7 @@ class OrderServiceTest {
                 User userWithInvalidRefundBankAccountHolder = new User();
                 userWithInvalidRefundBankAccountHolder.setBankAccount("111111111111");
                 userWithInvalidRefundBankAccountHolder.setBank(bank);
+                Long pointDiscountPrice = 0L;
 
                 // when // then
                 assertThatThrownBy(
@@ -452,6 +847,7 @@ class OrderServiceTest {
                 User userWithInvalidRefundBankAccount = new User();
                 userWithInvalidRefundBankAccount.setBankAccountHolder("예금주");
                 userWithInvalidRefundBankAccount.setBank(bank);
+                Long pointDiscountPrice = 0L;
 
                 // when
                 assertThatThrownBy(

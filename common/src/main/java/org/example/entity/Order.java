@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -17,10 +18,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @Table(name = "\"order\"")
+@NoArgsConstructor
 public class Order extends BaseEntity {
 
     @Id
@@ -80,7 +83,7 @@ public class Order extends BaseEntity {
 
     private String customerPersonalCustomsCode;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     private List<OrderItem> items = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -95,7 +98,10 @@ public class Order extends BaseEntity {
         this.orderName = orderName;
         this.orderNumber = orderNumber;
         this.totalOriginalPrice = this.calculateTotalOriginalPrice(items);
+        this.productDiscountPrice = this.calculateProductDiscountPrice(items);
         this.pointDiscountPrice = pointDiscountPrice;
+        this.couponDiscountPrice = 0L;
+        this.totalDiscountPrice = this.productDiscountPrice + this.pointDiscountPrice + this.couponDiscountPrice;
         this.deliveryFee = this.calculateTotalDeliveryFee(items);
         this.paymentMethod = paymentMethod;
         this.orderCustomerType = orderCustomerType;
@@ -137,5 +143,51 @@ public class Order extends BaseEntity {
 
     private Long calculateTotalDeliveryFee(List<OrderItem> items) {
         return items.stream().mapToLong(OrderItem::getDeliveryFee).sum();
+    }
+
+    private Long calculateProductDiscountPrice(List<OrderItem> items) {
+        return items.stream().mapToLong(OrderItem::getProductDiscountAmount).sum();
+    }
+
+    public void applyCouponDiscountPrice(Long couponDiscountPrice) {
+        this.couponDiscountPrice += couponDiscountPrice;
+        this.totalDiscountPrice += couponDiscountPrice;
+    }
+
+    public void applyPointDiscountPrice(Long pointDiscountPrice) {
+        this.pointDiscountPrice += pointDiscountPrice;
+        this.totalDiscountPrice += pointDiscountPrice;
+    }
+
+    public Order copy(Order order) {
+        Order newOrder = new Order();
+        newOrder.orderName = order.orderName;
+        newOrder.orderNumber = order.orderNumber;
+        newOrder.totalOriginalPrice = order.totalOriginalPrice;
+        newOrder.pointDiscountPrice = order.pointDiscountPrice;
+        newOrder.couponDiscountPrice = order.couponDiscountPrice;
+        newOrder.productDiscountPrice = order.productDiscountPrice;
+        newOrder.totalDiscountPrice = order.totalDiscountPrice;
+        newOrder.deliveryFee = order.deliveryFee;
+        newOrder.paymentMethod = order.paymentMethod;
+        newOrder.orderCustomerType = order.orderCustomerType;
+        newOrder.deliveryMessage = order.deliveryMessage;
+        newOrder.deliveryPhoneNumber = order.deliveryPhoneNumber;
+        newOrder.receiver = order.receiver;
+        newOrder.streetAddress = order.streetAddress;
+        newOrder.detailAddress = order.detailAddress;
+        newOrder.zipCode = order.zipCode;
+        newOrder.customerEmail = order.customerEmail;
+        newOrder.customerName = order.customerName;
+        newOrder.customerPhoneNumber = order.customerPhoneNumber;
+        newOrder.customerPersonalCustomsCode = order.customerPersonalCustomsCode;
+        newOrder.items = order.items;
+        newOrder.customer = order.customer;
+        newOrder.deliveryType = order.deliveryType;
+        newOrder.refundAccountBankName = order.refundAccountBankName;
+        newOrder.refundBankAccount = order.refundBankAccount;
+        newOrder.refundAccountHolder = order.refundAccountHolder;
+
+        return newOrder;
     }
 }

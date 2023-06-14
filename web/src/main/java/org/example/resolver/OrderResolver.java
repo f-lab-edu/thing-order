@@ -34,6 +34,7 @@ public class OrderResolver {
             .orElseThrow(() -> new Exception("user not found"));
         List<CreateOrderItemRequest> createOrderItemRequests = List.of(
             new CreateOrderItemRequest(70627111L, null, 1L, 1L));
+
         Long pointDiscountPrice = 0L;
         Long deliveryId = 5872L;
         String deliveryMessage = "temp delivery message";
