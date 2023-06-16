@@ -1,16 +1,12 @@
 package org.example.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Getter
 @EqualsAndHashCode
 @NoArgsConstructor
-@ToString
 public class ProductOption {
 
     private long optionId;
@@ -27,8 +23,7 @@ public class ProductOption {
 
     private String optionValue3;
 
-    @JsonProperty("isAvailable")
-    private boolean isAvailable;
+    private Boolean isAvailable;
 
     private Long stockCount;
 

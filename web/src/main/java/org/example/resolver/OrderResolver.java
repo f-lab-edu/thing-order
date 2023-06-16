@@ -1,16 +1,13 @@
 package org.example.resolver;
 
-import java.util.List;
-
 import org.example.dto.order.ConfirmMemberOrderResponseDto;
 import org.example.dto.order.ConfirmOrderRequestDto;
+import org.example.dto.order.CreateMemberOrderRequestDto;
 import org.example.dto.order.CreateMemberOrderResponseDto;
-import org.example.dto.order.CreateOrderItemRequest;
 import org.example.dto.order.GetMemberOrderByUserRequestDto;
 import org.example.dto.order.GetMemberOrderByUserResponseDto;
 import org.example.dto.order.OrderInfoResponse;
 import org.example.entity.Order;
-import org.example.entity.PaymentMethod;
 import org.example.entity.User;
 import org.example.service.OrderService;
 import org.example.service.UserService;
@@ -29,18 +26,15 @@ public class OrderResolver {
     private final UserService userService;
 
     @MutationMapping
-    public CreateMemberOrderResponseDto createMemberOrderV3() throws Exception {
+    public CreateMemberOrderResponseDto createMemberOrderV3(
+        @Argument("input") CreateMemberOrderRequestDto requestDto) throws Exception {
         User user = userService.findUserById(88293L)
             .orElseThrow(() -> new Exception("user not found"));
-        List<CreateOrderItemRequest> createOrderItemRequests = List.of(
-            new CreateOrderItemRequest(70627111L, null, 1L, 1L));
 
-        Long pointDiscountPrice = 0L;
-        Long deliveryId = 5872L;
-        String deliveryMessage = "temp delivery message";
-
-        Order newOrder = orderService.createMemberOrder(PaymentMethod.Card, user,
-            createOrderItemRequests, pointDiscountPrice, deliveryId, deliveryMessage);
+        Order newOrder = orderService.createMemberOrder(requestDto.getPaymentMethod(), user,
+            requestDto.getItems(), requestDto.getPointDiscountPrice(), requestDto.getDeliveryId(),
+            requestDto.getDeliveryMessage());
+        
         return new CreateMemberOrderResponseDto(true, newOrder, false);
     }
 
