@@ -208,4 +208,12 @@ public class OrderItem {
         this.orderItemTotalPaymentAmount -= this.pointDiscountAmount;
         this.order.applyPointDiscountPrice(pointDiscountAmount);
     }
+
+    public void setOrderStatusToComplete() {
+        this.orderStatus = OrderStatus.OrderComplete;
+    }
+
+    public Long getOptionId() {
+        return (Long)this.options.get("OptionId");
+    }
 }

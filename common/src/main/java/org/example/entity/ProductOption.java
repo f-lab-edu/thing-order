@@ -60,4 +60,8 @@ public class ProductOption {
     public void setStockCount(Long stockCount) {
         this.stockCount = stockCount;
     }
+
+    public void setStatusOfStock(StatusOfStock statusOfStock) {
+        this.statusOfStock = statusOfStock;
+    }
 }

@@ -3,6 +3,7 @@ package org.example.entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -140,5 +141,45 @@ public class Product extends BaseEntity {
         this.optionsType = optionsType;
         this.shop = shop;
         this.options = productOptions;
+    }
+
+    public void decreaseStockCount(Long stockCount) {
+        if (stockCount <= 0) {
+            throw new IllegalArgumentException("stock count must be greater than zero");
+        }
+
+        while (stockCount-- > 0) {
+            this.stockCount--;
+        }
+    }
+
+    public void decreaseOptionStockCount(Long stockCount, Long optionId) {
+        if (stockCount <= 0) {
+            throw new IllegalArgumentException("stock count must be greater than zero");
+        }
+
+        if (optionId == null) {
+            throw new IllegalArgumentException("optionId can not be null");
+        }
+
+        Optional<ProductOption> foundOption = this.options.stream()
+            .filter(option -> option.getOptionId() == optionId)
+            .findFirst();
+
+        if (foundOption.isPresent()) {
+            Long optionStockCountToDecrease = foundOption.get().getStockCount();
+
+            while (stockCount-- > 0) {
+                optionStockCountToDecrease--;
+            }
+
+            foundOption.get().setStockCount(optionStockCountToDecrease);
+
+            if (foundOption.get().getStockCount() == 0) {
+                foundOption.get().setStatusOfStock(StatusOfStock.OutOfStock);
+            }
+        } else {
+            throw new IllegalArgumentException("could not found option");
+        }
     }
 }

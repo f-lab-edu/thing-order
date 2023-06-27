@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.example.dto.order.CreateOrderItemRequest;
+import org.example.dto.order.ProductStockCountMessage;
 import org.example.entity.OptionsType;
 import org.example.entity.Product;
 import org.example.entity.ProductOption;
@@ -91,5 +92,22 @@ public class ProductService {
         }
 
         return optionalProduct.get();
+    }
+
+    public List<Product> decreaseProductStockCount(List<ProductStockCountMessage> productStockCountMessages) {
+        List<Product> productsToSave = new ArrayList<>();
+
+        for (ProductStockCountMessage message : productStockCountMessages) {
+            Product p = message.getProduct();
+
+            if (p.getOptionsType() == OptionsType.Combination) {
+                p.decreaseOptionStockCount(message.getStock(), message.getOptionId());
+            }
+
+            p.decreaseStockCount(message.getStock());
+            productsToSave.add(p);
+        }
+
+        return productsToSave;
     }
 }
