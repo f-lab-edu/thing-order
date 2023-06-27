@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.example.dto.order.CreateOrderItemRequest;
+import org.example.dto.order.ProductStockCountMessage;
 import org.example.entity.OptionsType;
 import org.example.entity.Product;
 import org.example.entity.ProductOption;
@@ -177,5 +178,46 @@ class ProductServiceTest {
                             " 재고 부족");
                 }
             });
+    }
+
+    @DisplayName("옵션 없는 상품 재고 감소 테스트")
+    @Test
+    void decreaseProductStockCount1() {
+        // given
+        Product product = new Product(1L, "product1", 200L, OptionsType.Absence, null);
+        ProductStockCountMessage message = new ProductStockCountMessage(product, null, 1L);
+
+        // when
+        List<Product> products = productService.decreaseProductStockCount(List.of(message));
+
+        // then
+        assertThat(products.size()).isEqualTo(1);
+        assertThat(products.contains(product)).isTrue();
+        assertThat(products.get(0).getStockCount()).isEqualTo(199L);
+    }
+
+    @DisplayName("옵션 상품 재고 감소 테스트")
+    @Test
+    void decreaseProductStockCount2() {
+        // given
+        ProductOption option1 = new ProductOption(1L, "색상", "빨강", 100L, StatusOfStock.OnSale);
+        ProductOption option2 = new ProductOption(2L, "색상", "파랑", 100L, StatusOfStock.OnSale);
+        Product product = new Product(1L, "product1", 200L, OptionsType.Combination, List.of(option1, option2));
+        ProductStockCountMessage message = new ProductStockCountMessage(product, 1L, 1L);
+
+        // when
+        List<Product> products = productService.decreaseProductStockCount(List.of(message));
+
+        // then
+        assertThat(products.size()).isEqualTo(1);
+        assertThat(products.contains(product)).isTrue();
+        assertThat(products.get(0).getStockCount()).isEqualTo(199L);
+        assertThat(products.get(0)
+            .getOptions()
+            .stream()
+            .filter(option -> option.getOptionId() == 1L)
+            .findFirst()
+            .get()
+            .getStockCount()).isEqualTo(99L);
     }
 }
