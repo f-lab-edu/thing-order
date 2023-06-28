@@ -115,4 +115,15 @@ public class CouponConstraint extends BaseEntity {
             return 0L;
         }
     }
+
+    public void increaseTotalUsedCount() {
+        this.usedCount++;
+    }
+
+    public CouponConstraint(String name, String description, boolean isActive, Long usedCount) {
+        this.name = name;
+        this.description = description;
+        this.isActive = isActive;
+        this.usedCount = usedCount;
+    }
 }
