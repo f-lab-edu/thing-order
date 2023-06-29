@@ -90,7 +90,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User customer;
 
-    public Order(String orderName, String orderNumber, Long pointDiscountPrice, PaymentMethod paymentMethod,
+    public Order(String orderName, String orderNumber, PaymentMethod paymentMethod,
         OrderCustomerType orderCustomerType, String deliveryMessage, String deliveryPhoneNumber, String receiver,
         String streetAddress, String detailAddress, String zipCode, String customerEmail, String customerName,
         String customerPhoneNumber, String customerPersonalCustomsCode, List<OrderItem> items, User customer,
@@ -99,7 +99,7 @@ public class Order extends BaseEntity {
         this.orderNumber = orderNumber;
         this.totalOriginalPrice = this.calculateTotalOriginalPrice(items);
         this.productDiscountPrice = this.calculateProductDiscountPrice(items);
-        this.pointDiscountPrice = pointDiscountPrice;
+        this.pointDiscountPrice = 0L;
         this.couponDiscountPrice = 0L;
         this.totalDiscountPrice = this.productDiscountPrice + this.pointDiscountPrice + this.couponDiscountPrice;
         this.deliveryFee = this.calculateTotalDeliveryFee(items);
@@ -135,6 +135,22 @@ public class Order extends BaseEntity {
             this.refundBankAccount = customer.getBankAccount();
             this.refundAccountHolder = customer.getBankAccountHolder();
         }
+    }
+
+    public void setPaymentDate(LocalDateTime paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public boolean isZeroPaid() {
+        return this.totalOriginalPrice + this.deliveryFee - this.totalDiscountPrice == 0;
+    }
+
+    public boolean hasCouponDiscountPrice() {
+        return this.couponDiscountPrice > 0;
+    }
+
+    public boolean hasPointDiscountPrice() {
+        return this.pointDiscountPrice > 0;
     }
 
     private Long calculateTotalOriginalPrice(List<OrderItem> items) {

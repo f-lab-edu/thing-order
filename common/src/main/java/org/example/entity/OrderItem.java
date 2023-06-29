@@ -197,6 +197,10 @@ public class OrderItem {
         return this.coupons == null;
     }
 
+    public boolean hasCouponProp() {
+        return this.coupons != null;
+    }
+
     public void applyCouponDiscountAmount(Long couponDiscountAmount) {
         this.couponDiscountAmount = couponDiscountAmount;
         this.orderItemTotalPaymentAmount -= this.couponDiscountAmount;
@@ -214,6 +218,6 @@ public class OrderItem {
     }
 
     public Long getOptionId() {
-        return (Long)this.options.get("OptionId");
+        return (Long)this.options.get("optionId");
     }
 }
