@@ -46,6 +46,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<UserDeliveryAddress> deliveryAddresses = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<Cart> carts = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_id")
     private Bank bank;
