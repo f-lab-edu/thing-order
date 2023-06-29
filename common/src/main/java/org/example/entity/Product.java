@@ -153,6 +153,10 @@ public class Product extends BaseEntity {
         }
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public void decreaseOptionStockCount(Long stockCount, Long optionId) {
         if (stockCount <= 0) {
             throw new IllegalArgumentException("stock count must be greater than zero");
