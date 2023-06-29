@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 import org.example.dto.order.CheckAdditionalDeliveryFeeOutput;
 import org.example.dto.order.CreateNewOrderItemResult;
 import org.example.dto.order.CreateOrderItemRequest;
+import org.example.dto.order.DeleteCartItemMessage;
 import org.example.dto.order.NewOrderItemResult;
+import org.example.dto.order.ProductStockCountMessage;
 import org.example.dto.order.SortedOrderItem;
 import org.example.entity.AreaType;
 import org.example.entity.Coupon;
@@ -35,11 +37,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final ProductService productService;
-    private final CouponService couponService;
-    private final PointService pointService;
     private final AdditionalDeliveryService additionalDeliveryService;
+    private final CartService cartService;
+    private final CouponService couponService;
     private final OrderRepository orderRepository;
+    private final PointService pointService;
+    private final ProductService productService;
 
     public Order createMemberOrder(PaymentMethod paymentMethod, User user,
         List<CreateOrderItemRequest> itemsToOrder, Long pointDiscountPrice, Long deliveryId, String deliveryMessage)
@@ -61,40 +64,86 @@ public class OrderService {
             user.findAddressById(deliveryId).getZipCode(), user.getId());
 
         Order order = this.newOrderObject(user, newOrderItemResult.getOrderItems(),
-            newOrderItemResult.getCheckAdditionalDeliveryFeeOutput(), paymentMethod, pointDiscountPrice,
-            deliveryMessage, deliveryId);
+            newOrderItemResult.getCheckAdditionalDeliveryFeeOutput(), paymentMethod, deliveryMessage, deliveryId);
+        order.getItems().forEach(orderItem -> orderItem.setOrder(order));
 
         Order couponAppliedOrder = this.calculateCouponUsageInOrder(order);
         Order pointAppliedOrder = this.calculatePointUsageInOrder(couponAppliedOrder, pointDiscountPrice);
-        pointAppliedOrder.getItems().forEach(orderItem -> orderItem.setOrder(pointAppliedOrder));
 
-        return pointAppliedOrder;
+        Order savedOrder = this.orderRepository.save(pointAppliedOrder);
+
+        if (savedOrder.isZeroPaid()) {
+            return this.zeroPaidProcess(savedOrder);
+        }
+
+        return savedOrder;
+    }
+
+    private Order zeroPaidProcess(Order order) {
+        order.setPaymentDate(LocalDateTime.now());
+
+        for (OrderItem item : order.getItems()) {
+            item.setOrderStatusToComplete();
+        }
+
+        List<ProductStockCountMessage> productStockCountMessages = order.getItems()
+            .stream()
+            .map(orderItem -> new ProductStockCountMessage(orderItem.getProduct(), orderItem.getOptionId(),
+                orderItem.getOrderQuantity()))
+            .collect(
+                Collectors.toList());
+
+        this.productService.decreaseProductStockCount(productStockCountMessages);
+
+        if (order.hasPointDiscountPrice()) {
+            this.pointService.usePoint(order.getCustomer(), order.getPointDiscountPrice(), order);
+        }
+
+        if (order.hasCouponDiscountPrice()) {
+            List<Coupon> usedCoupons = order.getItems().stream()
+                .filter(OrderItem::hasCouponProp)
+                .map(OrderItem::getCoupons)
+                .collect(Collectors.toList());
+
+            this.couponService.useCoupon(usedCoupons);
+        }
+
+        List<DeleteCartItemMessage> deleteCartItemMessages = order.getItems()
+            .stream()
+            .map(orderItem -> new DeleteCartItemMessage(orderItem.getProduct().getId(), orderItem.getProduct()
+                .getOptionsType(), orderItem.getOptionId()))
+            .collect(Collectors.toList());
+
+        this.cartService.deleteCartItems(order.getCustomer().getId(), deleteCartItemMessages);
+
+        return order;
     }
 
     private Order calculatePointUsageInOrder(Order order, Long pointDiscountAmount) {
-        if (pointDiscountAmount > 0) {
-            List<OrderItem> orderItems = this.sortOrderItemsByHighPrice(order.getItems());
+        Long point = pointDiscountAmount;
 
-            for (OrderItem orderItem : orderItems) {
-                if (pointDiscountAmount == 0) {
-                    break;
-                }
-
-                if (orderItem.getOrderItemTotalPaymentAmount() - pointDiscountAmount > 0) {
-                    orderItem.applyPointDiscountAmount(pointDiscountAmount);
-
-                    pointDiscountAmount = 0L;
-                } else if (orderItem.getOrderItemTotalPaymentAmount() - pointDiscountAmount <= 0) {
-                    orderItem.applyPointDiscountAmount(orderItem.getOrderItemTotalPaymentAmount());
-
-                    pointDiscountAmount -= orderItem.getOrderItemTotalPaymentAmount();
-                }
-            }
-
-            return order.copy(order);
-        } else {
+        if (point <= 0) {
             return order;
         }
+
+        List<OrderItem> orderItems = this.sortOrderItemsByHighPrice(order.getItems());
+
+        for (OrderItem orderItem : orderItems) {
+            if (point == 0) {
+                break;
+            }
+
+            if (orderItem.getOrderItemTotalPaymentAmount() - point > 0) {
+                orderItem.applyPointDiscountAmount(point);
+
+                point = 0L;
+            } else if (orderItem.getOrderItemTotalPaymentAmount() - point <= 0) {
+                point -= orderItem.getOrderItemTotalPaymentAmount();
+                orderItem.applyPointDiscountAmount(orderItem.getOrderItemTotalPaymentAmount());
+            }
+        }
+
+        return order;
     }
 
     private List<OrderItem> sortOrderItemsByHighPrice(List<OrderItem> orderItems) {
@@ -118,12 +167,12 @@ public class OrderService {
             orderItem.applyCouponDiscountAmount(couponDiscountPrice);
         }
 
-        return order.copy(order);
+        return order;
     }
 
     private Order newOrderObject(User user, List<OrderItem> orderItems,
         CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput, PaymentMethod paymentMethod,
-        Long pointDiscountPrice, String deliveryMessage, Long deliveryId) {
+        String deliveryMessage, Long deliveryId) {
         List<Product> products = orderItems.stream().map(OrderItem::getProduct)
             .collect(Collectors.toList());
 
@@ -132,7 +181,7 @@ public class OrderService {
         String orderName = this.createOrderName(products, products.size());
         String orderNumber = this.createOrderNumber();
 
-        return new Order(orderName, orderNumber, pointDiscountPrice, paymentMethod, OrderCustomerType.MemberOrder,
+        return new Order(orderName, orderNumber, paymentMethod, OrderCustomerType.MemberOrder,
             deliveryMessage, userDeliveryAddress.getPhoneNumberForDelivery(), userDeliveryAddress.getReceiver(),
             userDeliveryAddress.getStreetAddress(), userDeliveryAddress.getDetailAddress(),
             userDeliveryAddress.getZipCode(), user.getEmail(), user.getName(), user.getPhoneNumber(),

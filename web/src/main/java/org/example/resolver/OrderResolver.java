@@ -34,17 +34,21 @@ public class OrderResolver {
     public CreateMemberOrderResponseDto createMemberOrderV3(
         @Argument("input") CreateMemberOrderRequestDto requestDto,
         @ContextValue(name = "x-jwt") String jwtAccessToken) throws Exception {
-        if (!jwtService.verifyToken(jwtAccessToken)) {
+        if (!this.jwtService.verifyToken(jwtAccessToken)) {
             throw new GraphqlException("403 FORBIDDEN");
         }
 
-        JwtPayload jwtPayload = jwtService.getJwtPayload(jwtAccessToken);
-        User user = userService.findUserById(jwtPayload.getId())
+        JwtPayload jwtPayload = this.jwtService.getJwtPayload(jwtAccessToken);
+        User user = this.userService.findUserById(jwtPayload.getId())
             .orElseThrow(() -> new Exception("user not found"));
 
-        Order newOrder = orderService.createMemberOrder(requestDto.getPaymentMethod(), user,
+        Order newOrder = this.orderService.createMemberOrder(requestDto.getPaymentMethod(), user,
             requestDto.getItems(), requestDto.getPointDiscountPrice(), requestDto.getDeliveryId(),
             requestDto.getDeliveryMessage());
+
+        if (newOrder.isZeroPaid()) {
+            return new CreateMemberOrderResponseDto(true, newOrder, true);
+        }
 
         return new CreateMemberOrderResponseDto(true, newOrder, false);
     }

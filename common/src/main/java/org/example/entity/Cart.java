@@ -16,12 +16,12 @@ import org.hibernate.annotations.TypeDef;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.Getter;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 @TypeDef(name = "json", typeClass = JsonType.class)
-@ToString
 @Entity
 @Getter
+@NoArgsConstructor
 public class Cart extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -51,4 +51,5 @@ public class Cart extends BaseEntity {
         this.optionType = optionType;
         this.quantity = quantity;
     }
+
 }

@@ -3,7 +3,11 @@ package org.example.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -31,21 +35,29 @@ import org.example.entity.ShippingType;
 import org.example.entity.Shop;
 import org.example.entity.User;
 import org.example.entity.UserDeliveryAddress;
+import org.example.repository.OrderRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
+
     @InjectMocks
     private OrderService orderService;
+
+    @Mock
+    private CartService cartService;
+
+    @Mock
+    private OrderRepository orderRepository;
 
     @Mock
     private ProductService productService;
@@ -80,6 +92,7 @@ class OrderServiceTest {
 
         mockedUser = new User("test@gmail.com", "testUser", "01012341234", "", "testUser", "123456789",
             List.of(userDeliveryAddress), bank);
+        mockedUser.setId(1L);
 
         Shop shop = new Shop("testShop", true);
 
@@ -130,6 +143,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -158,6 +172,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -187,6 +202,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -213,6 +229,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -245,6 +262,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -273,6 +291,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -300,6 +319,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -330,6 +350,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -355,6 +376,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -382,6 +404,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, true, AreaType.Jeju));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -411,6 +434,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, true, AreaType.AreaExceptForJeju));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -438,6 +462,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -464,6 +489,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -488,6 +514,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -512,6 +539,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -536,6 +564,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -560,6 +589,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -584,6 +614,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -610,6 +641,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -636,6 +668,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -661,6 +694,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
 
@@ -687,6 +721,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, 1L,
                 productOptionId, productOrderQuantity);
 
@@ -702,7 +737,6 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("주문에서 포인트를 사용하려면 해당 user의 남은 포인트가 충분해야 한다.")
-        @Tag("TODO")
         void createOrderTest28() throws Exception {
             // given
             Long productIdToOrder = 1L;
@@ -714,6 +748,7 @@ class OrderServiceTest {
                 optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, 1L,
                 productOptionId, productOrderQuantity);
 
@@ -727,7 +762,6 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("같은 상점의 상품을 여러개 구매한 경우 하나의 상품에만 배송비(가장 비싼 배송비)가 적용되어야 한다.")
-        @Tag("TODO")
         void createOrderTest31() throws Exception {
             // given
             Long productIdToOrder = 1L;
@@ -744,6 +778,7 @@ class OrderServiceTest {
                 noOptionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
             CreateOrderItemRequest createOrderItemRequest2 = new CreateOrderItemRequest(productIdToOrder2, null,
@@ -762,7 +797,6 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("상점에서 조건부 무료 배송 기준을 지정했을 경우, 기준 금액 이상만큼의 상품을 구매했을 시 무료 배송이 적용되어야 한다.")
-        @Tag("TODO")
         void createOrderTest32() throws Exception {
             // given
             Long productIdToOrder = 1L;
@@ -781,6 +815,7 @@ class OrderServiceTest {
                 noOptionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
                 new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
                 productOptionId, productOrderQuantity);
             CreateOrderItemRequest createOrderItemRequest2 = new CreateOrderItemRequest(productIdToOrder2, null,
@@ -793,6 +828,46 @@ class OrderServiceTest {
 
             // then
             assertThat(order.getDeliveryFee()).isEqualTo(0L);
+        }
+
+        @Test
+        @DisplayName("고객이 실제로 결제할 금액이 없을 때는 zeroPaidProcess 함수가 실행되어야 한다.")
+        void createOrderTest33() throws Exception {
+            // given
+            Long productIdToOrder = 1L;
+            Long productOptionId = 1L;
+            Long productOrderQuantity = 1L;
+            Long pointDiscountPrice = 100000L;
+
+            Long productIdToOrder2 = 2L;
+            Long productOrderQuantity2 = 1L;
+
+            optionTestProduct.getShop().setFreeShippingFee(500L);
+
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
+                optionTestProduct);
+            given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder2)).willReturn(
+                noOptionTestProduct);
+            given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
+                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+            given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
+            CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
+                productOptionId, productOrderQuantity);
+            CreateOrderItemRequest createOrderItemRequest2 = new CreateOrderItemRequest(productIdToOrder2, null,
+                null, productOrderQuantity2);
+
+            // when
+            Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
+                List.of(createOrderItemRequest, createOrderItemRequest2), pointDiscountPrice, tempDeliveryId,
+                tempDeliveryMessage);
+
+            // then
+            then(pointService).should(times(1)).usePoint(any(User.class), anyLong(), any(Order.class));
+            then(productService).should(times(1)).decreaseProductStockCount(anyList());
+            then(cartService).should(times(1)).deleteCartItems(anyLong(), anyList());
+            if (order.hasCouponDiscountPrice()) {
+                then(couponService).should(times(1)).useCoupon(anyList());
+            }
         }
 
         @Nested
