@@ -1,8 +1,7 @@
-package org.example.dto.order;
-
-import org.example.entity.OptionsType;
+package org.example.message;
 
 import lombok.Getter;
+import org.example.entity.OptionsType;
 
 @Getter
 public class DeleteCartItemMessage {

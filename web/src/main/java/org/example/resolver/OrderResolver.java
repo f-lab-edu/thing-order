@@ -1,12 +1,12 @@
 package org.example.resolver;
 
 import lombok.RequiredArgsConstructor;
-import org.example.dto.order.CreateMemberOrderRequestDto;
-import org.example.dto.order.CreateMemberOrderResponseDto;
-import org.example.dto.order.JwtPayload;
+import org.example.dto.CreateMemberOrderRequestDto;
+import org.example.dto.CreateMemberOrderResponseDto;
 import org.example.entity.Order;
 import org.example.entity.User;
 import org.example.exception.GraphqlException;
+import org.example.message.JwtPayload;
 import org.example.service.JwtService;
 import org.example.service.OrderService;
 import org.example.service.UserService;

@@ -1,8 +1,7 @@
-package org.example.dto.order;
-
-import org.example.entity.OrderItem;
+package org.example.message;
 
 import lombok.Getter;
+import org.example.entity.OrderItem;
 
 @Getter
 public class CreateNewOrderItemResult {
@@ -12,7 +11,7 @@ public class CreateNewOrderItemResult {
     private final long deliveryFee;
 
     public CreateNewOrderItemResult(OrderItem orderItem, long productDiscountPrice,
-        long deliveryFee) {
+                                    long deliveryFee) {
         this.orderItem = orderItem;
         this.productDiscountPrice = productDiscountPrice;
         this.deliveryFee = deliveryFee;

@@ -1,4 +1,4 @@
-package org.example.dto.order;
+package org.example.message;
 
 import lombok.Getter;
 
