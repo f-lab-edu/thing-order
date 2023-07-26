@@ -1,8 +1,7 @@
-package org.example.dto.order;
-
-import org.example.entity.AreaType;
+package org.example.message;
 
 import lombok.Getter;
+import org.example.entity.AreaType;
 
 @Getter
 public class CheckAdditionalDeliveryFeeOutput {
@@ -12,7 +11,7 @@ public class CheckAdditionalDeliveryFeeOutput {
     private final AreaType areaType;
 
     public CheckAdditionalDeliveryFeeOutput(boolean ok, boolean isAddressToChargeAdditionalFee,
-        AreaType areaType) {
+                                            AreaType areaType) {
         this.ok = ok;
         this.isAddressToChargeAdditionalFee = isAddressToChargeAdditionalFee;
         this.areaType = areaType;

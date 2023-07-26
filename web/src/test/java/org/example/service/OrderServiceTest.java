@@ -1,51 +1,30 @@
 package org.example.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import org.example.dto.CreateOrderItemRequest;
+import org.example.entity.Order;
+import org.example.entity.*;
+import org.example.message.CheckAdditionalDeliveryFeeOutput;
+import org.example.repository.OrderRepository;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.AdditionalAnswers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.example.dto.order.CheckAdditionalDeliveryFeeOutput;
-import org.example.dto.order.CreateOrderItemRequest;
-import org.example.entity.AreaType;
-import org.example.entity.Bank;
-import org.example.entity.DeliveryType;
-import org.example.entity.DiscountType;
-import org.example.entity.OptionsType;
-import org.example.entity.Order;
-import org.example.entity.OrderCustomerType;
-import org.example.entity.OrderItem;
-import org.example.entity.OrderStatus;
-import org.example.entity.PaymentMethod;
-import org.example.entity.Product;
-import org.example.entity.ProductClassification;
-import org.example.entity.ProductOption;
-import org.example.entity.ShippingType;
-import org.example.entity.Shop;
-import org.example.entity.User;
-import org.example.entity.UserDeliveryAddress;
-import org.example.repository.OrderRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.AdditionalAnswers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -88,10 +67,10 @@ class OrderServiceTest {
         Bank bank = new Bank("우리", "20");
 
         UserDeliveryAddress userDeliveryAddress = new UserDeliveryAddress(1L, "testReceiver", "street address",
-            "detail address", "zip code", "01099999999");
+                "detail address", "zip code", "01099999999");
 
         mockedUser = new User("test@gmail.com", "testUser", "01012341234", "", "testUser", "123456789",
-            List.of(userDeliveryAddress), bank);
+                List.of(userDeliveryAddress), bank);
         mockedUser.setId(1L);
 
         Shop shop = new Shop("testShop", true);
@@ -99,15 +78,15 @@ class OrderServiceTest {
         ProductOption productOption1 = new ProductOption(1L, "종류", "랜덤1마리", "", "", "", "", 144L, 0L);
 
         ProductOption productOption2 = new ProductOption(2L, "색상", "파랑", "", "", "", "", 300L,
-            0L);
+                0L);
 
         optionTestProduct = new Product("test product 1", DiscountType.Value, 2810L, 1690L, 4500L, false,
-            ProductClassification.Partnership, ShippingType.Domestic, 3000L, 3000L, 3000L, true, 300L,
-            OptionsType.Combination, shop, List.of(productOption1, productOption2));
+                ProductClassification.Partnership, ShippingType.Domestic, 3000L, 3000L, 3000L, true, 300L,
+                OptionsType.Combination, shop, List.of(productOption1, productOption2));
 
         noOptionTestProduct = new Product("test product 2", DiscountType.Value, 1000L, 3500L, 4500L, false,
-            ProductClassification.Partnership, ShippingType.Domestic, 5000L, 3000L, 3000L, true, 300L,
-            OptionsType.Absence, shop, null);
+                ProductClassification.Partnership, ShippingType.Domestic, 5000L, 3000L, 3000L, true, 300L,
+                OptionsType.Absence, shop, null);
 
         CreateOrderItemRequest tempCreateOrderItemRequest = new CreateOrderItemRequest();
         tempCreateOrderItemRequest.setProductId(1L);
@@ -140,21 +119,21 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             Long totalOriginalPrice = order.getTotalOriginalPrice();
             Long sumOfOrderItemTotalAmount = order.getItems().stream()
-                .mapToLong(OrderItem::getOrderItemTotalAmount).sum();
+                    .mapToLong(OrderItem::getOrderItemTotalAmount).sum();
 
             assertThat(totalOriginalPrice).isEqualTo(sumOfOrderItemTotalAmount);
         }
@@ -169,22 +148,22 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             Long totalDiscountPrice = order.getTotalDiscountPrice();
             Long sumOfDiscountPrice =
-                order.getProductDiscountPrice() + order.getCouponDiscountPrice()
-                    + order.getPointDiscountPrice();
+                    order.getProductDiscountPrice() + order.getCouponDiscountPrice()
+                            + order.getPointDiscountPrice();
 
             assertThat(totalDiscountPrice).isEqualTo(sumOfDiscountPrice);
         }
@@ -199,19 +178,19 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
             Long orderDeliveryFee = order.getDeliveryFee();
             Long sumOfDeliveryFee = order.getItems().stream().mapToLong(OrderItem::getDeliveryFee)
-                .sum();
+                    .sum();
 
             assertThat(orderDeliveryFee).isEqualTo(sumOfDeliveryFee);
         }
@@ -226,26 +205,26 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertAll(
-                () -> assertThat(order.getStreetAddress()).isNotNull(),
-                () -> assertThat(order.getDetailAddress()).isNotNull(),
-                () -> assertThat(order.getZipCode()).isNotNull(),
-                () -> assertThat(order.getReceiver()).isNotNull(),
-                () -> assertThat(order.getDeliveryType()).isNotNull(),
-                () -> assertThat(order.getDeliveryMessage()).isNotNull(),
-                () -> assertThat(order.getDeliveryPhoneNumber()).isNotNull()
+                    () -> assertThat(order.getStreetAddress()).isNotNull(),
+                    () -> assertThat(order.getDetailAddress()).isNotNull(),
+                    () -> assertThat(order.getZipCode()).isNotNull(),
+                    () -> assertThat(order.getReceiver()).isNotNull(),
+                    () -> assertThat(order.getDeliveryType()).isNotNull(),
+                    () -> assertThat(order.getDeliveryMessage()).isNotNull(),
+                    () -> assertThat(order.getDeliveryPhoneNumber()).isNotNull()
             );
         }
 
@@ -259,22 +238,22 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertAll(
-                () -> assertThat(order.getCustomerEmail()).isNotNull(),
-                () -> assertThat(order.getCustomer()).isNotNull(),
-                () -> assertThat(order.getOrderCustomerType()).isNotNull()
+                    () -> assertThat(order.getCustomerEmail()).isNotNull(),
+                    () -> assertThat(order.getCustomer()).isNotNull(),
+                    () -> assertThat(order.getOrderCustomerType()).isNotNull()
             );
         }
 
@@ -288,21 +267,21 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertAll(
-                () -> assertThat(order.getOrderNumber()).isNotNull(),
-                () -> assertThat(order.getPaymentMethod()).isNotNull()
+                    () -> assertThat(order.getOrderNumber()).isNotNull(),
+                    () -> assertThat(order.getPaymentMethod()).isNotNull()
             );
         }
 
@@ -316,25 +295,25 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             order.getItems()
-                .forEach(orderItem -> assertThat(orderItem.getOrderItemTotalPaymentAmount())
-                    .isEqualTo(orderItem.getOrderItemTotalAmount() - (
-                        orderItem.getProductDiscountAmount()
-                            + orderItem.getPointDiscountAmount()
-                            + orderItem.getCouponDiscountAmount())
-                    ));
+                    .forEach(orderItem -> assertThat(orderItem.getOrderItemTotalPaymentAmount())
+                            .isEqualTo(orderItem.getOrderItemTotalAmount() - (
+                                    orderItem.getProductDiscountAmount()
+                                            + orderItem.getPointDiscountAmount()
+                                            + orderItem.getCouponDiscountAmount())
+                            ));
         }
 
         @Test
@@ -347,20 +326,20 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             order.getItems().forEach(orderItem -> assertThat(orderItem.getOrderStatus()).isEqualTo(
-                OrderStatus.Pending));
+                    OrderStatus.Pending));
         }
 
         @Test
@@ -373,22 +352,22 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertThat(order.getDeliveryType()).isEqualTo(DeliveryType.NORMAL);
             order.getItems()
-                .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                    orderItem.getBaseShippingFee()));
+                    .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                            orderItem.getBaseShippingFee()));
         }
 
         @Test
@@ -401,24 +380,24 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, true, AreaType.Jeju));
+                    new CheckAdditionalDeliveryFeeOutput(true, true, AreaType.Jeju));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertThat(order.getDeliveryType()).isEqualTo(DeliveryType.JEJU);
             order.getItems()
-                .forEach(orderItem -> {
-                    assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                        orderItem.getJejuShippingFee() + orderItem.getBaseShippingFee());
-                });
+                    .forEach(orderItem -> {
+                        assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                                orderItem.getJejuShippingFee() + orderItem.getBaseShippingFee());
+                    });
         }
 
         @Test
@@ -431,22 +410,22 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, true, AreaType.AreaExceptForJeju));
+                    new CheckAdditionalDeliveryFeeOutput(true, true, AreaType.AreaExceptForJeju));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertThat(order.getDeliveryType()).isEqualTo(DeliveryType.ISLAND);
             order.getItems()
-                .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
-                    orderItem.getIslandShippingFee() + orderItem.getBaseShippingFee()));
+                    .forEach(orderItem -> assertThat(orderItem.getDeliveryFee()).isEqualTo(
+                            orderItem.getIslandShippingFee() + orderItem.getBaseShippingFee()));
         }
 
         @Test
@@ -459,20 +438,20 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertAll(
-                () -> assertThat(order.getPaymentDate()).isNull()
+                    () -> assertThat(order.getPaymentDate()).isNull()
             );
         }
 
@@ -486,16 +465,16 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertThat(order.getItems()).isNotNull();
@@ -511,16 +490,16 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertThat(order.getCustomer()).isNotNull();
@@ -536,16 +515,16 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             order.getItems().forEach(orderItem -> assertThat(orderItem.getProduct()).isNotNull());
@@ -561,16 +540,16 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             order.getItems().forEach(orderItem -> assertThat(orderItem.getShop()).isNotNull());
@@ -586,16 +565,16 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertThat(order.getOrderCustomerType()).isEqualTo(OrderCustomerType.MemberOrder);
@@ -611,16 +590,16 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(tempPaymentMethod, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertThat(order.getRefundBankAccount()).isNull();
@@ -638,16 +617,16 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertThat(order.getRefundBankAccount()).isNotNull();
@@ -665,20 +644,20 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             assertThat(order.getTotalDiscountPrice()).isLessThanOrEqualTo(
-                order.getTotalDiscountPrice());
+                    order.getTotalDiscountPrice());
         }
 
         @Test
@@ -691,16 +670,16 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             verify(productService, times(1)).checkProductExist(List.of(productIdToOrder));
@@ -718,21 +697,21 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, 1L,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             verify(couponService, times(1)).checkUserCouponStatus(mockedUser, Stream.of(createOrderItemRequest)
-                .filter(item -> item != null && item.getUserCouponId() != null)
-                .map(CreateOrderItemRequest::getUserCouponId).collect(Collectors.toList()));
+                    .filter(item -> item != null && item.getUserCouponId() != null)
+                    .map(CreateOrderItemRequest::getUserCouponId).collect(Collectors.toList()));
         }
 
         @Test
@@ -745,16 +724,16 @@ class OrderServiceTest {
             Long pointDiscountPrice = 0L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, 1L,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
 
             // when
             orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
-                List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
+                    List.of(createOrderItemRequest), pointDiscountPrice, tempDeliveryId, tempDeliveryMessage);
 
             // then
             verify(pointService, times(1)).checkUserPoint(mockedUser.getId(), pointDiscountPrice);
@@ -773,26 +752,26 @@ class OrderServiceTest {
             Long productOrderQuantity2 = 1L;
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder2)).willReturn(
-                noOptionTestProduct);
+                    noOptionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
             CreateOrderItemRequest createOrderItemRequest2 = new CreateOrderItemRequest(productIdToOrder2, null,
-                null, productOrderQuantity2);
+                    null, productOrderQuantity2);
 
             // when
             Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
-                List.of(createOrderItemRequest, createOrderItemRequest2), pointDiscountPrice, tempDeliveryId,
-                tempDeliveryMessage);
+                    List.of(createOrderItemRequest, createOrderItemRequest2), pointDiscountPrice, tempDeliveryId,
+                    tempDeliveryMessage);
 
             // then
             assertThat(order.getDeliveryFee()).isEqualTo(Stream.of(optionTestProduct, noOptionTestProduct)
-                .map(Product::getBaseShippingFee)
-                .max(Comparator.naturalOrder()).orElse(0L));
+                    .map(Product::getBaseShippingFee)
+                    .max(Comparator.naturalOrder()).orElse(0L));
         }
 
         @Test
@@ -810,21 +789,21 @@ class OrderServiceTest {
             optionTestProduct.getShop().setFreeShippingFee(500L);
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder2)).willReturn(
-                noOptionTestProduct);
+                    noOptionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
             CreateOrderItemRequest createOrderItemRequest2 = new CreateOrderItemRequest(productIdToOrder2, null,
-                null, productOrderQuantity2);
+                    null, productOrderQuantity2);
 
             // when
             Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
-                List.of(createOrderItemRequest, createOrderItemRequest2), pointDiscountPrice, tempDeliveryId,
-                tempDeliveryMessage);
+                    List.of(createOrderItemRequest, createOrderItemRequest2), pointDiscountPrice, tempDeliveryId,
+                    tempDeliveryMessage);
 
             // then
             assertThat(order.getDeliveryFee()).isEqualTo(0L);
@@ -845,21 +824,21 @@ class OrderServiceTest {
             optionTestProduct.getShop().setFreeShippingFee(500L);
 
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder)).willReturn(
-                optionTestProduct);
+                    optionTestProduct);
             given(productService.findProductByDisplayedAndShopDisplayed(productIdToOrder2)).willReturn(
-                noOptionTestProduct);
+                    noOptionTestProduct);
             given(additionalDeliveryService.checkAdditionalDeliveryFee("zip code")).willReturn(
-                new CheckAdditionalDeliveryFeeOutput(true, false, null));
+                    new CheckAdditionalDeliveryFeeOutput(true, false, null));
             given(orderRepository.save(any(Order.class))).will(AdditionalAnswers.returnsFirstArg());
             CreateOrderItemRequest createOrderItemRequest = new CreateOrderItemRequest(productIdToOrder, null,
-                productOptionId, productOrderQuantity);
+                    productOptionId, productOrderQuantity);
             CreateOrderItemRequest createOrderItemRequest2 = new CreateOrderItemRequest(productIdToOrder2, null,
-                null, productOrderQuantity2);
+                    null, productOrderQuantity2);
 
             // when
             Order order = orderService.createMemberOrder(PaymentMethod.VirtualAccount, mockedUser,
-                List.of(createOrderItemRequest, createOrderItemRequest2), pointDiscountPrice, tempDeliveryId,
-                tempDeliveryMessage);
+                    List.of(createOrderItemRequest, createOrderItemRequest2), pointDiscountPrice, tempDeliveryId,
+                    tempDeliveryMessage);
 
             // then
             then(pointService).should(times(1)).usePoint(any(User.class), anyLong(), any(Order.class));
@@ -882,11 +861,11 @@ class OrderServiceTest {
 
                 // when // then
                 assertThatThrownBy(
-                    () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
-                        getUserWithInvalidRefundBank(), tempCreateOrderItemRequests,
-                        pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
-                    .isInstanceOf(Exception.class)
-                    .hasMessage("Refund bank information is necessary");
+                        () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
+                                getUserWithInvalidRefundBank(), tempCreateOrderItemRequests,
+                                pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
+                        .isInstanceOf(Exception.class)
+                        .hasMessage("Refund bank information is necessary");
             }
 
             @Test
@@ -904,11 +883,11 @@ class OrderServiceTest {
 
                 // when // then
                 assertThatThrownBy(
-                    () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
-                        userWithInvalidRefundBankAccountHolder, tempCreateOrderItemRequests,
-                        pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
-                    .isInstanceOf(Exception.class)
-                    .hasMessage("Refund bank information is necessary");
+                        () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
+                                userWithInvalidRefundBankAccountHolder, tempCreateOrderItemRequests,
+                                pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
+                        .isInstanceOf(Exception.class)
+                        .hasMessage("Refund bank information is necessary");
             }
 
             @Test
@@ -926,11 +905,11 @@ class OrderServiceTest {
 
                 // when
                 assertThatThrownBy(
-                    () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
-                        userWithInvalidRefundBankAccount, tempCreateOrderItemRequests,
-                        pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
-                    .isInstanceOf(Exception.class)
-                    .hasMessage("Refund bank information is necessary");
+                        () -> orderService.createMemberOrder(PaymentMethod.VirtualAccount,
+                                userWithInvalidRefundBankAccount, tempCreateOrderItemRequests,
+                                pointDiscountPrice, tempDeliveryId, tempDeliveryMessage))
+                        .isInstanceOf(Exception.class)
+                        .hasMessage("Refund bank information is necessary");
             }
 
             private User getUserWithInvalidRefundBank() {

@@ -1,11 +1,10 @@
-package org.example.dto.order;
-
-import java.util.List;
-
-import org.example.entity.PaymentMethod;
+package org.example.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.entity.PaymentMethod;
+
+import java.util.List;
 
 @Getter
 @Setter

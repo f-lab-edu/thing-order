@@ -1,10 +1,9 @@
-package org.example.dto.order;
-
-import java.util.List;
-
-import org.example.entity.OrderItem;
+package org.example.message;
 
 import lombok.Getter;
+import org.example.entity.OrderItem;
+
+import java.util.List;
 
 @Getter
 public class NewOrderItemResult {
@@ -13,7 +12,7 @@ public class NewOrderItemResult {
     private final CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput;
 
     public NewOrderItemResult(List<OrderItem> orderItemList,
-        CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput) {
+                              CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput) {
         this.orderItems = orderItemList;
         this.checkAdditionalDeliveryFeeOutput = checkAdditionalDeliveryFeeOutput;
     }

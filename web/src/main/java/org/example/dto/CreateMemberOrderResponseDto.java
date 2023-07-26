@@ -1,9 +1,8 @@
-package org.example.dto.order;
-
-import org.example.entity.Order;
+package org.example.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.entity.Order;
 
 @Getter
 @Setter
@@ -22,10 +21,10 @@ public class CreateMemberOrderResponseDto {
     @Override
     public String toString() {
         return "CreateMemberOrderOutputDTO{" +
-            "ok=" + ok +
-            ", results=" + results +
-            ", isZeroPaidOrder=" + isZeroPaidOrder +
-            '}';
+                "ok=" + ok +
+                ", results=" + results +
+                ", isZeroPaidOrder=" + isZeroPaidOrder +
+                '}';
     }
 }
 

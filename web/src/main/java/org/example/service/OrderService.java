@@ -1,37 +1,15 @@
 package org.example.service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.example.dto.order.CheckAdditionalDeliveryFeeOutput;
-import org.example.dto.order.CreateNewOrderItemResult;
-import org.example.dto.order.CreateOrderItemRequest;
-import org.example.dto.order.DeleteCartItemMessage;
-import org.example.dto.order.NewOrderItemResult;
-import org.example.dto.order.ProductStockCountMessage;
-import org.example.dto.order.SortedOrderItem;
-import org.example.entity.AreaType;
-import org.example.entity.Coupon;
-import org.example.entity.CouponConstraint;
-import org.example.entity.OptionsType;
-import org.example.entity.Order;
-import org.example.entity.OrderCustomerType;
-import org.example.entity.OrderItem;
-import org.example.entity.OrderStatus;
-import org.example.entity.PaymentMethod;
-import org.example.entity.Product;
-import org.example.entity.ProductOption;
-import org.example.entity.User;
-import org.example.entity.UserDeliveryAddress;
+import lombok.RequiredArgsConstructor;
+import org.example.dto.CreateOrderItemRequest;
+import org.example.entity.*;
+import org.example.message.*;
 import org.example.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,26 +23,26 @@ public class OrderService {
     private final ProductService productService;
 
     public Order createMemberOrder(PaymentMethod paymentMethod, User user,
-        List<CreateOrderItemRequest> itemsToOrder, Long pointDiscountPrice, Long deliveryId, String deliveryMessage)
-        throws Exception {
+                                   List<CreateOrderItemRequest> itemsToOrder, Long pointDiscountPrice, Long deliveryId, String deliveryMessage)
+            throws Exception {
         this.checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(user,
-            paymentMethod);
+                paymentMethod);
         this.productService.checkProductExist(
-            itemsToOrder.stream().map(CreateOrderItemRequest::getProductId)
-                .collect(Collectors.toList()));
+                itemsToOrder.stream().map(CreateOrderItemRequest::getProductId)
+                        .collect(Collectors.toList()));
         this.productService.checkProductStockCount(itemsToOrder);
         this.couponService.checkUserCouponStatus(user,
-            itemsToOrder.stream()
-                .filter(item -> item != null && item.getUserCouponId() != null)
-                .map(CreateOrderItemRequest::getUserCouponId).collect(Collectors.toList())
+                itemsToOrder.stream()
+                        .filter(item -> item != null && item.getUserCouponId() != null)
+                        .map(CreateOrderItemRequest::getUserCouponId).collect(Collectors.toList())
         );
         this.pointService.checkUserPoint(user.getId(), pointDiscountPrice);
 
         NewOrderItemResult newOrderItemResult = this.newOrderItemResult(itemsToOrder,
-            user.findAddressById(deliveryId).getZipCode(), user.getId());
+                user.findAddressById(deliveryId).getZipCode(), user.getId());
 
         Order order = this.newOrderObject(user, newOrderItemResult.getOrderItems(),
-            newOrderItemResult.getCheckAdditionalDeliveryFeeOutput(), paymentMethod, deliveryMessage, deliveryId);
+                newOrderItemResult.getCheckAdditionalDeliveryFeeOutput(), paymentMethod, deliveryMessage, deliveryId);
         order.getItems().forEach(orderItem -> orderItem.setOrder(order));
 
         Order couponAppliedOrder = this.calculateCouponUsageInOrder(order);
@@ -87,11 +65,11 @@ public class OrderService {
         }
 
         List<ProductStockCountMessage> productStockCountMessages = order.getItems()
-            .stream()
-            .map(orderItem -> new ProductStockCountMessage(orderItem.getProduct(), orderItem.getOptionId(),
-                orderItem.getOrderQuantity()))
-            .collect(
-                Collectors.toList());
+                .stream()
+                .map(orderItem -> new ProductStockCountMessage(orderItem.getProduct(), orderItem.getOptionId(),
+                        orderItem.getOrderQuantity()))
+                .collect(
+                        Collectors.toList());
 
         this.productService.decreaseProductStockCount(productStockCountMessages);
 
@@ -101,18 +79,18 @@ public class OrderService {
 
         if (order.hasCouponDiscountPrice()) {
             List<Coupon> usedCoupons = order.getItems().stream()
-                .filter(OrderItem::hasCouponProp)
-                .map(OrderItem::getCoupons)
-                .collect(Collectors.toList());
+                    .filter(OrderItem::hasCouponProp)
+                    .map(OrderItem::getCoupons)
+                    .collect(Collectors.toList());
 
             this.couponService.useCoupon(usedCoupons);
         }
 
         List<DeleteCartItemMessage> deleteCartItemMessages = order.getItems()
-            .stream()
-            .map(orderItem -> new DeleteCartItemMessage(orderItem.getProduct().getId(), orderItem.getProduct()
-                .getOptionsType(), orderItem.getOptionId()))
-            .collect(Collectors.toList());
+                .stream()
+                .map(orderItem -> new DeleteCartItemMessage(orderItem.getProduct().getId(), orderItem.getProduct()
+                        .getOptionsType(), orderItem.getOptionId()))
+                .collect(Collectors.toList());
 
         this.cartService.deleteCartItems(order.getCustomer().getId(), deleteCartItemMessages);
 
@@ -148,8 +126,8 @@ public class OrderService {
 
     private List<OrderItem> sortOrderItemsByHighPrice(List<OrderItem> orderItems) {
         orderItems.sort(Comparator.comparingLong((OrderItem item) ->
-                item.getOrderItemTotalAmount() - item.getProductDiscountAmount() - item.getCouponDiscountAmount())
-            .reversed());
+                        item.getOrderItemTotalAmount() - item.getProductDiscountAmount() - item.getCouponDiscountAmount())
+                .reversed());
 
         return orderItems;
     }
@@ -162,7 +140,7 @@ public class OrderService {
 
             CouponConstraint couponConstraint = orderItem.getCoupons().getCouponConstraint();
             Long couponDiscountPrice = couponConstraint.getTotalCouponDiscountPrice(orderItem.getOrderItemTotalAmount(),
-                orderItem.getOrderQuantity());
+                    orderItem.getOrderQuantity());
 
             orderItem.applyCouponDiscountAmount(couponDiscountPrice);
         }
@@ -171,10 +149,10 @@ public class OrderService {
     }
 
     private Order newOrderObject(User user, List<OrderItem> orderItems,
-        CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput, PaymentMethod paymentMethod,
-        String deliveryMessage, Long deliveryId) {
+                                 CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput, PaymentMethod paymentMethod,
+                                 String deliveryMessage, Long deliveryId) {
         List<Product> products = orderItems.stream().map(OrderItem::getProduct)
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
         UserDeliveryAddress userDeliveryAddress = user.findAddressById(deliveryId);
 
@@ -182,20 +160,20 @@ public class OrderService {
         String orderNumber = this.createOrderNumber();
 
         return new Order(orderName, orderNumber, paymentMethod, OrderCustomerType.MemberOrder,
-            deliveryMessage, userDeliveryAddress.getPhoneNumberForDelivery(), userDeliveryAddress.getReceiver(),
-            userDeliveryAddress.getStreetAddress(), userDeliveryAddress.getDetailAddress(),
-            userDeliveryAddress.getZipCode(), user.getEmail(), user.getName(), user.getPhoneNumber(),
-            user.getPersonalCustomsCode(), orderItems, user,
-            checkAdditionalDeliveryFeeOutput.isAddressToChargeAdditionalFee(),
-            checkAdditionalDeliveryFeeOutput.getAreaType());
+                deliveryMessage, userDeliveryAddress.getPhoneNumberForDelivery(), userDeliveryAddress.getReceiver(),
+                userDeliveryAddress.getStreetAddress(), userDeliveryAddress.getDetailAddress(),
+                userDeliveryAddress.getZipCode(), user.getEmail(), user.getName(), user.getPhoneNumber(),
+                user.getPersonalCustomsCode(), orderItems, user,
+                checkAdditionalDeliveryFeeOutput.isAddressToChargeAdditionalFee(),
+                checkAdditionalDeliveryFeeOutput.getAreaType());
     }
 
     private String createOrderNumber() {
         LocalDateTime now = LocalDateTime.now();
 
         return String.format("%04d%01d%02d%s",
-            now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
-            Integer.toString(now.getNano(), 36));
+                now.getYear(), now.getMonthValue(), now.getDayOfMonth(),
+                Integer.toString(now.getNano(), 36));
     }
 
     private String createOrderName(List<Product> products, int totalCountOfOrderedProduct) {
@@ -207,24 +185,24 @@ public class OrderService {
     }
 
     private void checkUserRefundABankAndHolderAndAccountWhenPaymentMethodVirtualAccount(User user,
-        PaymentMethod paymentMethod) throws Exception {
+                                                                                        PaymentMethod paymentMethod) throws Exception {
         if (paymentMethod == PaymentMethod.VirtualAccount && (user.getBank() == null
-            || user.getBankAccountHolder() == null || user.getBankAccount() == null)) {
+                || user.getBankAccountHolder() == null || user.getBankAccount() == null)) {
             throw new Exception("Refund bank information is necessary");
         }
     }
 
     private NewOrderItemResult newOrderItemResult(List<CreateOrderItemRequest> itemsToOrder,
-        String zipCode, Long userId) {
+                                                  String zipCode, Long userId) {
         List<OrderItem> result = new ArrayList<>();
         boolean isAddressToChargeAdditionalFee = false;
         AreaType areaType = null;
 
         CheckAdditionalDeliveryFeeOutput checkAdditionalDeliveryFeeOutput = this.additionalDeliveryService.checkAdditionalDeliveryFee(
-            zipCode);
+                zipCode);
 
         if (checkAdditionalDeliveryFeeOutput.isOk()
-            && checkAdditionalDeliveryFeeOutput.isAddressToChargeAdditionalFee()
+                && checkAdditionalDeliveryFeeOutput.isAddressToChargeAdditionalFee()
         ) {
             areaType = checkAdditionalDeliveryFeeOutput.getAreaType();
             isAddressToChargeAdditionalFee = true;
@@ -232,11 +210,11 @@ public class OrderService {
 
         for (CreateOrderItemRequest item : itemsToOrder) {
             Product product = this.productService.findProductByDisplayedAndShopDisplayed(
-                item.getProductId());
+                    item.getProductId());
 
             CreateNewOrderItemResult createNewOrderItemResult = this.createNewOrderItemObjectV2(
-                product, item.getOptionId(), item.getOrderQuantity(),
-                isAddressToChargeAdditionalFee, areaType);
+                    product, item.getOptionId(), item.getOrderQuantity(),
+                    isAddressToChargeAdditionalFee, areaType);
 
             if (item.getUserCouponId() != null) {
                 Coupon coupon = this.couponService.findUserCoupon(userId, item.getUserCouponId());
@@ -252,35 +230,35 @@ public class OrderService {
         for (OrderItem orderItem : result) {
             if (!sortedOrderItemsByShopId.containsKey(orderItem.getShop().getId())) {
                 sortedOrderItemsByShopId.put(orderItem.getShop().getId(),
-                    new SortedOrderItem(orderItem.getShop()));
+                        new SortedOrderItem(orderItem.getShop()));
             }
 
             sortedOrderItemsByShopId.get(orderItem.getShop().getId()).getOrderItems()
-                .add(orderItem);
+                    .add(orderItem);
         }
 
         for (Map.Entry<Long, SortedOrderItem> entry : sortedOrderItemsByShopId.entrySet()) {
             SortedOrderItem sortedOrderItem = entry.getValue();
 
             OrderItem maxOriginBaseShippingFeeItem = sortedOrderItem.getOrderItems()
-                .stream()
-                .reduce((prev, cur) ->
-                    prev.getOriginBaseShippingFee() >= cur.getOriginBaseShippingFee()
-                        ? prev : cur)
-                .orElse(null);
+                    .stream()
+                    .reduce((prev, cur) ->
+                            prev.getOriginBaseShippingFee() >= cur.getOriginBaseShippingFee()
+                                    ? prev : cur)
+                    .orElse(null);
 
             OrderItem maxOriginJejuShippingFeeItem = sortedOrderItem.getOrderItems().stream()
-                .reduce((prev, cur) ->
-                    prev.getOriginJejuShippingFee() >= cur.getOriginJejuShippingFee()
-                        ? prev : cur)
-                .orElse(null);
+                    .reduce((prev, cur) ->
+                            prev.getOriginJejuShippingFee() >= cur.getOriginJejuShippingFee()
+                                    ? prev : cur)
+                    .orElse(null);
 
             OrderItem maxOriginIsalndShippingFeeItem = sortedOrderItem.getOrderItems().stream()
-                .reduce((prev, cur) ->
-                    prev.getOriginIslandShippingFee() >= cur.getOriginIslandShippingFee()
-                        ? prev
-                        : cur)
-                .orElse(null);
+                    .reduce((prev, cur) ->
+                            prev.getOriginIslandShippingFee() >= cur.getOriginIslandShippingFee()
+                                    ? prev
+                                    : cur)
+                    .orElse(null);
 
             sortedOrderItem.setMaxOriginBaseShippingFeeItem(maxOriginBaseShippingFeeItem);
             sortedOrderItem.setMaxOriginJejuShippingFeeItem(maxOriginJejuShippingFeeItem);
@@ -293,11 +271,11 @@ public class OrderService {
             boolean isMaxBaseShippingItemChecked = false;
             for (OrderItem orderItem : sortedOrderItem.getOrderItems()) {
                 if (orderItem.getProduct().getId()
-                    == sortedOrderItem.getMaxOriginBaseShippingFeeItem()
-                    .getProduct().getId()
-                    && !isMaxBaseShippingItemChecked) {
+                        == sortedOrderItem.getMaxOriginBaseShippingFeeItem()
+                        .getProduct().getId()
+                        && !isMaxBaseShippingItemChecked) {
                     orderItem.setBaseShippingFee(
-                        sortedOrderItem.getMaxOriginBaseShippingFeeItem().getBaseShippingFee());
+                            sortedOrderItem.getMaxOriginBaseShippingFeeItem().getBaseShippingFee());
                     isMaxBaseShippingItemChecked = true;
                 } else {
                     orderItem.setBaseShippingFee(0L);
@@ -307,11 +285,11 @@ public class OrderService {
             boolean isMaxJejuShippingItemChecked = false;
             for (OrderItem orderItem : sortedOrderItem.getOrderItems()) {
                 if (orderItem.getProduct().getId()
-                    == sortedOrderItem.getMaxOriginJejuShippingFeeItem()
-                    .getProduct().getId()
-                    && !isMaxJejuShippingItemChecked) {
+                        == sortedOrderItem.getMaxOriginJejuShippingFeeItem()
+                        .getProduct().getId()
+                        && !isMaxJejuShippingItemChecked) {
                     orderItem.setJejuShippingFee(
-                        sortedOrderItem.getMaxOriginJejuShippingFeeItem().getJejuShippingFee());
+                            sortedOrderItem.getMaxOriginJejuShippingFeeItem().getJejuShippingFee());
                     isMaxJejuShippingItemChecked = true;
                 } else {
                     orderItem.setJejuShippingFee(0L);
@@ -321,12 +299,12 @@ public class OrderService {
             boolean isMaxIslandShippingItemChecked = false;
             for (OrderItem orderItem : sortedOrderItem.getOrderItems()) {
                 if (orderItem.getProduct().getId()
-                    == sortedOrderItem.getMaxOriginIslandShippingFeeItem()
-                    .getProduct().getId()
-                    && !isMaxIslandShippingItemChecked) {
+                        == sortedOrderItem.getMaxOriginIslandShippingFeeItem()
+                        .getProduct().getId()
+                        && !isMaxIslandShippingItemChecked) {
                     orderItem.setIslandShippingFee(
-                        sortedOrderItem.getMaxOriginIslandShippingFeeItem()
-                            .getIslandShippingFee());
+                            sortedOrderItem.getMaxOriginIslandShippingFeeItem()
+                                    .getIslandShippingFee());
                     isMaxIslandShippingItemChecked = true;
                 } else {
                     orderItem.setIslandShippingFee(0L);
@@ -338,13 +316,13 @@ public class OrderService {
             SortedOrderItem sortedOrderItem = entry.getValue();
 
             long totalPaymentAmountByShop = sortedOrderItem.getOrderItems().stream()
-                .mapToLong(OrderItem::getOrderItemTotalPaymentAmount)
-                .sum();
+                    .mapToLong(OrderItem::getOrderItemTotalPaymentAmount)
+                    .sum();
 
             boolean isFulfillFreeDeliveryCondition =
-                sortedOrderItem.getShop().getFreeShippingFee() != null
-                    && totalPaymentAmountByShop >= sortedOrderItem.getShop()
-                    .getFreeShippingFee();
+                    sortedOrderItem.getShop().getFreeShippingFee() != null
+                            && totalPaymentAmountByShop >= sortedOrderItem.getShop()
+                            .getFreeShippingFee();
 
             if (isFulfillFreeDeliveryCondition) {
                 for (OrderItem orderItem : sortedOrderItem.getOrderItems()) {
@@ -360,8 +338,8 @@ public class OrderService {
 
             sortedOrderItem.getOrderItems().forEach(orderItem -> {
                 orderItem.setDeliveryFee(
-                    orderItem.getBaseShippingFee() + orderItem.getJejuShippingFee()
-                        + orderItem.getIslandShippingFee());
+                        orderItem.getBaseShippingFee() + orderItem.getJejuShippingFee()
+                                + orderItem.getIslandShippingFee());
             });
         }
 
@@ -377,8 +355,8 @@ public class OrderService {
     }
 
     private CreateNewOrderItemResult createNewOrderItemObjectV2(Product product, Long optionId,
-        long orderQuantity,
-        boolean isAddressToChargeAdditionalFee, AreaType areaType) {
+                                                                long orderQuantity,
+                                                                boolean isAddressToChargeAdditionalFee, AreaType areaType) {
         long orderItemTotalAmount = 0;
         long orderItemTotalPaymentAmount = 0;
         long productDiscountPrice = 0;
@@ -389,21 +367,21 @@ public class OrderService {
 
         if (product.getOptions() != null && product.getOptionsType() != OptionsType.Absence) {
             userSelectOptions =
-                product.getOptions().stream().filter(option -> option.getOptionId() == optionId)
-                    .findFirst().get();
+                    product.getOptions().stream().filter(option -> option.getOptionId() == optionId)
+                            .findFirst().get();
         }
 
         boolean noOptionPriceProduct = product.getOptionsType() == OptionsType.Absence;
         boolean noOptionPriceAndNoDiscountProduct =
-            noOptionPriceProduct && product.getDiscountType() == null;
+                noOptionPriceProduct && product.getDiscountType() == null;
         boolean noOptionPriceAndDiscountProduct =
-            noOptionPriceProduct && product.getDiscountType() != null;
+                noOptionPriceProduct && product.getDiscountType() != null;
         boolean hasOptionPriceProduct = product.getOptionsType() == OptionsType.Combination
-            || product.getOptionsType() == OptionsType.Solo;
+                || product.getOptionsType() == OptionsType.Solo;
         boolean hasOptionPriceAndNoDiscountProduct =
-            hasOptionPriceProduct && product.getDiscountType() == null;
+                hasOptionPriceProduct && product.getDiscountType() == null;
         boolean hasOptionPriceAndDiscountProduct =
-            hasOptionPriceProduct && product.getDiscountType() != null;
+                hasOptionPriceProduct && product.getDiscountType() != null;
 
         // 주문 아이템에 옵션 가격이 없을 경우 (단독형, 옵션 없음)
         if (noOptionPriceProduct) {
@@ -417,27 +395,27 @@ public class OrderService {
         if (noOptionPriceAndDiscountProduct) {
             orderItemTotalPaymentAmount += product.getDiscountPrice() * orderQuantity;
             productDiscountPrice +=
-                (product.getPrice() - product.getDiscountPrice()) * orderQuantity;
+                    (product.getPrice() - product.getDiscountPrice()) * orderQuantity;
         }
 
         if (hasOptionPriceProduct) {
             assert userSelectOptions != null;
             orderItemTotalAmount +=
-                (product.getPrice() + userSelectOptions.getOptionPrice()) * orderQuantity;
+                    (product.getPrice() + userSelectOptions.getOptionPrice()) * orderQuantity;
         }
 
         if (hasOptionPriceAndNoDiscountProduct) {
             orderItemTotalPaymentAmount +=
-                (product.getPrice() + userSelectOptions.getOptionPrice()) * orderQuantity;
+                    (product.getPrice() + userSelectOptions.getOptionPrice()) * orderQuantity;
         }
 
         if (hasOptionPriceAndDiscountProduct) {
             orderItemTotalPaymentAmount +=
-                (product.getDiscountPrice() + userSelectOptions.getOptionPrice())
-                    * orderQuantity;
+                    (product.getDiscountPrice() + userSelectOptions.getOptionPrice())
+                            * orderQuantity;
 
             productDiscountPrice +=
-                (product.getPrice() - product.getDiscountPrice()) * orderQuantity;
+                    (product.getPrice() - product.getDiscountPrice()) * orderQuantity;
         }
 
         if (isAddressToChargeAdditionalFee && areaType == AreaType.Jeju) {
@@ -449,15 +427,15 @@ public class OrderService {
         }
 
         Long conditionalFreeDeliveryFeeStandardByShop =
-            product.getShop().getFreeShippingFee() != null ? product.getShop()
-                .getFreeShippingFee() : 0;
+                product.getShop().getFreeShippingFee() != null ? product.getShop()
+                        .getFreeShippingFee() : 0;
 
         OrderItem newOrderItem = new OrderItem(product, orderItemTotalPaymentAmount, orderQuantity,
-            orderItemTotalAmount, productDiscountPrice, LocalDateTime.now(),
-            OrderStatus.Pending, deliveryFee, product.getBaseShippingFee(), jejuShippingFee,
-            islandShippingFee, jejuShippingFee, islandShippingFee, product.getBaseShippingFee(),
-            conditionalFreeDeliveryFeeStandardByShop, false, deliveryFee, product.getShop(),
-            userSelectOptions);
+                orderItemTotalAmount, productDiscountPrice, LocalDateTime.now(),
+                OrderStatus.Pending, deliveryFee, product.getBaseShippingFee(), jejuShippingFee,
+                islandShippingFee, jejuShippingFee, islandShippingFee, product.getBaseShippingFee(),
+                conditionalFreeDeliveryFeeStandardByShop, false, deliveryFee, product.getShop(),
+                userSelectOptions);
 
         return new CreateNewOrderItemResult(newOrderItem, productDiscountPrice, deliveryFee);
     }

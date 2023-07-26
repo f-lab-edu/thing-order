@@ -1,10 +1,9 @@
-package org.example.dto.order;
+package org.example.message;
 
+import lombok.Getter;
 import org.example.entity.OptionsType;
 import org.example.entity.Product;
 import org.example.exception.GraphqlException;
-
-import lombok.Getter;
 
 @Getter
 public class ProductStockCountMessage {
