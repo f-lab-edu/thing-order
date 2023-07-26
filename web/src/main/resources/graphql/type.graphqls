@@ -1,24 +1,14 @@
-type OrderInfo {
-    order: Order
-    payment: Payment
-}
-
 type Order {
     id: Int!
     createdAt: DateTime!
     updatedAt: DateTime!
     orderNumber: String!
-    customer: User
-    items: [OrderItem!]!
     totalOriginalPrice: Int!
     totalDiscountPrice: Int!
     productDiscountPrice: Int
     pointDiscountPrice: Int
     couponDiscountPrice: Int
     deliveryFee: Int!
-    user: User
-    product: [Product!]
-    shop: Shop
     orderItemVat: Int
     finalPrice: Int
     finalPurchasePrice: Int

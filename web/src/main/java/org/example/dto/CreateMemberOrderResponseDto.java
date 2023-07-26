@@ -9,22 +9,17 @@ import org.example.entity.Order;
 public class CreateMemberOrderResponseDto {
 
     private boolean ok;
-    private Order results;
+    private OrderResponse results;
     private boolean isZeroPaidOrder;
 
-    public CreateMemberOrderResponseDto(boolean ok, Order results, boolean isZeroPaidOrder) {
+    public CreateMemberOrderResponseDto(boolean ok, Order order, boolean isZeroPaidOrder) {
         this.ok = ok;
-        this.results = results;
+        this.results = this.toDto(order);
         this.isZeroPaidOrder = isZeroPaidOrder;
     }
 
-    @Override
-    public String toString() {
-        return "CreateMemberOrderOutputDTO{" +
-                "ok=" + ok +
-                ", results=" + results +
-                ", isZeroPaidOrder=" + isZeroPaidOrder +
-                '}';
+    private OrderResponse toDto(Order order) {
+        return new OrderResponse(order);
     }
 }
 

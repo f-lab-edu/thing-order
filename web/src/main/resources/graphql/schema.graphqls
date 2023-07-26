@@ -1,10 +1,9 @@
 type Mutation {
     createMemberOrderV3(input: CreateOrderV3Input!): CreateOrderV3Output!
-    confirmMemberOrder(input: ConfirmMemberOrderInput!): ConfirmMemberOrderOutput!
 }
 
 type Query {
-    order(input: MemberOrderInput!): MemberOrderOutput!
+    healthCheck: String!
 }
 
 scalar DateTime

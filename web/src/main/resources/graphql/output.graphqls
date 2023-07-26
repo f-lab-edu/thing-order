@@ -3,15 +3,3 @@ type CreateOrderV3Output {
     results: Order
     isZeroPaidOrder: Boolean
 }
-
-type MemberOrderOutput {
-    error: String
-    ok: Boolean!
-    results: OrderInfo
-}
-
-type ConfirmMemberOrderOutput {
-    error: String
-    ok: Boolean!
-    results: Boolean
-}
